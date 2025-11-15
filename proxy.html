@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Proxy</title>
+</head>
+<body>
+<script>
+/*
+  This proxy forwards the JSON result from Squarespace so it can be loaded
+  from your GitHub domain without CORS problems.
+*/
+
+const url = "https://www.flowingframes.media/all-projekte?format=json-pretty";
+
+fetch(url)
+  .then(r => r.text())
+  .then(text => {
+    document.write(text);
+  })
+  .catch(err => {
+    document.write(JSON.stringify({error: true, message: err.toString()}));
+  });
+</script>
+</body>
+</html>
