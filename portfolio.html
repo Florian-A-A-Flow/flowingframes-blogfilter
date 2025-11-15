@@ -1,33 +1,65 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8">
-  <title>Portfolio</title>
-  <link rel="stylesheet" href="portfolio.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="portfolio.css">
 </head>
 
 <body>
 
 <div id="portfolio-wrapper">
 
-  <!-- Filter -->
-  <div id="filterBar">
-    <div class="filter-group">
-      <label>Kategorien</label>
-      <div id="categoryFilters"></div>
+    <!-- FILTER BAR -->
+    <div id="filterBar">
+        <div class="filter-group">
+            <label>Kategorien</label>
+            <div id="categoryFilters">
+                <label><input type="checkbox" value="Konzertfotografie"> Konzertfotografie</label>
+                <label><input type="checkbox" value="Konzertvideo"> Konzertvideo</label>
+                <label><input type="checkbox" value="Livesession"> Livesession</label>
+                <label><input type="checkbox" value="Musikvideo"> Musikvideo</label>
+                <label><input type="checkbox" value="Personenfotografie"> Personenfotografie</label>
+                <label><input type="checkbox" value="Produktfotografie"> Produktfotografie</label>
+                <label><input type="checkbox" value="Real Estate Fotografie"> Real Estate Fotografie</label>
+            </div>
+        </div>
     </div>
-  </div>
 
-  <!-- Grid -->
-  <div id="portfolio-grid" class="portfolio-grid"></div>
 
-  <!-- Load More -->
-  <button id="loadMoreBtn" class="load-more">ALLE ANZEIGEN</button>
+    <!-- PORTFOLIO GRID -->
+    <div class="portfolio-grid">
+
+        <!-- CARD TEMPLATE (BEISPIELE) -->
+        <a class="card" href="https://florian-a-a-flow.github.io/all-projekte/heiligermartin">
+            <img class="card-img" src="Jakuba+-+Heiliger+Martin-12+16x9+Thumbnail+kl.jpg" alt="">
+            <div class="card-category">Musikvideo, Personenfotografie</div>
+            <div class="card-title">JAKUBA – HEILIGER MARTIN</div>
+            <div class="card-excerpt">2025 | Video, Foto</div>
+        </a>
+
+        <a class="card" href="https://florian-a-a-flow.github.io/all-projekte/iwdam25">
+            <img class="card-img" src="IFdAM+-+La+sprezzatura-68 (Benutzerdefiniert).jpg" alt="">
+            <div class="card-category">Konzertfotografie</div>
+            <div class="card-title">INNSBRUCKER FESTWOCHEN – ERÖFFNUNGSKONZERT 2025</div>
+            <div class="card-excerpt">2025 | Fotografie</div>
+        </a>
+
+        <!-- Du kannst hier beliebig viele weitere Cards einfügen -->
+        <!-- Jede Card bleibt immer gleich aufgebaut -->
+
+        <!-- ... ALLE DEINE WEITEREN PROJEKTE ... -->
+
+    </div>
+
+    <!-- LOAD MORE BUTTON -->
+    <button class="load-more">ALLE ANZEIGEN</button>
 
 </div>
 
 <script src="portfolio.js"></script>
-
 </body>
 </html>
-
