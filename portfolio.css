@@ -1,85 +1,135 @@
+/* ===========================
+   Grundlayout
+=========================== */
+
 body {
-  font-family: sans-serif;
   margin: 0;
-  padding: 40px;
+  padding: 60px;
   background: #111;
   color: #fff;
+  font-family: "Inter", sans-serif;
 }
 
-/* Wrapper */
+/* ---------------------------
+   Wrapper
+--------------------------- */
+
 #portfolio-wrapper {
-  max-width: 1200px;
+  max-width: 1400px;
   margin: auto;
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 60px;
 }
 
-/* Filter Bar */
+/* ===========================
+   Linke Seitenleiste (Filter)
+=========================== */
+
 #filterBar {
-  margin-bottom: 30px;
+  position: sticky;
+  top: 40px;
+  align-self: flex-start;
 }
 
-.filter-group label {
-  font-weight: bold;
+#filterBar h3 {
+  font-family: "Inter", sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  letter-spacing: 0.8px;
+}
+
+.filter-item {
+  display: flex;
+  align-items: center;
   margin-bottom: 10px;
-  display: block;
+  font-size: 15px;
 }
 
-#categoryFilters label {
-  margin-right: 20px;
-  cursor: pointer;
+.filter-item input {
+  margin-right: 10px;
+  width: 16px;
+  height: 16px;
 }
 
-#categoryFilters input {
-  margin-right: 6px;
-}
+/* ===========================
+   Portfolio Grid
+=========================== */
 
-/* Grid */
 .portfolio-grid {
   display: grid;
-  gap: 40px;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 45px;
+  grid-template-columns: repeat(auto-fill, minmax(480px, 1fr));
 }
 
-/* Blog Summary Card Style */
+/* ===========================
+   Card Style
+=========================== */
+
 .card {
-  cursor: pointer;
+  display: block;
   text-decoration: none;
-  color: inherit;
+  color: #fff;
+  transition: opacity 0.25s ease;
 }
 
-.card-img {
+.card:hover {
+  opacity: 0.85;
+}
+
+.card img {
   width: 100%;
   aspect-ratio: 16/9;
   object-fit: cover;
-  border-radius: 6px;
+  border-radius: 12px;
+  margin-bottom: 15px;
 }
 
+/* Kategorie-Zeile über dem Titel */
+
 .card-category {
-  margin-top: 12px;
+  font-family: "Inter", sans-serif;
   text-transform: uppercase;
-  font-size: 12px;
+  font-size: 11px;
+  opacity: 0.7;
+  margin-bottom: 6px;
   letter-spacing: 1px;
+}
+
+/* ---------------------------
+   TITEL – OMES PRO
+--------------------------- */
+
+.card-title {
+  font-family: "OMES Pro", "Times New Roman", serif;
+  font-size: 28px;
+  letter-spacing: -0.2px;
+  line-height: 1.25;
+  margin-bottom: 6px;
+}
+
+/* Beschreibung (Jahr + Medienart) */
+
+.card-meta {
+  font-family: "Inter", sans-serif;
+  font-size: 14px;
   opacity: 0.7;
 }
 
-.card-title {
-  font-size: 22px;
-  margin: 6px 0;
-  font-weight: 600;
-}
+/* ===========================
+   Button unten (Alle Anzeigen)
+=========================== */
 
-.card-excerpt {
-  font-size: 14px;
-  opacity: 0.8;
-}
-
-/* Load More button */
-.load-more {
-  margin: 50px auto;
+.load-more,
+#showAllBtn {
+  margin: 70px auto 0;
   display: block;
-  background: #fff;
-  padding: 14px 25px;
-  border-radius: 6px;
+  padding: 16px 30px;
+  border-radius: 8px;
   border: none;
+  background: #fff;
+  font-weight: 700;
+  color: #000;
   cursor: pointer;
-  font-weight: bold;
 }
