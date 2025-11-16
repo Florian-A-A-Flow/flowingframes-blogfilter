@@ -1,38 +1,144 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8" />
-  <title>Portfolio – Flowing Frames</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portfolio</title>
 
-  <!-- Font – möglichst nah an deinem Squarespace-Look -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <!-- Omnes Pro (Squarespace version) -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="portfolio.css" />
+  <link rel="stylesheet" href="portfolio.css">
 </head>
 <body>
-  <div id="portfolio-wrapper">
-    <!-- Filter-Bar -->
-    <section id="filterBar">
-      <div class="filter-heading">Kategorien</div>
-      <div id="categoryFilters" class="filter-group">
-        <!-- wird von JS dynamisch mit Checkboxen gefüllt -->
-      </div>
-    </section>
 
-    <!-- Grid -->
-    <section class="portfolio-grid" id="portfolioGrid">
-      <!-- Cards werden von JS eingefügt -->
-    </section>
+<div id="portfolio-wrapper">
 
-    <!-- Load More -->
-    <button id="loadMoreBtn" class="load-more" style="display:none;">
-      ALLE ANZEIGEN
-    </button>
+  <!-- Filter -->
+  <div id="filterBar">
+    <div class="filter-group">
+      <label>Kategorien</label>
+      <div id="categoryFilters"></div>
+    </div>
   </div>
 
-  <script src="portfolio.js"></script>
+  <!-- GRID -->
+  <div class="portfolio-grid" id="portfolio-grid"></div>
+
+  <!-- LOAD MORE -->
+  <button id="loadMore" class="load-more">Mehr laden</button>
+
+</div>
+
+<script>
+// ----------------------------------------------------------
+// CONFIG
+// ----------------------------------------------------------
+const PROXY = "https://flowingframes-proxy.florian-augustus-alexander.workers.dev/?url=";
+const FEED_URL = "https://www.flowingframes.media/all-projekte?format=json-pretty";
+
+let allPosts = [];
+let visibleCount = 0;
+const LOAD_STEP = 12;
+
+// ----------------------------------------------------------
+// FETCH DATA
+// ----------------------------------------------------------
+async function loadPosts() {
+  const url = PROXY + encodeURIComponent(FEED_URL);
+  const res = await fetch(url);
+  const data = await res.json();
+
+  allPosts = (data.items || []).slice(0, 50); // only 50 newest
+
+  renderFilters(allPosts);
+  renderPosts();
+}
+
+// ----------------------------------------------------------
+// FILTERS
+// ----------------------------------------------------------
+function renderFilters(posts) {
+  const categories = new Set();
+  posts.forEach(p => {
+    if (p.categories) p.categories.forEach(c => categories.add(c));
+  });
+
+  const container = document.getElementById("categoryFilters");
+  container.innerHTML = "";
+
+  categories.forEach(cat => {
+    const id = "cat_" + cat.replace(/\s+/g, "_");
+
+    container.innerHTML += `
+      <label>
+        <input type="checkbox" value="${cat}" class="filter-check">
+        ${cat}
+      </label>
+    `;
+  });
+
+  document.querySelectorAll(".filter-check").forEach(cb => {
+    cb.addEventListener("change", renderPosts);
+  });
+}
+
+// ----------------------------------------------------------
+// RENDER POSTS
+// ----------------------------------------------------------
+function renderPosts(force = false) {
+  const activeCats = [...document.querySelectorAll(".filter-check:checked")].map(
+    cb => cb.value
+  );
+
+  let filtered = allPosts;
+
+  if (activeCats.length > 0) {
+    filtered = allPosts.filter(p =>
+      p.categories && p.categories.some(c => activeCats.includes(c))
+    );
+  }
+
+  visibleCount = LOAD_STEP;
+  drawGrid(filtered.slice(0, visibleCount));
+
+  const loadBtn = document.getElementById("loadMore");
+  loadBtn.style.display = filtered.length > visibleCount ? "block" : "none";
+
+  loadBtn.onclick = () => {
+    visibleCount += LOAD_STEP;
+    drawGrid(filtered.slice(0, visibleCount));
+    loadBtn.style.display = filtered.length > visibleCount ? "block" : "none";
+  };
+}
+
+// ----------------------------------------------------------
+// DRAW CARDS
+// ----------------------------------------------------------
+function drawGrid(posts) {
+  const grid = document.getElementById("portfolio-grid");
+  grid.innerHTML = "";
+
+  posts.forEach(p => {
+    const thumb = p.assetUrl || (p.asset && p.asset.assetUrl) || "";
+    const cats = p.categories ? p.categories.join(", ") : "";
+    const year = p.publishOn ? p.publishOn.split("-")[0] : "";
+    const url = p.fullUrl || p.clickthroughUrl || "#";
+
+    grid.innerHTML += `
+      <a class="card" href="${url}">
+        <img class="card-img" src="${thumb}" alt="">
+        <div class="card-category">${cats}</div>
+        <div class="card-title">${p.title}</div>
+        <div class="card-excerpt">${year} | ${p.excerpt || ""}</div>
+      </a>
+    `;
+  });
+}
+
+// Init
+loadPosts();
+</script>
+
 </body>
 </html>
