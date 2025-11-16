@@ -1,140 +1,194 @@
 <!DOCTYPE html>
-<html lang="de">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Portfolio</title>
+<meta charset="UTF-8">
 
-  <!-- Omnes Pro (Squarespace version) -->
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+<!-- Omnes Pro Einbindung (Basic-Plan kompatibel) -->
+<style>
+@font-face {
+    font-family: 'Omnes Pro';
+    src: url('https://florian-a-a-flow.github.io/flowingframes-blogfilter/omnes-pro-400.woff2') format('woff2');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
 
-  <link rel="stylesheet" href="portfolio.css">
+body {
+    background: #111;
+    font-family: 'Omnes Pro', sans-serif;
+    margin: 0;
+    padding: 40px;
+    color: #fff;
+}
+
+/* Filter Bar */
+#filterBar {
+  margin-bottom: 40px;
+}
+#filterBar label {
+  font-size: 18px;
+  margin-right: 25px;
+  cursor: pointer;
+}
+#filterBar input {
+  margin-right: 6px;
+}
+
+/* Grid */
+.portfolio-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 45px;
+}
+
+/* Card */
+.card {
+    display: block;
+    color: white;
+    text-decoration: none;
+    transition: opacity .25s;
+}
+.card:hover {
+    opacity: .65;
+}
+.card-img {
+    width: 100%;
+    aspect-ratio: 16/9;
+    object-fit: cover;
+    border-radius: 8px;
+}
+.card-category {
+    margin-top: 14px;
+    font-size: 13px;
+    text-transform: uppercase;
+    opacity: .55;
+}
+.card-title {
+    font-size: 28px;
+    margin: 2px 0 6px 0;
+}
+.card-excerpt {
+    font-size: 16px;
+    opacity: .75;
+}
+
+/* Load More */
+#loadMore {
+    margin: 60px auto;
+    display: block;
+    background: #fff;
+    color: #111;
+    padding: 16px 35px;
+    font-size: 18px;
+    border-radius: 6px;
+    cursor: pointer;
+    border: none;
+}
+</style>
 </head>
+
+
 <body>
 
-<div id="portfolio-wrapper">
-
-  <!-- Filter -->
-  <div id="filterBar">
-    <div class="filter-group">
-      <label>Kategorien</label>
-      <div id="categoryFilters"></div>
-    </div>
-  </div>
-
-  <!-- GRID -->
-  <div class="portfolio-grid" id="portfolio-grid"></div>
-
-  <!-- LOAD MORE -->
-  <button id="loadMore" class="load-more">Mehr laden</button>
-
+<!-- FILTER -->
+<div id="filterBar">
+    <label><input type="checkbox" value="musikvideo"> Musikvideo</label>
+    <label><input type="checkbox" value="personenfotografie"> Personenfotografie</label>
+    <label><input type="checkbox" value="konzertfotografie"> Konzertfotografie</label>
+    <label><input type="checkbox" value="livesession"> Livesession</label>
+    <label><input type="checkbox" value="konzertvideo"> Konzertvideo</label>
+    <label><input type="checkbox" value="real-estate-fotografie"> Real Estate Fotografie</label>
+    <label><input type="checkbox" value="produktfotografie"> Produktfotografie</label>
 </div>
 
+<!-- GRID -->
+<div id="portfolioGrid" class="portfolio-grid"></div>
+
+<button id="loadMore">Mehr laden</button>
+
+
+
+
 <script>
-// ----------------------------------------------------------
-// CONFIG
-// ----------------------------------------------------------
-const PROXY = "https://flowingframes-proxy.florian-augustus-alexander.workers.dev/?url=";
-const FEED_URL = "https://www.flowingframes.media/all-projekte?format=json-pretty";
+const API_URL = "https://flowingframes-proxy.florian-augustus-alexander.workers.dev/?url=https://www.flowingframes.media/all?format=json-pretty";
 
 let allPosts = [];
-let visibleCount = 0;
-const LOAD_STEP = 12;
+let currentIndex = 0;
+const batchSize = 12;
 
-// ----------------------------------------------------------
-// FETCH DATA
-// ----------------------------------------------------------
+// 1) Load from API
 async function loadPosts() {
-  const url = PROXY + encodeURIComponent(FEED_URL);
-  const res = await fetch(url);
-  const data = await res.json();
+    const response = await fetch(API_URL);
+    const data = await response.json();
 
-  allPosts = (data.items || []).slice(0, 50); // only 50 newest
+    // squarespace feed structure
+    allPosts = data.items || [];
+    allPosts.sort((a,b) => b.publishOn - a.publishOn);
 
-  renderFilters(allPosts);
-  renderPosts();
+    renderPosts();
 }
 
-// ----------------------------------------------------------
-// FILTERS
-// ----------------------------------------------------------
-function renderFilters(posts) {
-  const categories = new Set();
-  posts.forEach(p => {
-    if (p.categories) p.categories.forEach(c => categories.add(c));
-  });
+function renderPosts() {
+    const subset = allPosts.slice(currentIndex, currentIndex + batchSize);
+    currentIndex += batchSize;
 
-  const container = document.getElementById("categoryFilters");
-  container.innerHTML = "";
-
-  categories.forEach(cat => {
-    const id = "cat_" + cat.replace(/\s+/g, "_");
-
-    container.innerHTML += `
-      <label>
-        <input type="checkbox" value="${cat}" class="filter-check">
-        ${cat}
-      </label>
-    `;
-  });
-
-  document.querySelectorAll(".filter-check").forEach(cb => {
-    cb.addEventListener("change", renderPosts);
-  });
+    drawGrid(subset);
 }
 
-// ----------------------------------------------------------
-// RENDER POSTS
-// ----------------------------------------------------------
-function renderPosts(force = false) {
-  const activeCats = [...document.querySelectorAll(".filter-check:checked")].map(
-    cb => cb.value
-  );
-
-  let filtered = allPosts;
-
-  if (activeCats.length > 0) {
-    filtered = allPosts.filter(p =>
-      p.categories && p.categories.some(c => activeCats.includes(c))
-    );
-  }
-
-  visibleCount = LOAD_STEP;
-  drawGrid(filtered.slice(0, visibleCount));
-
-  const loadBtn = document.getElementById("loadMore");
-  loadBtn.style.display = filtered.length > visibleCount ? "block" : "none";
-
-  loadBtn.onclick = () => {
-    visibleCount += LOAD_STEP;
-    drawGrid(filtered.slice(0, visibleCount));
-    loadBtn.style.display = filtered.length > visibleCount ? "block" : "none";
-  };
-}
-
-// ----------------------------------------------------------
-// DRAW CARDS
-// ----------------------------------------------------------
 function drawGrid(posts) {
-  const grid = document.getElementById("portfolio-grid");
-  grid.innerHTML = "";
+    const grid = document.getElementById("portfolioGrid");
 
-  posts.forEach(p => {
-    const thumb = p.assetUrl || (p.asset && p.asset.assetUrl) || "";
-    const cats = p.categories ? p.categories.join(", ") : "";
-    const year = p.publishOn ? p.publishOn.split("-")[0] : "";
-    const url = p.fullUrl || p.clickthroughUrl || "#";
+    posts.forEach(p => {
 
-    grid.innerHTML += `
-      <a class="card" href="${url}">
-        <img class="card-img" src="${thumb}" alt="">
-        <div class="card-category">${cats}</div>
-        <div class="card-title">${p.title}</div>
-        <div class="card-excerpt">${year} | ${p.excerpt || ""}</div>
-      </a>
-    `;
-  });
+        let dateObj = new Date(p.publishOn * 1000);
+
+        let card = document.createElement("a");
+        card.className = "card";
+        card.href = p.fullUrl;
+        card.target = "_top";
+
+        card.innerHTML = `
+            <img class="card-img" src="${p.assetUrl}" />
+            <div class="card-category">${(p.categories || []).join(", ")}</div>
+            <div class="card-title">${p.title}</div>
+            <div class="card-excerpt">${p.excerpt || ""}</div>
+        `;
+
+        grid.appendChild(card);
+    });
 }
+
+
+// FILTERING
+document.querySelectorAll("#filterBar input").forEach(cb => {
+    cb.addEventListener("change", applyFilter);
+});
+
+function applyFilter() {
+    const active = [...document.querySelectorAll("#filterBar input:checked")].map(c => c.value.toLowerCase());
+
+    const grid = document.getElementById("portfolioGrid");
+    grid.innerHTML = "";
+
+    let filtered = allPosts;
+
+    if (active.length > 0) {
+        filtered = allPosts.filter(p =>
+            (p.categories || [])
+                .map(c => c.toLowerCase())
+                .some(cat => active.includes(cat))
+        );
+    }
+
+    currentIndex = 0;
+    drawGrid(filtered.slice(0, batchSize));
+}
+
+
+// LOAD MORE
+document.getElementById("loadMore").addEventListener("click", () => {
+    renderPosts();
+});
 
 // Init
 loadPosts();
