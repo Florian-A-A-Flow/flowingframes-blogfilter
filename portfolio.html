@@ -2,269 +2,222 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
+
 <title>Portfolio</title>
 
 <style>
-/* ----------------------------------------
-   GLOBAL (an Fluid/Omnes angelehnt)
----------------------------------------- */
-body {
-  margin: 0;
-  padding: 40px;
-  background: #111;
-  color: #fff;
-  font-family: var(--font-primary); /* Squarespace: Omnes Pro / Primary Font */
-}
+    body {
+      font-family: "Omnes", "Helvetica Neue", Arial, sans-serif;
+      background: #111;
+      color: #fff;
+      margin: 0;
+      padding: 40px;
+    }
 
-/* Wrapper */
-#portfolio-wrapper {
-  max-width: 1300px;
-  margin: 0 auto;
-}
+    #portfolio-wrapper {
+      max-width: 1300px;
+      margin: auto;
+    }
 
-/* Filter-Bar */
-#filterBar {
-  margin-bottom: 35px;
-}
+    /* --- FILTER --- */
+    #filterBar { margin-bottom: 35px; }
 
-.filter-group label {
-  font-weight: 600;
-  margin-right: 25px;
-  cursor: pointer;
-  font-size: 14px;
-  opacity: 0.85;
-}
+    .filter-group label {
+      margin-right: 22px;
+      cursor: pointer;
+      font-size: 15px;
+      opacity: .8;
+    }
 
-.filter-group input {
-  margin-right: 6px;
-}
+    /* --- GRID --- */
+    .portfolio-grid {
+      display: grid;
+      gap: 45px;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    }
 
-/* Grid */
-.portfolio-grid {
-  display: grid;
-  gap: 50px;
-  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-}
+    /* --- CARD --- */
+    .card {
+      text-decoration: none;
+      color: inherit;
+      display: block;
+      transition: transform .28s ease, box-shadow .28s ease;
+      transform-origin: center;
+    }
 
-/* Card-Struktur */
-.card {
-  display: block;
-  text-decoration: none;
-  color: inherit;
-}
+    /* Outer zoom */
+    .card:hover {
+      transform: scale(1.03);
+    }
 
-.card-inner {
-  border-radius: 10px;
-  overflow: hidden;
-  transform-origin: center center;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
+    /* Inner image zoom */
+    .card-img-wrapper {
+      overflow: hidden;
+      border-radius: 7px;
+      position: relative;
+    }
 
-.card:hover .card-inner {
-  transform: translateY(-4px) scale(1.02);
-  box-shadow: 0 18px 40px rgba(0,0,0,0.45);
-}
+    .card-img {
+      width: 100%;
+      aspect-ratio: 16/9;
+      object-fit: cover;
+      border-radius: 7px;
+      transition: transform .45s ease;
+    }
 
-/* Bild + Hover-Zoom im Rahmen */
-.card-img {
-  width: 100%;
-  aspect-ratio: 16 / 9;
-  object-fit: cover;
-  display: block;
-  transition: transform 0.3s ease, opacity 0.3s ease;
-}
+    .card:hover .card-img {
+      transform: scale(1.08);
+    }
 
-.card:hover .card-img {
-  transform: scale(1.06);
-  opacity: 0.9;
-}
+    .card-category {
+      margin-top: 12px;
+      text-transform: uppercase;
+      font-size: 11px;
+      letter-spacing: 1.2px;
+      opacity: .65;
+    }
 
-/* Textbereich */
-.card-text {
-  padding-top: 14px;
-}
+    .card-title {
+      font-size: 23px;
+      margin: 6px 0 4px 0;
+      font-weight: 600;
+    }
 
-.card-category {
-  text-transform: uppercase;
-  font-size: 11px;
-  letter-spacing: 1px;
-  opacity: 0.65;
-  margin-bottom: 4px;
-}
+    .card-excerpt {
+      font-size: 14px;
+      opacity: .75;
+      line-height: 1.45;
+    }
 
-.card-title {
-  font-size: 22px;
-  font-weight: 600;
-  margin: 4px 0;
-}
-
-.card-excerpt {
-  font-size: 14px;
-  opacity: 0.8;
-}
-
-/* Load-More Button */
-#loadMoreBtn {
-  margin: 50px auto 0;
-  display: block;
-  padding: 14px 26px;
-  border-radius: 6px;
-  border: none;
-  cursor: pointer;
-  font-weight: 600;
-  background: #fff;
-  color: #000;
-  transition: background 0.25s ease, transform 0.25s ease;
-}
-
-#loadMoreBtn:hover {
-  background: #ddd;
-  transform: translateY(-1px);
-}
+    /* --- LOAD MORE --- */
+    #loadMoreBtn {
+      margin: 50px auto;
+      display: block;
+      padding: 12px 25px;
+      background: #fff;
+      color: #111;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 15px;
+    }
 </style>
+
 </head>
 <body>
-
 <div id="portfolio-wrapper">
 
-  <!-- FILTER -->
   <div id="filterBar">
-    <div class="filter-group" id="categoryFilters">
-      <label><input type="checkbox" value="Musikvideo"> Musikvideo</label>
-      <label><input type="checkbox" value="Personenfotografie"> Personenfotografie</label>
-      <label><input type="checkbox" value="Konzertfotografie"> Konzertfotografie</label>
-      <label><input type="checkbox" value="Livesession"> Livesession</label>
-      <label><input type="checkbox" value="Konzertvideo"> Konzertvideo</label>
-      <label><input type="checkbox" value="Real Estate Fotografie"> Real Estate Fotografie</label>
-      <label><input type="checkbox" value="Produktfotografie"> Produktfotografie</label>
-    </div>
+      <div class="filter-group">
+          <label><input type="checkbox" value="Musikvideo"> Musikvideo</label>
+          <label><input type="checkbox" value="Personenfotografie"> Personenfotografie</label>
+          <label><input type="checkbox" value="Konzertfotografie"> Konzertfotografie</label>
+          <label><input type="checkbox" value="Livesession"> Livesession</label>
+          <label><input type="checkbox" value="Konzertvideo"> Konzertvideo</label>
+          <label><input type="checkbox" value="Real Estate Fotografie"> Real Estate Fotografie</label>
+          <label><input type="checkbox" value="Produktfotografie"> Produktfotografie</label>
+      </div>
   </div>
 
-  <!-- GRID -->
   <div class="portfolio-grid" id="portfolioGrid"></div>
 
-  <!-- LOAD MORE -->
   <button id="loadMoreBtn">Mehr laden</button>
 
 </div>
 
 <script>
-/* ----------------------------------------
-   CONFIG
----------------------------------------- */
-const PROXY = "https://flowingframes-proxy.florian-augustus-alexander.workers.dev/?url=";
-const FEED  = "https://www.flowingframes.media/all-projekte?format=json-pretty";
-const BASE_URL = "https://www.flowingframes.media";  // ← für funktionierende Links
+const proxy = "https://flowingframes-proxy.florian-augustus-alexander.workers.dev/?url=";
+const endpoint = "https://www.flowingframes.media/all-projekte?format=json-pretty";
 
 let allPosts = [];
-let visibleCount = 0;
-const CHUNK = 12;
+let page = 1;
+let visibleCount = 20;
 
-/* ----------------------------------------
-   LOAD POSTS
----------------------------------------- */
-async function loadPosts() {
-  try {
-    const res = await fetch(PROXY + FEED);
+document.addEventListener("DOMContentLoaded", () => {
+  loadAllPages().then(() => {
+    renderPosts();
+  });
+
+  document.querySelectorAll("#filterBar input").forEach(cb => {
+    cb.addEventListener("change", renderPosts);
+  });
+
+  document.getElementById("loadMoreBtn").addEventListener("click", () => {
+    visibleCount += 20;
+    renderPosts();
+  });
+});
+
+/* -----------------------------
+    LOAD ALL PAGES RECURSIVELY
+--------------------------------*/
+async function loadAllPages() {
+  while (true) {
+    const res = await fetch(proxy + endpoint + "&page=" + page);
     const text = await res.text();
 
-    // Wenn Proxy z.B. HTML-Fehler zurückgibt
-    if (!text.trim().startsWith('{')) {
-      console.error("Proxy liefert kein JSON:", text.slice(0, 200));
-      return;
-    }
+    if (!text || text.startsWith("<")) break; // Invalid / no more pages
 
-    const data = JSON.parse(text);
-    allPosts = Array.isArray(data.items) ? data.items : [];
-    visibleCount = 0;
+    const json = JSON.parse(text);
+    const items = json.items || [];
 
-    renderPosts(true);
+    if (items.length === 0) break;
 
-  } catch (err) {
-    console.error("Fetch-Fehler:", err);
+    allPosts.push(...items);
+    page++;
   }
 }
 
-/* ----------------------------------------
-   RENDER POSTS
----------------------------------------- */
-function renderPosts(reset = false) {
+/* -----------------------------
+    RENDER POSTS
+--------------------------------*/
+function renderPosts() {
   const grid = document.getElementById("portfolioGrid");
+  grid.innerHTML = "";
 
-  const selectedCats = [...document.querySelectorAll("#categoryFilters input:checked")]
-    .map(cb => cb.value);
+  const activeFilters = [...document.querySelectorAll("#filterBar input:checked")]
+     .map(cb => cb.value);
 
-  let posts = allPosts;
+  let filtered = allPosts;
 
-  if (selectedCats.length > 0) {
-    posts = posts.filter(p =>
-      Array.isArray(p.categories) &&
-      p.categories.some(cat => selectedCats.includes(cat))
+  if (activeFilters.length > 0) {
+    filtered = filtered.filter(item =>
+      item.categories && item.categories.some(c => activeFilters.includes(c))
     );
   }
 
-  if (reset) {
-    visibleCount = Math.min(CHUNK, posts.length);
-  } else {
-    visibleCount = Math.min(visibleCount + CHUNK, posts.length);
-  }
-
-  const slice = posts.slice(0, visibleCount);
-
-  grid.innerHTML = "";
-
-  slice.forEach(p => {
-    const img  = p.assetUrl || "";
-    const cat  = Array.isArray(p.categories) ? p.categories.join(", ") : "";
-    const url  = BASE_URL + (p.fullUrl || "");
-    const title = p.title || "";
-
-    // Excerpt aus HTML zu Text konvertieren
-    let excerptText = "";
-    if (p.excerpt) {
-      const tmp = document.createElement("div");
-      tmp.innerHTML = p.excerpt;
-      excerptText = (tmp.textContent || tmp.innerText || "").trim();
-    }
-
-    grid.innerHTML += `
-      <a class="card" href="${url}">
-        <div class="card-inner">
-          <img class="card-img" src="${img}" alt="${title}">
-          <div class="card-text">
-            <div class="card-category">${cat}</div>
-            <div class="card-title">${title}</div>
-            ${excerptText ? `<div class="card-excerpt">${excerptText}</div>` : ""}
-          </div>
-        </div>
-      </a>
-    `;
+  filtered.slice(0, visibleCount).forEach(p => {
+    grid.appendChild(createCard(p));
   });
-
-  // Button ausblenden, wenn nichts mehr zu laden ist
-  const btn = document.getElementById("loadMoreBtn");
-  if (visibleCount >= posts.length) {
-    btn.style.display = "none";
-  } else {
-    btn.style.display = "block";
-  }
 }
 
-/* ----------------------------------------
-   EVENTS
----------------------------------------- */
-document.getElementById("loadMoreBtn").addEventListener("click", () => {
-  renderPosts(false);
-});
+/* -----------------------------
+    CARD BUILDER
+--------------------------------*/
+function createCard(p) {
+  const link = document.createElement("a");
 
-document.querySelectorAll("#categoryFilters input").forEach(cb => {
-  cb.addEventListener("change", () => {
-    renderPosts(true);
-  });
-});
+  link.href = p.fullUrl;   // FIXED — richtige URL  
+  link.className = "card";
 
-/* Init */
-loadPosts();
+  const img = p.assetUrl || (p.systemData && p.systemData.mainImage && p.systemData.mainImage.assetUrl) || "";
+
+  const excerpt =
+      p.excerpt ||
+      (p.body && p.body.replace(/<[^>]*>/g, "").split(" ").slice(0, 20).join(" ") + "…") ||
+      "";
+
+  link.innerHTML = `
+      <div class="card-img-wrapper">
+        <img class="card-img" src="${img}">
+      </div>
+      <div class="card-category">${(p.categories || []).join(", ")}</div>
+      <div class="card-title">${p.title || ""}</div>
+      <div class="card-excerpt">${excerpt}</div>
+  `;
+  return link;
+}
 </script>
 
 </body>
