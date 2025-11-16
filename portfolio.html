@@ -6,23 +6,23 @@
 
 <style>
 /* ----------------------------------------
-   GLOBAL STYLE (Squarespace-like)
+   GLOBAL (an Fluid/Omnes angelehnt)
 ---------------------------------------- */
 body {
   margin: 0;
   padding: 40px;
   background: #111;
-  color: white;
-  font-family: var(--font-primary);   /* ← Omnes Pro */
+  color: #fff;
+  font-family: var(--font-primary); /* Squarespace: Omnes Pro / Primary Font */
 }
 
 /* Wrapper */
 #portfolio-wrapper {
   max-width: 1300px;
-  margin: auto;
+  margin: 0 auto;
 }
 
-/* Filter */
+/* Filter-Bar */
 #filterBar {
   margin-bottom: 35px;
 }
@@ -31,7 +31,7 @@ body {
   font-weight: 600;
   margin-right: 25px;
   cursor: pointer;
-  font-size: 15px;
+  font-size: 14px;
   opacity: 0.85;
 }
 
@@ -46,62 +46,80 @@ body {
   grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
 }
 
-/* Card */
+/* Card-Struktur */
 .card {
-  cursor: pointer;
+  display: block;
   text-decoration: none;
   color: inherit;
-  transition: all 0.3s ease;
+}
+
+.card-inner {
+  border-radius: 10px;
+  overflow: hidden;
+  transform-origin: center center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover .card-inner {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 18px 40px rgba(0,0,0,0.45);
+}
+
+/* Bild + Hover-Zoom im Rahmen */
+.card-img {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.3s ease, opacity 0.3s ease;
 }
 
 .card:hover .card-img {
-  transform: scale(1.03);
-  opacity: 0.85;
+  transform: scale(1.06);
+  opacity: 0.9;
 }
 
-.card-img {
-  width: 100%;
-  aspect-ratio: 16/9;
-  object-fit: cover;
-  border-radius: 8px;
-  transition: all 0.3s;
+/* Textbereich */
+.card-text {
+  padding-top: 14px;
 }
 
 .card-category {
-  margin-top: 14px;
   text-transform: uppercase;
-  font-size: 12px;
-  opacity: 0.6;
+  font-size: 11px;
   letter-spacing: 1px;
+  opacity: 0.65;
+  margin-bottom: 4px;
 }
 
 .card-title {
-  margin: 6px 0;
   font-size: 22px;
   font-weight: 600;
+  margin: 4px 0;
 }
 
-.card-date {
-  opacity: 0.6;
-  font-size: 13px;
+.card-excerpt {
+  font-size: 14px;
+  opacity: 0.8;
 }
 
-/* Load more */
+/* Load-More Button */
 #loadMoreBtn {
-  margin: 50px auto;
+  margin: 50px auto 0;
   display: block;
   padding: 14px 26px;
   border-radius: 6px;
   border: none;
   cursor: pointer;
   font-weight: 600;
-  background: white;
-  color: black;
-  transition: 0.25s;
+  background: #fff;
+  color: #000;
+  transition: background 0.25s ease, transform 0.25s ease;
 }
 
 #loadMoreBtn:hover {
   background: #ddd;
+  transform: translateY(-1px);
 }
 </style>
 </head>
@@ -130,16 +148,16 @@ body {
 
 </div>
 
-
 <script>
 /* ----------------------------------------
    CONFIG
 ---------------------------------------- */
 const PROXY = "https://flowingframes-proxy.florian-augustus-alexander.workers.dev/?url=";
-const FEED = "https://www.flowingframes.media/all-projekte?format=json-pretty";
+const FEED  = "https://www.flowingframes.media/all-projekte?format=json-pretty";
+const BASE_URL = "https://www.flowingframes.media";  // ← für funktionierende Links
 
 let allPosts = [];
-let visible = 0;
+let visibleCount = 0;
 const CHUNK = 12;
 
 /* ----------------------------------------
@@ -150,73 +168,103 @@ async function loadPosts() {
     const res = await fetch(PROXY + FEED);
     const text = await res.text();
 
-    // Check if valid JSON
-    if (!text.startsWith("{")) {
-      console.error("Invalid JSON from proxy:", text);
+    // Wenn Proxy z.B. HTML-Fehler zurückgibt
+    if (!text.trim().startsWith('{')) {
+      console.error("Proxy liefert kein JSON:", text.slice(0, 200));
       return;
     }
 
-    const json = JSON.parse(text);
+    const data = JSON.parse(text);
+    allPosts = Array.isArray(data.items) ? data.items : [];
+    visibleCount = 0;
 
-    allPosts = json.items || [];
-    visible = 0;
-
-    renderPosts();
+    renderPosts(true);
 
   } catch (err) {
-    console.error("Fetch error:", err);
+    console.error("Fetch-Fehler:", err);
   }
 }
 
 /* ----------------------------------------
-   RENDER
+   RENDER POSTS
 ---------------------------------------- */
-function renderPosts() {
+function renderPosts(reset = false) {
   const grid = document.getElementById("portfolioGrid");
-  grid.innerHTML = "";
 
   const selectedCats = [...document.querySelectorAll("#categoryFilters input:checked")]
-    .map(c => c.value);
+    .map(cb => cb.value);
 
   let posts = allPosts;
 
   if (selectedCats.length > 0) {
     posts = posts.filter(p =>
-      p.categories &&
+      Array.isArray(p.categories) &&
       p.categories.some(cat => selectedCats.includes(cat))
     );
   }
 
-  const slice = posts.slice(0, visible + CHUNK);
-  visible += CHUNK;
+  if (reset) {
+    visibleCount = Math.min(CHUNK, posts.length);
+  } else {
+    visibleCount = Math.min(visibleCount + CHUNK, posts.length);
+  }
+
+  const slice = posts.slice(0, visibleCount);
+
+  grid.innerHTML = "";
 
   slice.forEach(p => {
-    const date = p.publishOn ? p.publishOn.date : "";
-    const img = p.assetUrl || p.assetUrlAbsolute || "";
-    const cat = p.categories ? p.categories.join(", ") : "";
+    const img  = p.assetUrl || "";
+    const cat  = Array.isArray(p.categories) ? p.categories.join(", ") : "";
+    const url  = BASE_URL + (p.fullUrl || "");
+    const title = p.title || "";
+
+    // Excerpt aus HTML zu Text konvertieren
+    let excerptText = "";
+    if (p.excerpt) {
+      const tmp = document.createElement("div");
+      tmp.innerHTML = p.excerpt;
+      excerptText = (tmp.textContent || tmp.innerText || "").trim();
+    }
 
     grid.innerHTML += `
-      <a class="card" href="${p.fullUrl}">
-        <img class="card-img" src="${img}">
-        <div class="card-category">${cat}</div>
-        <div class="card-title">${p.title}</div>
-        <div class="card-date">${date}</div>
+      <a class="card" href="${url}">
+        <div class="card-inner">
+          <img class="card-img" src="${img}" alt="${title}">
+          <div class="card-text">
+            <div class="card-category">${cat}</div>
+            <div class="card-title">${title}</div>
+            ${excerptText ? `<div class="card-excerpt">${excerptText}</div>` : ""}
+          </div>
+        </div>
       </a>
     `;
   });
+
+  // Button ausblenden, wenn nichts mehr zu laden ist
+  const btn = document.getElementById("loadMoreBtn");
+  if (visibleCount >= posts.length) {
+    btn.style.display = "none";
+  } else {
+    btn.style.display = "block";
+  }
 }
 
 /* ----------------------------------------
    EVENTS
 ---------------------------------------- */
-document.getElementById("loadMoreBtn").addEventListener("click", renderPosts);
-document.querySelectorAll("#categoryFilters input").forEach(cb =>
-  cb.addEventListener("change", renderPosts)
-);
+document.getElementById("loadMoreBtn").addEventListener("click", () => {
+  renderPosts(false);
+});
+
+document.querySelectorAll("#categoryFilters input").forEach(cb => {
+  cb.addEventListener("change", () => {
+    renderPosts(true);
+  });
+});
 
 /* Init */
 loadPosts();
-
 </script>
 
 </body>
