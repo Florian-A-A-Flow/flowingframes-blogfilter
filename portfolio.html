@@ -1,3 +1,4 @@
+<!-- portfolio.html v1.1 -->
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -56,40 +57,59 @@
       gap: 10px 18px;
     }
 
+    /* Filter-Pills / Buttons */
     .filter-pill {
+      position: relative;
       display: inline-flex;
       align-items: center;
-      gap: 8px;
-      padding: 6px 12px;
+      justify-content: center;
+      padding: 7px 14px;
       border-radius: 999px;
       background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.14);
       font-size: 11px;
       text-transform: uppercase;
       letter-spacing: 0.12em;
       color: var(--text-muted);
       cursor: pointer;
-      transition: background var(--transition-fast),
-                  border-color var(--transition-fast),
-                  color var(--transition-fast),
-                  transform var(--transition-fast);
+      transition:
+        background var(--transition-fast),
+        border-color var(--transition-fast),
+        color var(--transition-fast),
+        transform var(--transition-fast),
+        box-shadow var(--transition-fast);
+      user-select: none;
     }
 
+    /* Checkbox selbst unsichtbar machen */
     .filter-pill input {
-      accent-color: #ffffff;
-      width: 14px;
-      height: 14px;
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+      width: 0;
+      height: 0;
+    }
+
+    .filter-pill span {
+      pointer-events: none;
+      white-space: nowrap;
     }
 
     .filter-pill:hover {
       transform: translateY(-1px);
-      border-color: rgba(255, 255, 255, 0.35);
+      background: rgba(255, 255, 255, 0.06);
+      border-color: rgba(255, 255, 255, 0.4);
+      color: #f5f5f5;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
     }
 
     .filter-pill.active {
-      background: rgba(255, 255, 255, 0.07);
-      border-color: rgba(255, 255, 255, 0.7);
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.95); /* „weißer“ Rahmen */
       color: #ffffff;
+      box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.7),
+                  0 10px 26px rgba(0, 0, 0, 0.7);
+      transform: translateY(-1px);
     }
 
     /* Grid */
@@ -325,6 +345,7 @@
           input.type = "checkbox";
           input.value = cat;
 
+          // Change-Listener auf der unsichtbaren Checkbox
           input.addEventListener("change", () => {
             if (input.checked) {
               activeCategories.add(cat);
