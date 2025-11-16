@@ -1,224 +1,500 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-<meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <title>Portfolio – Flowing Frames</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-<title>Portfolio</title>
+  <style>
+    :root {
+      --bg: #050505;
+      --card-bg: #111111;
+      --text-main: #f5f5f5;
+      --text-muted: #a0a0a0;
+      --accent: #ffffff;
+      --border-radius: 10px;
+      --transition-fast: 0.22s ease-out;
+      --shadow-soft: 0 18px 55px rgba(0, 0, 0, 0.6);
+      --shadow-hover: 0 26px 80px rgba(0, 0, 0, 0.9);
+    }
 
-<style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
-      font-family: "Omnes", "Helvetica Neue", Arial, sans-serif;
-      background: #111;
-      color: #fff;
       margin: 0;
-      padding: 40px;
+      padding: 40px 20px 60px;
+      background: radial-gradient(circle at top, #151515 0, #050505 55%);
+      color: var(--text-main);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
+        "Helvetica Neue", Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
     }
 
     #portfolio-wrapper {
-      max-width: 1300px;
-      margin: auto;
+      max-width: 1200px;
+      margin: 0 auto;
     }
 
-    /* --- FILTER --- */
-    #filterBar { margin-bottom: 35px; }
+    /* Filter Bar */
+    #filterBar {
+      margin-bottom: 32px;
+    }
 
-    .filter-group label {
-      margin-right: 22px;
+    .filter-group-label {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+
+    #categoryFilters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 18px;
+    }
+
+    .filter-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--text-muted);
       cursor: pointer;
-      font-size: 15px;
-      opacity: .8;
+      transition: background var(--transition-fast),
+                  border-color var(--transition-fast),
+                  color var(--transition-fast),
+                  transform var(--transition-fast);
     }
 
-    /* --- GRID --- */
+    .filter-pill input {
+      accent-color: #ffffff;
+      width: 14px;
+      height: 14px;
+    }
+
+    .filter-pill:hover {
+      transform: translateY(-1px);
+      border-color: rgba(255, 255, 255, 0.35);
+    }
+
+    .filter-pill.active {
+      background: rgba(255, 255, 255, 0.07);
+      border-color: rgba(255, 255, 255, 0.7);
+      color: #ffffff;
+    }
+
+    /* Grid */
     .portfolio-grid {
       display: grid;
-      gap: 45px;
-      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 34px;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
     }
 
-    /* --- CARD --- */
+    /* Card */
     .card {
+      display: block;
       text-decoration: none;
       color: inherit;
-      display: block;
-      transition: transform .28s ease, box-shadow .28s ease;
-      transform-origin: center;
-    }
-
-    /* Outer zoom */
-    .card:hover {
-      transform: scale(1.03);
-    }
-
-    /* Inner image zoom */
-    .card-img-wrapper {
+      background: linear-gradient(145deg, #111111, #171717);
+      border-radius: var(--border-radius);
       overflow: hidden;
-      border-radius: 7px;
+      box-shadow: var(--shadow-soft);
+      transform: translate3d(0, 0, 0);
+      transition:
+        transform var(--transition-fast),
+        box-shadow var(--transition-fast),
+        background var(--transition-fast);
+    }
+
+    .card-inner {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .card-media-wrap {
       position: relative;
+      overflow: hidden;
+      border-radius: var(--border-radius);
     }
 
     .card-img {
       width: 100%;
-      aspect-ratio: 16/9;
+      aspect-ratio: 16 / 9;
       object-fit: cover;
-      border-radius: 7px;
-      transition: transform .45s ease;
+      display: block;
+      transition: transform 0.45s cubic-bezier(0.19, 1, 0.22, 1),
+                  filter 0.45s cubic-bezier(0.19, 1, 0.22, 1);
+      transform-origin: center;
     }
 
-    .card:hover .card-img {
-      transform: scale(1.08);
+    .card-media-overlay {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at center, transparent 0, rgba(0,0,0,0.4) 80%);
+      opacity: 0;
+      transition: opacity 0.45s ease-out;
+      pointer-events: none;
+    }
+
+    .card-text {
+      padding: 18px 18px 20px;
     }
 
     .card-category {
-      margin-top: 12px;
       text-transform: uppercase;
       font-size: 11px;
-      letter-spacing: 1.2px;
-      opacity: .65;
+      letter-spacing: 0.16em;
+      color: var(--text-muted);
+      margin-bottom: 6px;
     }
 
     .card-title {
-      font-size: 23px;
-      margin: 6px 0 4px 0;
+      font-size: 20px;
+      line-height: 1.2;
       font-weight: 600;
+      margin: 0 0 6px;
+      color: var(--text-main);
     }
 
     .card-excerpt {
-      font-size: 14px;
-      opacity: .75;
-      line-height: 1.45;
+      font-size: 13px;
+      line-height: 1.5;
+      color: var(--text-muted);
+      margin: 0;
     }
 
-    /* --- LOAD MORE --- */
+    /* Hover Effekt – Tiefe, Zoom, Glow */
+    .card:hover {
+      transform: translate3d(0, -6px, 0) scale(1.015);
+      box-shadow: var(--shadow-hover);
+      background: radial-gradient(circle at top left, #1b1b1b, #121212 55%);
+    }
+
+    .card:hover .card-img {
+      transform: scale(1.06);
+      filter: saturate(1.05) contrast(1.02);
+    }
+
+    .card:hover .card-media-overlay {
+      opacity: 1;
+    }
+
+    /* Load More Button */
     #loadMoreBtn {
-      margin: 50px auto;
-      display: block;
-      padding: 12px 25px;
-      background: #fff;
-      color: #111;
+      margin: 40px auto 0;
+      display: none;
+      background: #ffffff;
+      color: #000000;
+      padding: 14px 28px;
+      border-radius: 999px;
       border: none;
-      border-radius: 6px;
       cursor: pointer;
-      font-weight: bold;
-      font-size: 15px;
+      font-weight: 600;
+      font-size: 13px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+      transition:
+        background var(--transition-fast),
+        transform var(--transition-fast),
+        box-shadow var(--transition-fast),
+        color var(--transition-fast);
     }
-</style>
 
+    #loadMoreBtn:hover {
+      transform: translateY(-2px);
+      background: #f5f5f5;
+      box-shadow: 0 16px 45px rgba(0,0,0,0.85);
+    }
+
+    #loadMoreBtn:active {
+      transform: translateY(0);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.6);
+    }
+
+    /* Info / Fehler */
+    #statusMessage {
+      margin-top: 24px;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    @media (max-width: 768px) {
+      body {
+        padding: 24px 14px 40px;
+      }
+
+      .portfolio-grid {
+        gap: 26px;
+        grid-template-columns: 1fr;
+      }
+
+      .card-text {
+        padding: 16px 14px 18px;
+      }
+
+      .card-title {
+        font-size: 18px;
+      }
+    }
+  </style>
 </head>
 <body>
-<div id="portfolio-wrapper">
-
-  <div id="filterBar">
+  <div id="portfolio-wrapper">
+    <!-- Filter -->
+    <div id="filterBar">
       <div class="filter-group">
-          <label><input type="checkbox" value="Musikvideo"> Musikvideo</label>
-          <label><input type="checkbox" value="Personenfotografie"> Personenfotografie</label>
-          <label><input type="checkbox" value="Konzertfotografie"> Konzertfotografie</label>
-          <label><input type="checkbox" value="Livesession"> Livesession</label>
-          <label><input type="checkbox" value="Konzertvideo"> Konzertvideo</label>
-          <label><input type="checkbox" value="Real Estate Fotografie"> Real Estate Fotografie</label>
-          <label><input type="checkbox" value="Produktfotografie"> Produktfotografie</label>
+        <div class="filter-group-label">Kategorien</div>
+        <div id="categoryFilters"></div>
       </div>
+    </div>
+
+    <!-- Grid -->
+    <div id="portfolioGrid" class="portfolio-grid"></div>
+
+    <!-- Load More -->
+    <button id="loadMoreBtn" class="load-more">Mehr laden</button>
+
+    <div id="statusMessage"></div>
   </div>
 
-  <div class="portfolio-grid" id="portfolioGrid"></div>
+  <script>
+    (function () {
+      const BASE = "https://www.flowingframes.media";
+      const PROXY =
+        "https://flowingframes-proxy.florian-augustus-alexander.workers.dev/?url=";
 
-  <button id="loadMoreBtn">Mehr laden</button>
+      let allPosts = [];
+      let visibleCount = 50;
+      let nextPath = "/all-projekte?format=json-pretty";
+      let activeCategories = new Set();
 
-</div>
+      const gridEl = document.getElementById("portfolioGrid");
+      const filtersEl = document.getElementById("categoryFilters");
+      const loadMoreBtn = document.getElementById("loadMoreBtn");
+      const statusEl = document.getElementById("statusMessage");
 
-<script>
-const proxy = "https://flowingframes-proxy.florian-augustus-alexander.workers.dev/?url=";
-const endpoint = "https://www.flowingframes.media/all-projekte?format=json-pretty";
+      async function fetchPage(path) {
+        const url = PROXY + encodeURIComponent(BASE + path);
+        const res = await fetch(url);
+        if (!res.ok) {
+          throw new Error("Fehler beim Laden: " + res.status);
+        }
+        return res.json();
+      }
 
-let allPosts = [];
-let page = 1;
-let visibleCount = 20;
+      function getExcerptText(post) {
+        if (!post.excerpt) return "";
+        return post.excerpt.replace(/<[^>]+>/g, "").trim();
+      }
 
-document.addEventListener("DOMContentLoaded", () => {
-  loadAllPages().then(() => {
-    renderPosts();
-  });
+      function getCategoryLabel(post) {
+        if (Array.isArray(post.categories) && post.categories.length > 0) {
+          return post.categories.join(" · ");
+        }
+        return "";
+      }
 
-  document.querySelectorAll("#filterBar input").forEach(cb => {
-    cb.addEventListener("change", renderPosts);
-  });
+      function buildFilters() {
+        filtersEl.innerHTML = "";
 
-  document.getElementById("loadMoreBtn").addEventListener("click", () => {
-    visibleCount += 20;
-    renderPosts();
-  });
-});
+        const categories = new Set();
+        allPosts.forEach((p) => {
+          (p.categories || []).forEach((c) => categories.add(c));
+        });
 
-/* -----------------------------
-    LOAD ALL PAGES RECURSIVELY
---------------------------------*/
-async function loadAllPages() {
-  while (true) {
-    const res = await fetch(proxy + endpoint + "&page=" + page);
-    const text = await res.text();
+        const sorted = Array.from(categories).sort((a, b) =>
+          a.localeCompare(b, "de", { sensitivity: "base" })
+        );
 
-    if (!text || text.startsWith("<")) break; // Invalid / no more pages
+        sorted.forEach((cat) => {
+          const label = document.createElement("label");
+          label.className = "filter-pill";
 
-    const json = JSON.parse(text);
-    const items = json.items || [];
+          const input = document.createElement("input");
+          input.type = "checkbox";
+          input.value = cat;
 
-    if (items.length === 0) break;
+          input.addEventListener("change", () => {
+            if (input.checked) {
+              activeCategories.add(cat);
+              label.classList.add("active");
+            } else {
+              activeCategories.delete(cat);
+              label.classList.remove("active");
+            }
+            renderPosts();
+          });
 
-    allPosts.push(...items);
-    page++;
-  }
-}
+          const text = document.createElement("span");
+          text.textContent = cat;
 
-/* -----------------------------
-    RENDER POSTS
---------------------------------*/
-function renderPosts() {
-  const grid = document.getElementById("portfolioGrid");
-  grid.innerHTML = "";
+          label.appendChild(input);
+          label.appendChild(text);
+          filtersEl.appendChild(label);
+        });
+      }
 
-  const activeFilters = [...document.querySelectorAll("#filterBar input:checked")]
-     .map(cb => cb.value);
+      function getFilteredPosts() {
+        if (activeCategories.size === 0) {
+          return allPosts;
+        }
+        return allPosts.filter((p) => {
+          if (!Array.isArray(p.categories)) return false;
+          return p.categories.some((c) => activeCategories.has(c));
+        });
+      }
 
-  let filtered = allPosts;
+      function renderPosts() {
+        const filtered = getFilteredPosts();
+        const toShow = filtered.slice(0, visibleCount);
 
-  if (activeFilters.length > 0) {
-    filtered = filtered.filter(item =>
-      item.categories && item.categories.some(c => activeFilters.includes(c))
-    );
-  }
+        gridEl.innerHTML = "";
 
-  filtered.slice(0, visibleCount).forEach(p => {
-    grid.appendChild(createCard(p));
-  });
-}
+        toShow.forEach((p) => {
+          const href = BASE + p.fullUrl;
 
-/* -----------------------------
-    CARD BUILDER
---------------------------------*/
-function createCard(p) {
-  const link = document.createElement("a");
+          const a = document.createElement("a");
+          a.className = "card";
+          a.href = href;
+          a.target = "_top"; // wichtig: raus aus dem Embed
+          a.rel = "noopener";
 
-  link.href = p.fullUrl;   // FIXED — richtige URL  
-  link.className = "card";
+          const inner = document.createElement("div");
+          inner.className = "card-inner";
 
-  const img = p.assetUrl || (p.systemData && p.systemData.mainImage && p.systemData.mainImage.assetUrl) || "";
+          const mediaWrap = document.createElement("div");
+          mediaWrap.className = "card-media-wrap";
 
-  const excerpt =
-      p.excerpt ||
-      (p.body && p.body.replace(/<[^>]*>/g, "").split(" ").slice(0, 20).join(" ") + "…") ||
-      "";
+          const img = document.createElement("img");
+          img.className = "card-img";
+          img.src = p.assetUrl;
+          img.alt = p.title || "";
+          img.loading = "lazy";
 
-  link.innerHTML = `
-      <div class="card-img-wrapper">
-        <img class="card-img" src="${img}">
-      </div>
-      <div class="card-category">${(p.categories || []).join(", ")}</div>
-      <div class="card-title">${p.title || ""}</div>
-      <div class="card-excerpt">${excerpt}</div>
-  `;
-  return link;
-}
-</script>
+          const overlay = document.createElement("div");
+          overlay.className = "card-media-overlay";
 
+          mediaWrap.appendChild(img);
+          mediaWrap.appendChild(overlay);
+
+          const text = document.createElement("div");
+          text.className = "card-text";
+
+          const catEl = document.createElement("div");
+          catEl.className = "card-category";
+          catEl.textContent = getCategoryLabel(p);
+
+          const titleEl = document.createElement("h3");
+          titleEl.className = "card-title";
+          titleEl.textContent = p.title || "";
+
+          const excerptEl = document.createElement("p");
+          excerptEl.className = "card-excerpt";
+          excerptEl.textContent = getExcerptText(p);
+
+          text.appendChild(catEl);
+          text.appendChild(titleEl);
+          if (excerptEl.textContent) {
+            text.appendChild(excerptEl);
+          }
+
+          inner.appendChild(mediaWrap);
+          inner.appendChild(text);
+          a.appendChild(inner);
+          gridEl.appendChild(a);
+        });
+
+        // Load-More-Button Logik
+        const hasMoreInFiltered = filtered.length > visibleCount;
+        const canLoadMoreFromServer = !!nextPath;
+
+        if (hasMoreInFiltered || canLoadMoreFromServer) {
+          loadMoreBtn.style.display = "block";
+        } else {
+          loadMoreBtn.style.display = "none";
+        }
+
+        statusEl.textContent =
+          filtered.length === 0
+            ? "Keine Projekte für die gewählten Kategorien."
+            : "";
+      }
+
+      async function loadInitial() {
+        try {
+          statusEl.textContent = "Lade Projekte ...";
+
+          // Lade Seiten, bis wir mindestens 50 haben oder keine weiteren Seiten
+          while (nextPath && allPosts.length < 50) {
+            const data = await fetchPage(nextPath);
+            allPosts = allPosts.concat(data.items || []);
+
+            if (data.pagination && data.pagination.nextPage) {
+              let np = data.pagination.nextPageUrl; // z.B. "/all-projekte?offset=..."
+              if (!np.includes("format=")) {
+                np += (np.includes("?") ? "&" : "?") + "format=json-pretty";
+              }
+              nextPath = np;
+            } else {
+              nextPath = null;
+            }
+          }
+
+          buildFilters();
+          renderPosts();
+          statusEl.textContent = "";
+        } catch (err) {
+          console.error(err);
+          statusEl.textContent =
+            "Beim Laden der Projekte ist ein Fehler aufgetreten.";
+        }
+      }
+
+      async function handleLoadMore() {
+        const filteredBefore = getFilteredPosts();
+        const hadAllVisible = visibleCount >= filteredBefore.length;
+
+        if (hadAllVisible && nextPath) {
+          // Wenn alles Sichtbare gezeigt ist, aber Server noch mehr hat -> nachladen
+          try {
+            const data = await fetchPage(nextPath);
+            allPosts = allPosts.concat(data.items || []);
+
+            if (data.pagination && data.pagination.nextPage) {
+              let np = data.pagination.nextPageUrl;
+              if (!np.includes("format=")) {
+                np += (np.includes("?") ? "&" : "?") + "format=json-pretty";
+              }
+              nextPath = np;
+            } else {
+              nextPath = null;
+            }
+          } catch (err) {
+            console.error(err);
+            // Wir lassen die aktuellen Posts trotzdem stehen
+          }
+        }
+
+        visibleCount += 50;
+        renderPosts();
+      }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        loadMoreBtn.addEventListener("click", handleLoadMore);
+        loadInitial();
+      });
+    })();
+  </script>
 </body>
 </html>
