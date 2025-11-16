@@ -1,197 +1,222 @@
 <!DOCTYPE html>
-<html>
+<html lang="de">
 <head>
 <meta charset="UTF-8">
+<title>Portfolio</title>
 
-<!-- Omnes Pro Einbindung (Basic-Plan kompatibel) -->
 <style>
-@font-face {
-    font-family: 'Omnes Pro';
-    src: url('https://florian-a-a-flow.github.io/flowingframes-blogfilter/omnes-pro-400.woff2') format('woff2');
-    font-weight: 400;
-    font-style: normal;
-    font-display: swap;
-}
-
+/* ----------------------------------------
+   GLOBAL STYLE (Squarespace-like)
+---------------------------------------- */
 body {
-    background: #111;
-    font-family: 'Omnes Pro', sans-serif;
-    margin: 0;
-    padding: 40px;
-    color: #fff;
+  margin: 0;
+  padding: 40px;
+  background: #111;
+  color: white;
+  font-family: var(--font-primary);   /* ← Omnes Pro */
 }
 
-/* Filter Bar */
-#filterBar {
-  margin-bottom: 40px;
+/* Wrapper */
+#portfolio-wrapper {
+  max-width: 1300px;
+  margin: auto;
 }
-#filterBar label {
-  font-size: 18px;
+
+/* Filter */
+#filterBar {
+  margin-bottom: 35px;
+}
+
+.filter-group label {
+  font-weight: 600;
   margin-right: 25px;
   cursor: pointer;
+  font-size: 15px;
+  opacity: 0.85;
 }
-#filterBar input {
+
+.filter-group input {
   margin-right: 6px;
 }
 
 /* Grid */
 .portfolio-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-    gap: 45px;
+  display: grid;
+  gap: 50px;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
 }
 
 /* Card */
 .card {
-    display: block;
-    color: white;
-    text-decoration: none;
-    transition: opacity .25s;
-}
-.card:hover {
-    opacity: .65;
-}
-.card-img {
-    width: 100%;
-    aspect-ratio: 16/9;
-    object-fit: cover;
-    border-radius: 8px;
-}
-.card-category {
-    margin-top: 14px;
-    font-size: 13px;
-    text-transform: uppercase;
-    opacity: .55;
-}
-.card-title {
-    font-size: 28px;
-    margin: 2px 0 6px 0;
-}
-.card-excerpt {
-    font-size: 16px;
-    opacity: .75;
+  cursor: pointer;
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.3s ease;
 }
 
-/* Load More */
-#loadMore {
-    margin: 60px auto;
-    display: block;
-    background: #fff;
-    color: #111;
-    padding: 16px 35px;
-    font-size: 18px;
-    border-radius: 6px;
-    cursor: pointer;
-    border: none;
+.card:hover .card-img {
+  transform: scale(1.03);
+  opacity: 0.85;
+}
+
+.card-img {
+  width: 100%;
+  aspect-ratio: 16/9;
+  object-fit: cover;
+  border-radius: 8px;
+  transition: all 0.3s;
+}
+
+.card-category {
+  margin-top: 14px;
+  text-transform: uppercase;
+  font-size: 12px;
+  opacity: 0.6;
+  letter-spacing: 1px;
+}
+
+.card-title {
+  margin: 6px 0;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.card-date {
+  opacity: 0.6;
+  font-size: 13px;
+}
+
+/* Load more */
+#loadMoreBtn {
+  margin: 50px auto;
+  display: block;
+  padding: 14px 26px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  background: white;
+  color: black;
+  transition: 0.25s;
+}
+
+#loadMoreBtn:hover {
+  background: #ddd;
 }
 </style>
 </head>
-
-
 <body>
 
-<!-- FILTER -->
-<div id="filterBar">
-    <label><input type="checkbox" value="musikvideo"> Musikvideo</label>
-    <label><input type="checkbox" value="personenfotografie"> Personenfotografie</label>
-    <label><input type="checkbox" value="konzertfotografie"> Konzertfotografie</label>
-    <label><input type="checkbox" value="livesession"> Livesession</label>
-    <label><input type="checkbox" value="konzertvideo"> Konzertvideo</label>
-    <label><input type="checkbox" value="real-estate-fotografie"> Real Estate Fotografie</label>
-    <label><input type="checkbox" value="produktfotografie"> Produktfotografie</label>
+<div id="portfolio-wrapper">
+
+  <!-- FILTER -->
+  <div id="filterBar">
+    <div class="filter-group" id="categoryFilters">
+      <label><input type="checkbox" value="Musikvideo"> Musikvideo</label>
+      <label><input type="checkbox" value="Personenfotografie"> Personenfotografie</label>
+      <label><input type="checkbox" value="Konzertfotografie"> Konzertfotografie</label>
+      <label><input type="checkbox" value="Livesession"> Livesession</label>
+      <label><input type="checkbox" value="Konzertvideo"> Konzertvideo</label>
+      <label><input type="checkbox" value="Real Estate Fotografie"> Real Estate Fotografie</label>
+      <label><input type="checkbox" value="Produktfotografie"> Produktfotografie</label>
+    </div>
+  </div>
+
+  <!-- GRID -->
+  <div class="portfolio-grid" id="portfolioGrid"></div>
+
+  <!-- LOAD MORE -->
+  <button id="loadMoreBtn">Mehr laden</button>
+
 </div>
-
-<!-- GRID -->
-<div id="portfolioGrid" class="portfolio-grid"></div>
-
-<button id="loadMore">Mehr laden</button>
-
-
 
 
 <script>
-const API_URL = "https://flowingframes-proxy.florian-augustus-alexander.workers.dev/?url=https://www.flowingframes.media/all?format=json-pretty";
+/* ----------------------------------------
+   CONFIG
+---------------------------------------- */
+const PROXY = "https://flowingframes-proxy.florian-augustus-alexander.workers.dev/?url=";
+const FEED = "https://www.flowingframes.media/all-projekte?format=json-pretty";
 
 let allPosts = [];
-let currentIndex = 0;
-const batchSize = 12;
+let visible = 0;
+const CHUNK = 12;
 
-// 1) Load from API
+/* ----------------------------------------
+   LOAD POSTS
+---------------------------------------- */
 async function loadPosts() {
-    const response = await fetch(API_URL);
-    const data = await response.json();
+  try {
+    const res = await fetch(PROXY + FEED);
+    const text = await res.text();
 
-    // squarespace feed structure
-    allPosts = data.items || [];
-    allPosts.sort((a,b) => b.publishOn - a.publishOn);
-
-    renderPosts();
-}
-
-function renderPosts() {
-    const subset = allPosts.slice(currentIndex, currentIndex + batchSize);
-    currentIndex += batchSize;
-
-    drawGrid(subset);
-}
-
-function drawGrid(posts) {
-    const grid = document.getElementById("portfolioGrid");
-
-    posts.forEach(p => {
-
-        let dateObj = new Date(p.publishOn * 1000);
-
-        let card = document.createElement("a");
-        card.className = "card";
-        card.href = p.fullUrl;
-        card.target = "_top";
-
-        card.innerHTML = `
-            <img class="card-img" src="${p.assetUrl}" />
-            <div class="card-category">${(p.categories || []).join(", ")}</div>
-            <div class="card-title">${p.title}</div>
-            <div class="card-excerpt">${p.excerpt || ""}</div>
-        `;
-
-        grid.appendChild(card);
-    });
-}
-
-
-// FILTERING
-document.querySelectorAll("#filterBar input").forEach(cb => {
-    cb.addEventListener("change", applyFilter);
-});
-
-function applyFilter() {
-    const active = [...document.querySelectorAll("#filterBar input:checked")].map(c => c.value.toLowerCase());
-
-    const grid = document.getElementById("portfolioGrid");
-    grid.innerHTML = "";
-
-    let filtered = allPosts;
-
-    if (active.length > 0) {
-        filtered = allPosts.filter(p =>
-            (p.categories || [])
-                .map(c => c.toLowerCase())
-                .some(cat => active.includes(cat))
-        );
+    // Check if valid JSON
+    if (!text.startsWith("{")) {
+      console.error("Invalid JSON from proxy:", text);
+      return;
     }
 
-    currentIndex = 0;
-    drawGrid(filtered.slice(0, batchSize));
+    const json = JSON.parse(text);
+
+    allPosts = json.items || [];
+    visible = 0;
+
+    renderPosts();
+
+  } catch (err) {
+    console.error("Fetch error:", err);
+  }
 }
 
+/* ----------------------------------------
+   RENDER
+---------------------------------------- */
+function renderPosts() {
+  const grid = document.getElementById("portfolioGrid");
+  grid.innerHTML = "";
 
-// LOAD MORE
-document.getElementById("loadMore").addEventListener("click", () => {
-    renderPosts();
-});
+  const selectedCats = [...document.querySelectorAll("#categoryFilters input:checked")]
+    .map(c => c.value);
 
-// Init
+  let posts = allPosts;
+
+  if (selectedCats.length > 0) {
+    posts = posts.filter(p =>
+      p.categories &&
+      p.categories.some(cat => selectedCats.includes(cat))
+    );
+  }
+
+  const slice = posts.slice(0, visible + CHUNK);
+  visible += CHUNK;
+
+  slice.forEach(p => {
+    const date = p.publishOn ? p.publishOn.date : "";
+    const img = p.assetUrl || p.assetUrlAbsolute || "";
+    const cat = p.categories ? p.categories.join(", ") : "";
+
+    grid.innerHTML += `
+      <a class="card" href="${p.fullUrl}">
+        <img class="card-img" src="${img}">
+        <div class="card-category">${cat}</div>
+        <div class="card-title">${p.title}</div>
+        <div class="card-date">${date}</div>
+      </a>
+    `;
+  });
+}
+
+/* ----------------------------------------
+   EVENTS
+---------------------------------------- */
+document.getElementById("loadMoreBtn").addEventListener("click", renderPosts);
+document.querySelectorAll("#categoryFilters input").forEach(cb =>
+  cb.addEventListener("change", renderPosts)
+);
+
+/* Init */
 loadPosts();
+
 </script>
 
 </body>
