@@ -522,5 +522,19 @@
       });
     })();
   </script>
+
+  <script>
+function sendHeight() {
+  const height = document.documentElement.scrollHeight;
+  parent.postMessage({ portfolioHeight: height }, "*");
+}
+
+// initial
+sendHeight();
+
+// if content changes dynamically
+setInterval(sendHeight, 300);
+</script>
+
 </body>
 </html>
