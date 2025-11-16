@@ -7,9 +7,8 @@
 
   <style>
     :root {
-      /* HIER ggf. den Wert anpassen auf die exakte Squarespace-Hintergrundfarbe */
-      --bg: #050505;
-      --card-bg: #111111;
+      --bg: #1B1B1B;          /* neue Hintergrundfarbe */
+      --card-bg: #1B1B1B;     /* Karten-Hintergrund */
       --text-main: #f5f5f5;
       --text-muted: #a0a0a0;
       --accent: #ffffff;
@@ -25,8 +24,8 @@
 
     body {
       margin: 0;
-      padding: 40px 20px 60px;
-      /* Seite = gleiche Hintergrundfarbe wie Info-Box */
+      /* Weniger horizontaler Abstand, damit der Inhalt weiter zu den Rändern geht */
+      padding: 40px 0 60px;
       background: var(--bg);
       color: var(--text-main);
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
@@ -35,8 +34,11 @@
     }
 
     #portfolio-wrapper {
-      max-width: 1200px;
+      /* etwas breiter als vorher (1200 -> 1400) */
+      max-width: 1400px;
       margin: 0 auto;
+      /* kleines Innenpadding, damit nichts hart am Rand klebt */
+      padding: 0 16px;
     }
 
     /* Filter Bar */
@@ -77,10 +79,13 @@
                   transform var(--transition-fast);
     }
 
+    /* Checkbox unsichtbar machen – nur die Pill soll sichtbar sein */
     .filter-pill input {
-      accent-color: #ffffff;
-      width: 14px;
-      height: 14px;
+      position: absolute;
+      opacity: 0;
+      width: 0;
+      height: 0;
+      pointer-events: none;
     }
 
     .filter-pill:hover {
@@ -106,7 +111,7 @@
       display: block;
       text-decoration: none;
       color: inherit;
-      background: linear-gradient(145deg, #111111, #171717);
+      background: var(--card-bg);  /* statt Gradient nun #1B1B1B */
       border-radius: var(--border-radius);
       overflow: hidden;
       box-shadow: var(--shadow-soft);
@@ -150,6 +155,8 @@
 
     .card-text {
       padding: 18px 18px 20px;
+      /* Hintergrund der Text-Box ebenfalls #1B1B1B – passt sich an Karte an */
+      background: var(--card-bg);
     }
 
     .card-category {
@@ -179,7 +186,8 @@
     .card:hover {
       transform: translate3d(0, -6px, 0) scale(1.015);
       box-shadow: var(--shadow-hover);
-      background: radial-gradient(circle at top left, #1b1b1b, #121212 55%);
+      /* leicht aufgehellter Effekt beim Hover, aber weiterhin dark */
+      background: #202020;
     }
 
     .card:hover .card-img {
@@ -224,7 +232,7 @@
       box-shadow: 0 8px 20px rgba(0,0,0,0.6);
     }
 
-    /* Info / Fehler – gleiche Hintergrundfarbe wie Seite */
+    /* Info / Fehler – gleicher Hintergrund wie Seite */
     #statusMessage {
       margin-top: 24px;
       font-size: 13px;
@@ -234,7 +242,11 @@
 
     @media (max-width: 768px) {
       body {
-        padding: 24px 14px 40px;
+        padding: 24px 0 40px;
+      }
+
+      #portfolio-wrapper {
+        padding: 0 12px;
       }
 
       .portfolio-grid {
@@ -370,7 +382,7 @@
           const a = document.createElement("a");
           a.className = "card";
           a.href = href;
-          a.target = "_top"; // wichtig: raus aus dem Embed
+          a.target = "_top"; // raus aus dem Embed
           a.rel = "noopener";
 
           const inner = document.createElement("div");
@@ -418,7 +430,6 @@
           gridEl.appendChild(a);
         });
 
-        // Load-More-Button Logik
         const hasMoreInFiltered = filtered.length > visibleCount;
         const canLoadMoreFromServer = !!nextPath;
 
@@ -438,7 +449,6 @@
         try {
           statusEl.textContent = "Lade Projekte ...";
 
-          // Lade Seiten, bis wir mindestens 50 haben oder keine weiteren Seiten
           while (nextPath && allPosts.length < 50) {
             const data = await fetchPage(nextPath);
             allPosts = allPosts.concat(data.items || []);
@@ -469,7 +479,6 @@
         const hadAllVisible = visibleCount >= filteredBefore.length;
 
         if (hadAllVisible && nextPath) {
-          // Wenn alles Sichtbare gezeigt ist, aber Server noch mehr hat -> nachladen
           try {
             const data = await fetchPage(nextPath);
             allPosts = allPosts.concat(data.items || []);
@@ -485,7 +494,6 @@
             }
           } catch (err) {
             console.error(err);
-            // Wir lassen die aktuellen Posts trotzdem stehen
           }
         }
 
