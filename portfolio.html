@@ -561,6 +561,35 @@ window.addEventListener("load", postHeight);
 // Höhe senden nach Filter-Änderung oder "Mehr laden"
 const observer = new MutationObserver(postHeight);
 observer.observe(document.body, { childList: true, subtree: true });
+
+
+
+
+
+    function sendHeight() {
+  const height = document.body.scrollHeight;
+
+  window.parent.postMessage(
+    { portfolioHeight: height },
+    "*"
+  );
+}
+
+/* Sofort senden beim Load */
+window.addEventListener("load", () => {
+  sendHeight();
+});
+
+/* Nach Filterklick: Fade starten */
+function triggerPortfolioFade() {
+  window.parent.postMessage({ portfolioFade: "start" }, "*");
+
+  setTimeout(() => {
+    sendHeight();
+    window.parent.postMessage({ portfolioFade: "end" }, "*");
+  }, 250);
+}
+
 </script>
 
 
