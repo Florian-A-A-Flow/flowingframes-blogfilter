@@ -5,454 +5,473 @@
   <title>Portfolio – Flowing Frames</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <style>
-    :root {
-      --bg: #1B1B1B;
-      --card-bg: #1B1B1B;
-      --text-main: #f5f5f5;
-      --text-muted: #a0a0a0;
-      --accent: #ffffff;
-      --border-radius: 10px;
-      --transition-fast: 0.22s ease-out;
-      --shadow-soft: 0 18px 55px rgba(0, 0, 0, 0.6);
-      --shadow-hover: 0 6px 16px rgba(0, 0, 0, 0.3);
-    }
+<style>
+:root {
+  --bg: #1B1B1B;
+  --card-bg: #1B1B1B;
+  --text-main: #f5f5f5;
+  --text-muted: #a0a0a0;
+  --border-radius: 10px;
+  --transition-fast: 0.22s ease-out;
+  --shadow-hover: 0 6px 16px rgba(0,0,0,0.3);
+}
 
-    * { box-sizing: border-box; }
+/* Basic Reset */
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  padding: 40px 0 60px;
+  background: var(--bg);
+  color: var(--text-main);
+  font-family: system-ui, Helvetica, Arial, sans-serif;
+}
 
-    body {
-      margin: 0;
-      padding: 40px 0 60px;
-      background: var(--bg);
-      color: var(--text-main);
-      font-family: system-ui, -apple-system, BlinkMacSystemFont,
-        "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
-      -webkit-font-smoothing: antialiased;
-    }
+/* Wrapper */
+#portfolio-wrapper {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
 
-    #portfolio-wrapper {
-      max-width: 1400px;
-      margin: 0 auto;
-      padding: 0 16px;
-    }
+/* FILTER BAR */
+#filterBar { margin-bottom: 32px; }
+.filter-group-label {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+}
 
-    /* Filter Bar */
-    #filterBar { margin-bottom: 32px; }
+#categoryFilters {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, auto));
+  gap: 12px;
+}
 
-    .filter-group-label {
-      font-size: 12px;
-      text-transform: uppercase;
-      letter-spacing: 0.14em;
-      color: var(--text-muted);
-      margin-bottom: 10px;
-    }
+.filter-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: .12em;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: .25s;
+}
 
-    #categoryFilters {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(140px, auto));
-      gap: 14px 10px;
-    }
+.filter-pill input {
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
+}
 
-    .filter-pill {
-      position: relative;
-      display: inline-flex;
-      justify-content: center;
-      align-items: center;
-      padding: 6px 12px;
-      border-radius: 999px;
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-      color: var(--text-muted);
-      cursor: pointer;
-      transition: background var(--transition-fast),
-                  border-color var(--transition-fast),
-                  color var(--transition-fast),
-                  transform var(--transition-fast);
-      white-space: nowrap;
-    }
+.filter-pill:hover {
+  border-color: rgba(255,255,255,0.35);
+  transform: translateY(-1px);
+}
 
-    .filter-pill input {
-      position: absolute;
-      opacity: 0;
-      width: 0;
-      height: 0;
-      pointer-events: none;
-    }
+.filter-pill.active {
+  background: rgba(255,255,255,0.12);
+  border-color: rgba(255,255,255,0.65);
+  color: white;
+}
 
-    .filter-pill:hover {
-      transform: translateY(-1px);
-      border-color: rgba(255, 255, 255, 0.35);
-    }
+/* GRID */
+.portfolio-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px,1fr));
+  gap: 34px;
+  opacity: 1;
+  transition: opacity .35s ease;
+}
 
-    .filter-pill.active {
-      background: rgba(255, 255, 255, 0.07);
-      border-color: rgba(255, 255, 255, 0.7);
-      color: #fff;
-    }
+.portfolio-grid.fade-out {
+  opacity: 0;
+}
 
-    /* Grid */
-    .portfolio-grid {
-      display: grid;
-      gap: 34px;
-      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    }
+/* CARD */
+.card {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  background: var(--card-bg);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  transform: translateY(0px);
+  opacity: 0;
+  transition: opacity .6s ease, transform .6s ease;
+}
 
-    /* Cards */
-    .card {
-      display: block;
-      text-decoration: none;
-      color: inherit;
-      background: var(--card-bg);
-      border-radius: var(--border-radius);
-      overflow: hidden;
-      box-shadow: none;
-      transform: translate3d(0,0,0);
-      transition:
-        transform var(--transition-fast),
-        box-shadow var(--transition-fast),
-        background var(--transition-fast);
-    }
+.card.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
 
-    .card-inner { display: flex; flex-direction: column; height: 100%; }
-    .card-media-wrap { position: relative; overflow: hidden; border-radius: var(--border-radius); }
+.card-inner {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
 
-    .card-img {
-      width: 100%;
-      aspect-ratio: 16 / 9;
-      object-fit: cover;
-      transition: transform 0.45s cubic-bezier(0.19,1,0.22,1),
-                  filter 0.45s cubic-bezier(0.19,1,0.22,1);
-    }
+.card-media-wrap {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--border-radius);
+}
 
-    .card-media-overlay {
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(circle at center,
-                  transparent 0, rgba(0,0,0,0.4) 80%);
-      opacity: 0;
-      transition: opacity 0.45s ease-out;
-    }
+.card-img {
+  width: 100%;
+  aspect-ratio: 16/9;
+  object-fit: cover;
+  display: block;
+  transition: transform .45s ease, filter .45s ease;
+}
 
-    .card:hover {
-      transform: translate3d(0,-6px,0) scale(1.015);
-      box-shadow: var(--shadow-hover);
-      background: #202020;
-    }
+.card-media-overlay {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  background: radial-gradient(circle at center,
+             transparent 0%, rgba(0,0,0,0.4) 80%);
+  transition: opacity .45s ease;
+}
 
-    .card:hover .card-img { transform: scale(1.06); filter: saturate(1.05) contrast(1.02); }
-    .card:hover .card-media-overlay { opacity: 1; }
+.card:hover .card-img {
+  transform: scale(1.06);
+  filter: saturate(1.1);
+}
 
-    .card-text { padding: 18px 18px 20px; }
-    .card-category { text-transform: uppercase; font-size: 11px; margin-bottom: 6px; color: var(--text-muted); }
-    .card-title { font-size: 20px; font-weight: 600; margin: 0 0 6px; }
-    .card-excerpt { font-size: 13px; color: var(--text-muted); margin: 0; }
+.card:hover .card-media-overlay {
+  opacity: 1;
+}
 
-    /* Load More */
-    #loadMoreBtn {
-      margin: 40px auto 0;
-      display: none;
-      padding: 14px 28px;
-      border-radius: 999px;
-      background: #fff;
-      color: #000;
-      border: none;
-      font-weight: 600;
-      font-size: 13px;
-      text-transform: uppercase;
-      cursor: pointer;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
-      transition: background var(--transition-fast),
-                  box-shadow var(--transition-fast),
-                  transform var(--transition-fast);
-    }
+.card-text {
+  padding: 18px 18px 20px;
+}
 
-    #loadMoreBtn:hover {
-      transform: translateY(-2px);
-      background: #f5f5f5;
-      box-shadow: 0 16px 45px rgba(0,0,0,0.85);
-    }
+.card-category {
+  font-size: 11px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
 
-    #loadMoreBtn:active {
-      transform: translateY(0);
-      box-shadow: 0 8px 20px rgba(0,0,0,0.6);
-    }
+.card-title {
+  font-size: 20px;
+  margin: 0 0 6px;
+}
 
-    #statusMessage { margin-top: 24px; font-size: 13px; color: var(--text-muted); }
+.card-excerpt {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin: 0;
+}
 
-  </style>
+/* STATUS */
+#statusMessage {
+  margin-top: 24px;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+/* MOBILE */
+@media (max-width: 768px) {
+  .portfolio-grid { gap: 24px; }
+  .card-title { font-size: 18px; }
+}
+
+</style>
 </head>
+
 <body>
 
-  <div id="portfolio-wrapper">
+<div id="portfolio-wrapper">
 
-    <div id="filterBar">
-      <div class="filter-group">
-        <div class="filter-group-label">Kategorien</div>
-        <div id="categoryFilters"></div>
-      </div>
+  <div id="filterBar">
+    <div class="filter-group">
+      <div class="filter-group-label">Kategorien</div>
+      <div id="categoryFilters"></div>
     </div>
-
-    <div id="portfolioGrid" class="portfolio-grid"></div>
-
-    <button id="loadMoreBtn">Mehr laden</button>
-
-    <div id="statusMessage"></div>
   </div>
 
-  <script>
-    (function () {
+  <div id="portfolioGrid" class="portfolio-grid"></div>
 
-      const BASE = "https://www.flowingframes.media";
-      const PROXY = "https://flowingframes-proxy.florian-augustus-alexander.workers.dev/?url=";
+  <div id="statusMessage"></div>
+</div>
 
-      let allPosts = [];
-      let visibleCount = 50;
-      let nextPath = "/all-projekte?format=json-pretty";
-      let activeCategories = new Set();
 
-      const gridEl = document.getElementById("portfolioGrid");
-      const filtersEl = document.getElementById("categoryFilters");
-      const loadMoreBtn = document.getElementById("loadMoreBtn");
-      const statusEl = document.getElementById("statusMessage");
+<script>
+/* ============================================================
+   PORTFOLIO ENGINE — FlowingFrames Infinite Scroll Version
+   ============================================================ */
 
-      async function fetchPage(path) {
-        const url = PROXY + encodeURIComponent(BASE + path);
-        const res = await fetch(url);
-        if (!res.ok) throw new Error("Fehler beim Laden: " + res.status);
-        return res.json();
-      }
+(function() {
 
-      /* Neue Funktion: lädt ALLE restlichen Seiten */
-      async function loadAllPages() {
-        while (nextPath) {
-          try {
-            const data = await fetchPage(nextPath);
-            allPosts = allPosts.concat(data.items || []);
+  const BASE = "https://www.flowingframes.media";
+  const PROXY = "https://flowingframes-proxy.florian-augustus-alexander.workers.dev/?url=";
 
-            if (data.pagination?.nextPageUrl) {
-              nextPath = data.pagination.nextPageUrl.includes("format=")
-                ? data.pagination.nextPageUrl
-                : data.pagination.nextPageUrl + "&format=json-pretty";
-            } else {
-              nextPath = null;
-            }
+  let allPosts = [];
+  let nextPath = "/all-projekte?format=json-pretty";
+  let activeCategories = new Set();
 
-          } catch (err) {
-            console.error("Fehler beim Nachladen:", err);
-            nextPath = null;
-          }
-        }
-      }
+  const gridEl = document.getElementById("portfolioGrid");
+  const filtersEl = document.getElementById("categoryFilters");
+  const statusEl = document.getElementById("statusMessage");
 
-      function getExcerptText(post) {
-        if (!post.excerpt) return "";
-        return post.excerpt.replace(/<[^>]+>/g, "").trim();
-      }
+  let visibleCount = 0;
+  const BATCH = 30; // ← 30 Cards pro Schritt
 
-      function getCategoryLabel(post) {
-        if (Array.isArray(post.categories) && post.categories.length > 0) {
-          return post.categories.join(" · ");
-        }
-        return "";
-      }
 
-      function buildFilters() {
-        filtersEl.innerHTML = "";
-        const counts = {};
+  /* ---------------------------
+      Fetch Helper
+  ---------------------------- */
+  async function fetchPage(path) {
+    const url = PROXY + encodeURIComponent(BASE + path);
+    const res = await fetch(url);
+    if (!res.ok) throw new Error("Fehler: " + res.status);
+    return res.json();
+  }
 
-        allPosts.forEach((p) => {
-          (p.categories || []).forEach((c) => {
-            counts[c] = (counts[c] || 0) + 1;
-          });
-        });
 
-        const sorted = Object.keys(counts).sort((a, b) =>
-          counts[b] !== counts[a] ? counts[b] - counts[a] : a.localeCompare(b, "de")
-        );
+  /* ---------------------------
+      Load ALL pages (for filter)
+  ---------------------------- */
+  async function loadAllPages() {
+    while (nextPath) {
+      const data = await fetchPage(nextPath);
+      allPosts = allPosts.concat(data.items || []);
 
-        sorted.forEach((cat) => {
-          const label = document.createElement("label");
-          label.className = "filter-pill";
+      if (data.pagination?.nextPageUrl) {
+        const u = data.pagination.nextPageUrl;
+        nextPath = u.includes("format=") ? u : u + "&format=json-pretty";
+      } else nextPath = null;
+    }
+  }
 
-          const input = document.createElement("input");
-          input.type = "checkbox";
-          input.value = cat;
 
-          input.addEventListener("change", async () => {
+  /* ---------------------------
+      Build Filters
+  ---------------------------- */
+  function buildFilters() {
+    filtersEl.innerHTML = "";
 
-            if (input.checked) {
-              activeCategories.add(cat);
-              label.classList.add("active");
-            } else {
-              activeCategories.delete(cat);
-              label.classList.remove("active");
-            }
-
-            /* NEU: Bei aktivem Filter → ALLE Seiten laden */
-            if (activeCategories.size > 0 && nextPath) {
-              await loadAllPages();
-            }
-
-            renderPosts();
-          });
-
-          const text = document.createElement("span");
-          text.textContent = cat;
-
-          label.appendChild(input);
-          label.appendChild(text);
-          filtersEl.appendChild(label);
-        });
-      }
-
-      function getFilteredPosts() {
-        if (activeCategories.size === 0) return allPosts;
-        return allPosts.filter((p) =>
-          Array.isArray(p.categories) &&
-          p.categories.some((c) => activeCategories.has(c))
-        );
-      }
-
-      function renderPosts() {
-        const filtered = getFilteredPosts();
-        const toShow = filtered.slice(0, visibleCount);
-
-        gridEl.innerHTML = "";
-
-        toShow.forEach((p) => {
-          const a = document.createElement("a");
-          a.className = "card";
-          a.href = BASE + p.fullUrl;
-          a.target = "_top";
-          a.rel = "noopener";
-
-          const inner = document.createElement("div");
-          inner.className = "card-inner";
-
-          const mediaWrap = document.createElement("div");
-          mediaWrap.className = "card-media-wrap";
-
-          const img = document.createElement("img");
-          img.className = "card-img";
-          img.src = p.assetUrl;
-          img.alt = p.title || "";
-          img.loading = "lazy";
-
-          const overlay = document.createElement("div");
-          overlay.className = "card-media-overlay";
-
-          mediaWrap.appendChild(img);
-          mediaWrap.appendChild(overlay);
-
-          const text = document.createElement("div");
-          text.className = "card-text";
-
-          const catEl = document.createElement("div");
-          catEl.className = "card-category";
-          catEl.textContent = getCategoryLabel(p);
-
-          const titleEl = document.createElement("h3");
-          titleEl.className = "card-title";
-          titleEl.textContent = p.title;
-
-          const excerptEl = document.createElement("p");
-          excerptEl.className = "card-excerpt";
-          excerptEl.textContent = getExcerptText(p);
-
-          text.appendChild(catEl);
-          text.appendChild(titleEl);
-          if (excerptEl.textContent) text.appendChild(excerptEl);
-
-          inner.appendChild(mediaWrap);
-          inner.appendChild(text);
-          a.appendChild(inner);
-
-          gridEl.appendChild(a);
-        });
-
-        /* NEU: Bei aktivem Filter → NIE „Mehr laden“ */
-        if (activeCategories.size > 0) {
-          loadMoreBtn.style.display = "none";
-        } else {
-          const showButton =
-            filtered.length > visibleCount || nextPath !== null;
-          loadMoreBtn.style.display = showButton ? "block" : "none";
-        }
-
-        statusEl.textContent =
-          filtered.length === 0
-            ? "Keine Projekte für die gewählten Kategorien."
-            : "";
-      }
-
-      async function loadInitial() {
-        statusEl.textContent = "Lade Projekte …";
-
-        while (nextPath && allPosts.length < 50) {
-          const data = await fetchPage(nextPath);
-          allPosts = allPosts.concat(data.items || []);
-
-          if (data.pagination?.nextPageUrl) {
-            nextPath = data.pagination.nextPageUrl.includes("format=")
-              ? data.pagination.nextPageUrl
-              : data.pagination.nextPageUrl + "&format=json-pretty";
-          } else {
-            nextPath = null;
-          }
-        }
-
-        buildFilters();
-        renderPosts();
-        statusEl.textContent = "";
-      }
-
-      async function handleLoadMore() {
-        const filteredBefore = getFilteredPosts();
-        const hadAllVisible = visibleCount >= filteredBefore.length;
-
-        if (hadAllVisible && nextPath) {
-          try {
-            const data = await fetchPage(nextPath);
-            allPosts = allPosts.concat(data.items || []);
-
-            if (data.pagination?.nextPageUrl) {
-              nextPath = data.pagination.nextPageUrl.includes("format=")
-                ? data.pagination.nextPageUrl
-                : data.pagination.nextPageUrl + "&format=json-pretty";
-            } else {
-              nextPath = null;
-            }
-
-          } catch (err) {
-            console.error(err);
-          }
-        }
-
-        visibleCount += 50;
-        renderPosts();
-      }
-
-      document.addEventListener("DOMContentLoaded", () => {
-        loadMoreBtn.addEventListener("click", handleLoadMore);
-        loadInitial();
+    const counts = {};
+    allPosts.forEach(p => {
+      (p.categories || []).forEach(cat => {
+        counts[cat] = (counts[cat] || 0) + 1;
       });
-    })();
-  </script>
+    });
+
+    Object.keys(counts)
+      .sort((a,b) => counts[b] - counts[a] || a.localeCompare(b))
+      .forEach(cat => {
+
+        const label = document.createElement("label");
+        label.className = "filter-pill";
+
+        const input = document.createElement("input");
+        input.type = "checkbox";
+        input.value = cat;
+
+        input.addEventListener("change", async () => {
+
+          if (input.checked) {
+            activeCategories.add(cat);
+            label.classList.add("active");
+          } else {
+            activeCategories.delete(cat);
+            label.classList.remove("active");
+          }
+
+          gridEl.classList.add("fade-out");
+          await new Promise(r => setTimeout(r, 250));
+
+          if (activeCategories.size > 0 && nextPath)
+            await loadAllPages();
+
+          visibleCount = 0;
+          renderCards();
+
+          gridEl.classList.remove("fade-out");
+        });
+
+        const span = document.createElement("span");
+        span.textContent = cat;
+
+        label.appendChild(input);
+        label.appendChild(span);
+        filtersEl.appendChild(label);
+      });
+  }
 
 
-  <!-- Height messaging to Squarespace iframe -->
-  <script>
-    function sendHeight() {
-      const height = document.documentElement.scrollHeight;
-      parent.postMessage({ portfolioHeight: height }, "*");
+  /* ---------------------------
+      Filter logic
+  ---------------------------- */
+  function getFilteredPosts() {
+    if (activeCategories.size === 0) return allPosts;
+    return allPosts.filter(post =>
+      post.categories?.some(c => activeCategories.has(c))
+    );
+  }
+
+
+  /* ---------------------------
+      Render cards in batches
+  ---------------------------- */
+  function renderCards() {
+    const filtered = getFilteredPosts();
+
+    const newEnd = visibleCount + BATCH;
+    const slice = filtered.slice(visibleCount, newEnd);
+
+    slice.forEach(post => {
+      const a = document.createElement("a");
+      a.className = "card";
+      a.href = BASE + post.fullUrl;
+      a.target = "_top";
+
+      const inner = document.createElement("div");
+      inner.className = "card-inner";
+
+      const media = document.createElement("div");
+      media.className = "card-media-wrap";
+
+      const img = document.createElement("img");
+      img.className = "card-img";
+      img.src = post.assetUrl;
+      img.alt = post.title;
+      img.loading = "lazy";
+
+      const overlay = document.createElement("div");
+      overlay.className = "card-media-overlay";
+
+      media.appendChild(img);
+      media.appendChild(overlay);
+
+      const text = document.createElement("div");
+      text.className = "card-text";
+
+      const catEl = document.createElement("div");
+      catEl.className = "card-category";
+      catEl.textContent = (post.categories || []).join(" · ");
+
+      const titleEl = document.createElement("h3");
+      titleEl.className = "card-title";
+      titleEl.textContent = post.title;
+
+      const excerptEl = document.createElement("p");
+      excerptEl.className = "card-excerpt";
+      excerptEl.textContent = post.excerpt?.replace(/<[^>]+>/g,"") || "";
+
+      text.appendChild(catEl);
+      text.appendChild(titleEl);
+      if (excerptEl.textContent) text.appendChild(excerptEl);
+
+      inner.appendChild(media);
+      inner.appendChild(text);
+
+      a.appendChild(inner);
+      gridEl.appendChild(a);
+
+      observeCard(a);
+    });
+
+    visibleCount = newEnd;
+
+    statusEl.textContent = filtered.length === 0
+      ? "Keine Projekte für die gewählten Kategorien."
+      : "";
+  }
+
+
+  /* ---------------------------
+      CARD LAZY ANIMATION
+  ---------------------------- */
+  const cardObserver = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add("visible");
+        cardObserver.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.2 });
+
+  function observeCard(card) {
+    cardObserver.observe(card);
+  }
+
+
+  /* ---------------------------
+      INFINITE SCROLL OBSERVER
+  ---------------------------- */
+  const sentinel = document.createElement("div");
+  sentinel.style.height = "1px";
+  gridEl.after(sentinel);
+
+  const scrollObserver = new IntersectionObserver(async (entries) => {
+    if (!entries[0].isIntersecting) return;
+
+    const filtered = getFilteredPosts();
+    if (visibleCount >= filtered.length) return;
+
+    renderCards();
+    sendHeight();
+  });
+
+  scrollObserver.observe(sentinel);
+
+
+  /* ---------------------------
+      INITIAL LOAD
+  ---------------------------- */
+  async function loadInitial() {
+    statusEl.textContent = "Lade Projekte …";
+
+    while (nextPath && allPosts.length < 100) {
+      const data = await fetchPage(nextPath);
+      allPosts = allPosts.concat(data.items || []);
+
+      if (data.pagination?.nextPageUrl) {
+        const u = data.pagination.nextPageUrl;
+        nextPath = u.includes("format=") ? u : u + "&format=json-pretty";
+      } else nextPath = null;
     }
 
-    sendHeight();
-    setInterval(sendHeight, 300);
-  </script>
+    buildFilters();
+    renderCards();
+    renderCards(); // 2 batches für "volleres" initial Layout
+
+    statusEl.textContent = "";
+  }
+
+  loadInitial();
+
+})();
+</script>
+
+
+
+<!-- HEIGHT MESSAGE TO SQUARESPACE -->
+<script>
+function sendHeight() {
+  const h = document.documentElement.scrollHeight;
+  parent.postMessage({ portfolioHeight: h }, "*");
+}
+
+new MutationObserver(() => sendHeight())
+  .observe(document.body, { childList: true, subtree: true });
+
+setInterval(sendHeight, 300);
+window.addEventListener("load", sendHeight);
+</script>
+
 
 </body>
 </html>
