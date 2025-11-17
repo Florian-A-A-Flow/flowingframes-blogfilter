@@ -103,7 +103,7 @@ body {
   background: var(--card-bg);
   border-radius: var(--border-radius);
   overflow: hidden;
-  transform: translateY(0px);
+  transform: translateY(20px);
   opacity: 0;
   transition: opacity .6s ease, transform .6s ease;
 }
@@ -225,7 +225,7 @@ body {
   const statusEl = document.getElementById("statusMessage");
 
   let visibleCount = 0;
-  const BATCH = 30; // ← 30 Cards pro Schritt
+  const BATCH = 30; // ← 30 Cards pro Scroll-Ladung
 
 
   /* ---------------------------
@@ -289,16 +289,29 @@ body {
             label.classList.remove("active");
           }
 
+          // Fade out
           gridEl.classList.add("fade-out");
           await new Promise(r => setTimeout(r, 250));
 
+          // Load all posts if needed
           if (activeCategories.size > 0 && nextPath)
             await loadAllPages();
 
+          // Reset grid
           visibleCount = 0;
+          gridEl.innerHTML = "";
+
+          // reset sentinel
+          gridEl.after(sentinel);
+
+          // Re-render
           renderCards();
 
+          // Fade In
           gridEl.classList.remove("fade-out");
+
+          // Height sync
+          setTimeout(sendHeight, 50);
         });
 
         const span = document.createElement("span");
@@ -446,7 +459,7 @@ body {
 
     buildFilters();
     renderCards();
-    renderCards(); // 2 batches für "volleres" initial Layout
+    renderCards(); // 2 batches für „volleres“ initial Layout
 
     statusEl.textContent = "";
   }
