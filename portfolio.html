@@ -102,10 +102,25 @@ body {
   color: inherit;
   background: var(--card-bg);
   border-radius: var(--border-radius);
-  /* overflow removed to allow shadow */
+  overflow: hidden;
+
+  /* WICHTIG:
+     NICHT opacity:0 → macht Observer blind
+     Stattdessen „fast unsichtbar“, aber sichtbar für IntersectionObserver
+  */
+  opacity: 0.001;
   transform: translateY(20px);
-  opacity: 0;
-  transition: opacity .6s ease, transform .6s ease, box-shadow .35s ease;
+
+  transition:
+    opacity .6s ease,
+    transform .6s ease,
+    box-shadow .35s ease;
+}
+
+/* Sichtbar durch Lazy-Animation */
+.card.visible {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 /* Hover Shadow FIXED */
@@ -314,7 +329,6 @@ body {
 
   function renderCards() {
     const filtered = getFilteredPosts();
-
     const slice = filtered.slice(visibleCount, visibleCount + BATCH);
 
     slice.forEach(post => {
@@ -348,7 +362,7 @@ body {
       catEl.className = "card-category";
       catEl.textContent = (post.categories || []).join(" · ");
 
-      const titleEl = document.createElement("h3");
+      const titleEl = document.create.createElement("h3");
       titleEl.className = "card-title";
       titleEl.textContent = post.title;
 
@@ -378,6 +392,7 @@ body {
   }
 
 
+  /* --- LAZY ENTRY ANIMATION FIXED --- */
   const cardObserver = new IntersectionObserver(entries => {
     entries.forEach(e => {
       if (e.isIntersecting) {
@@ -385,13 +400,14 @@ body {
         cardObserver.unobserve(e.target);
       }
     });
-  }, { threshold: 0.2 });
+  });
 
   function observeCard(card) {
-    cardObserver.observe(card);
+    requestAnimationFrame(() => cardObserver.observe(card));
   }
 
 
+  /* --- INFINITE SCROLL SENTINEL --- */
   const sentinel = document.createElement("div");
   sentinel.style.height = "1px";
   gridEl.after(sentinel);
