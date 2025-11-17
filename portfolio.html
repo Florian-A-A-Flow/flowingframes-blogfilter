@@ -536,5 +536,33 @@ sendHeight();
 setInterval(sendHeight, 300);
 </script>
 
+  <script>
+function postHeight() {
+  const newHeight = document.documentElement.scrollHeight;
+
+  // Sofort senden
+  window.parent.postMessage(
+    { portfolioHeight: newHeight },
+    "*"
+  );
+
+  // Ein zweites Mal nach Reflow
+  setTimeout(() => {
+    window.parent.postMessage(
+      { portfolioHeight: document.documentElement.scrollHeight },
+      "*"
+    );
+  }, 120);
+}
+
+// Höhe senden beim initialen Laden
+window.addEventListener("load", postHeight);
+
+// Höhe senden nach Filter-Änderung oder "Mehr laden"
+const observer = new MutationObserver(postHeight);
+observer.observe(document.body, { childList: true, subtree: true });
+</script>
+
+
 </body>
 </html>
