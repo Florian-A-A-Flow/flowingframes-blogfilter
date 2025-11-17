@@ -102,15 +102,15 @@ body {
   color: inherit;
   background: var(--card-bg);
   border-radius: var(--border-radius);
-  overflow: hidden;
+  /* overflow removed to allow shadow */
   transform: translateY(20px);
   opacity: 0;
-  transition: opacity .6s ease, transform .6s ease;
+  transition: opacity .6s ease, transform .6s ease, box-shadow .35s ease;
 }
 
-.card.visible {
-  opacity: 1;
-  transform: translateY(0);
+/* Hover Shadow FIXED */
+.card:hover {
+  box-shadow: var(--shadow-hover);
 }
 
 .card-inner {
@@ -208,7 +208,7 @@ body {
 
 <script>
 /* ============================================================
-   PORTFOLIO ENGINE — FlowingFrames Infinite Scroll Version
+   PORTFOLIO ENGINE — Infinite Scroll + Lazy Anim + Filter Fix
    ============================================================ */
 
 (function() {
@@ -225,12 +225,9 @@ body {
   const statusEl = document.getElementById("statusMessage");
 
   let visibleCount = 0;
-  const BATCH = 30; // 30 Cards pro Scroll-Ladung
+  const BATCH = 30;
 
 
-  /* ---------------------------
-      Fetch Helper
-  ---------------------------- */
   async function fetchPage(path) {
     const url = PROXY + encodeURIComponent(BASE + path);
     const res = await fetch(url);
@@ -239,14 +236,10 @@ body {
   }
 
 
-  /* ---------------------------
-      Load ALL pages (for filter)
-  ---------------------------- */
   async function loadAllPages() {
     while (nextPath) {
       const data = await fetchPage(nextPath);
       allPosts = allPosts.concat(data.items || []);
-
       if (data.pagination?.nextPageUrl) {
         const u = data.pagination.nextPageUrl;
         nextPath = u.includes("format=") ? u : u + "&format=json-pretty";
@@ -255,21 +248,16 @@ body {
   }
 
 
-  /* ---------------------------
-      Build Filters
-  ---------------------------- */
   function buildFilters() {
     filtersEl.innerHTML = "";
 
     const counts = {};
-    allPosts.forEach(p => {
-      (p.categories || []).forEach(cat => {
-        counts[cat] = (counts[cat] || 0) + 1;
-      });
-    });
+    allPosts.forEach(p =>
+      (p.categories || []).forEach(c => counts[c] = (counts[c] || 0) + 1)
+    );
 
     Object.keys(counts)
-      .sort((a,b) => counts[b] - counts[a] || a.localeCompare(b))
+      .sort((a,b) => counts[b]-counts[a] || a.localeCompare(b))
       .forEach(cat => {
 
         const label = document.createElement("label");
@@ -289,25 +277,20 @@ body {
             label.classList.remove("active");
           }
 
-          // Fade out
           gridEl.classList.add("fade-out");
           await new Promise(r => setTimeout(r, 250));
 
-          // All pages nachladen, falls nötig
-          if (activeCategories.size > 0 && nextPath)
+          if (activeCategories.size > 0 && nextPath) {
             await loadAllPages();
+          }
 
-          // Grid komplett zurücksetzen
           visibleCount = 0;
           gridEl.innerHTML = "";
+          gridEl.after(sentinel);
 
-          // Neu rendern
           renderCards();
-
-          // Fade In
           gridEl.classList.remove("fade-out");
 
-          // Height sync
           setTimeout(sendHeight, 50);
         });
 
@@ -321,25 +304,18 @@ body {
   }
 
 
-  /* ---------------------------
-      Filter logic
-  ---------------------------- */
   function getFilteredPosts() {
     if (activeCategories.size === 0) return allPosts;
-    return allPosts.filter(post =>
-      post.categories?.some(c => activeCategories.has(c))
+    return allPosts.filter(p =>
+      p.categories?.some(c => activeCategories.has(c))
     );
   }
 
 
-  /* ---------------------------
-      Render cards in batches
-  ---------------------------- */
   function renderCards() {
     const filtered = getFilteredPosts();
 
-    const newEnd = visibleCount + BATCH;
-    const slice = filtered.slice(visibleCount, newEnd);
+    const slice = filtered.slice(visibleCount, visibleCount + BATCH);
 
     slice.forEach(post => {
       const a = document.createElement("a");
@@ -356,7 +332,7 @@ body {
       const img = document.createElement("img");
       img.className = "card-img";
       img.src = post.assetUrl;
-      img.alt = post.title || "";
+      img.alt = post.title;
       img.loading = "lazy";
 
       const overlay = document.createElement("div");
@@ -374,11 +350,11 @@ body {
 
       const titleEl = document.createElement("h3");
       titleEl.className = "card-title";
-      titleEl.textContent = post.title || "";
+      titleEl.textContent = post.title;
 
       const excerptEl = document.createElement("p");
       excerptEl.className = "card-excerpt";
-      excerptEl.textContent = post.excerpt?.replace(/<[^>]+>/g,"") || "";
+      excerptEl.textContent = (post.excerpt || "").replace(/<[^>]+>/g, "");
 
       text.appendChild(catEl);
       text.appendChild(titleEl);
@@ -386,23 +362,22 @@ body {
 
       inner.appendChild(media);
       inner.appendChild(text);
+
       a.appendChild(inner);
       gridEl.appendChild(a);
 
       observeCard(a);
     });
 
-    visibleCount = newEnd;
+    visibleCount += BATCH;
 
-    statusEl.textContent = filtered.length === 0
+    statusEl.textContent =
+      filtered.length === 0
       ? "Keine Projekte für die gewählten Kategorien."
       : "";
   }
 
 
-  /* ---------------------------
-      CARD LAZY ANIMATION
-  ---------------------------- */
   const cardObserver = new IntersectionObserver(entries => {
     entries.forEach(e => {
       if (e.isIntersecting) {
@@ -417,29 +392,23 @@ body {
   }
 
 
-  /* ---------------------------
-      INFINITE SCROLL OBSERVER
-  ---------------------------- */
   const sentinel = document.createElement("div");
   sentinel.style.height = "1px";
   gridEl.after(sentinel);
 
-  const scrollObserver = new IntersectionObserver(async (entries) => {
-    if (!entries[0].isIntersecting) return;
-
-    const filtered = getFilteredPosts();
-    if (visibleCount >= filtered.length) return;
-
-    renderCards();
-    sendHeight();
+  const scrollObserver = new IntersectionObserver(entries => {
+    if (entries[0].isIntersecting) {
+      const filtered = getFilteredPosts();
+      if (visibleCount < filtered.length) {
+        renderCards();
+        sendHeight();
+      }
+    }
   });
 
   scrollObserver.observe(sentinel);
 
 
-  /* ---------------------------
-      INITIAL LOAD
-  ---------------------------- */
   async function loadInitial() {
     statusEl.textContent = "Lade Projekte …";
 
@@ -455,7 +424,7 @@ body {
 
     buildFilters();
     renderCards();
-    renderCards(); // zweites Batch für volleres Initiallayout
+    renderCards();
 
     statusEl.textContent = "";
   }
@@ -466,21 +435,18 @@ body {
 </script>
 
 
-
-<!-- HEIGHT MESSAGE TO SQUARESPACE -->
 <script>
 function sendHeight() {
   const h = document.documentElement.scrollHeight;
   parent.postMessage({ portfolioHeight: h }, "*");
 }
 
-new MutationObserver(() => sendHeight())
+new MutationObserver(sendHeight)
   .observe(document.body, { childList: true, subtree: true });
 
 setInterval(sendHeight, 300);
 window.addEventListener("load", sendHeight);
 </script>
-
 
 </body>
 </html>
