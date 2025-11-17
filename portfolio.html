@@ -14,12 +14,11 @@
       --accent: #ffffff;
       --border-radius: 10px;
       --transition-fast: 0.22s ease-out;
-      --shadow-hover: 0 6px 16px rgba(0,0,0,0.3);
+      --shadow-soft: 0 18px 55px rgba(0, 0, 0, 0.6);
+      --shadow-hover: 0 6px 16px rgba(0, 0, 0, 0.3);
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
@@ -28,6 +27,7 @@
       color: var(--text-main);
       font-family: system-ui, -apple-system, BlinkMacSystemFont,
         "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
     }
 
     #portfolio-wrapper {
@@ -36,9 +36,8 @@
       padding: 0 16px;
     }
 
-    #filterBar {
-      margin-bottom: 32px;
-    }
+    /* Filter Bar */
+    #filterBar { margin-bottom: 32px; }
 
     .filter-group-label {
       font-size: 12px;
@@ -56,6 +55,9 @@
 
     .filter-pill {
       position: relative;
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
       padding: 6px 12px;
       border-radius: 999px;
       background: rgba(255, 255, 255, 0.03);
@@ -65,17 +67,18 @@
       letter-spacing: 0.12em;
       color: var(--text-muted);
       cursor: pointer;
-      transition: 0.22s ease-out;
-      text-align: center;
+      transition: background var(--transition-fast),
+                  border-color var(--transition-fast),
+                  color var(--transition-fast),
+                  transform var(--transition-fast);
       white-space: nowrap;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
     }
 
     .filter-pill input {
-      opacity: 0;
       position: absolute;
+      opacity: 0;
+      width: 0;
+      height: 0;
       pointer-events: none;
     }
 
@@ -86,328 +89,370 @@
 
     .filter-pill.active {
       background: rgba(255, 255, 255, 0.07);
-      border-color: rgba(255, 255, 255, 0.75);
+      border-color: rgba(255, 255, 255, 0.7);
       color: #fff;
     }
 
+    /* Grid */
     .portfolio-grid {
       display: grid;
       gap: 34px;
       grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
     }
 
+    /* Cards */
     .card {
+      display: block;
       text-decoration: none;
       color: inherit;
       background: var(--card-bg);
       border-radius: var(--border-radius);
       overflow: hidden;
-      transition: transform 0.22s ease-out,
-                  box-shadow 0.22s ease-out;
+      box-shadow: none;
+      transform: translate3d(0,0,0);
+      transition:
+        transform var(--transition-fast),
+        box-shadow var(--transition-fast),
+        background var(--transition-fast);
     }
 
-    .card:hover {
-      transform: translateY(-6px) scale(1.015);
-      box-shadow: var(--shadow-hover);
-    }
+    .card-inner { display: flex; flex-direction: column; height: 100%; }
+    .card-media-wrap { position: relative; overflow: hidden; border-radius: var(--border-radius); }
 
     .card-img {
       width: 100%;
-      aspect-ratio: 16/9;
+      aspect-ratio: 16 / 9;
       object-fit: cover;
-      transition: transform 0.4s ease, filter 0.4s ease;
+      transition: transform 0.45s cubic-bezier(0.19,1,0.22,1),
+                  filter 0.45s cubic-bezier(0.19,1,0.22,1);
     }
 
-    .card:hover .card-img {
-      transform: scale(1.06);
-      filter: saturate(1.05);
+    .card-media-overlay {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at center,
+                  transparent 0, rgba(0,0,0,0.4) 80%);
+      opacity: 0;
+      transition: opacity 0.45s ease-out;
     }
 
-    .card-text {
-      padding: 18px 18px 20px;
+    .card:hover {
+      transform: translate3d(0,-6px,0) scale(1.015);
+      box-shadow: var(--shadow-hover);
+      background: #202020;
     }
 
-    .card-category {
-      text-transform: uppercase;
-      font-size: 11px;
-      letter-spacing: 0.16em;
-      color: var(--text-muted);
-      margin-bottom: 6px;
-    }
+    .card:hover .card-img { transform: scale(1.06); filter: saturate(1.05) contrast(1.02); }
+    .card:hover .card-media-overlay { opacity: 1; }
 
-    .card-title {
-      font-size: 20px;
-      margin: 0 0 6px;
-    }
+    .card-text { padding: 18px 18px 20px; }
+    .card-category { text-transform: uppercase; font-size: 11px; margin-bottom: 6px; color: var(--text-muted); }
+    .card-title { font-size: 20px; font-weight: 600; margin: 0 0 6px; }
+    .card-excerpt { font-size: 13px; color: var(--text-muted); margin: 0; }
 
-    .card-excerpt {
-      font-size: 13px;
-      color: var(--text-muted);
-      margin: 0;
-    }
-
+    /* Load More */
     #loadMoreBtn {
       margin: 40px auto 0;
       display: none;
-      background: #ffffff;
-      color: #000000;
       padding: 14px 28px;
       border-radius: 999px;
+      background: #fff;
+      color: #000;
       border: none;
-      cursor: pointer;
       font-weight: 600;
       font-size: 13px;
-      letter-spacing: 0.16em;
       text-transform: uppercase;
+      cursor: pointer;
       box-shadow: 0 10px 30px rgba(0,0,0,0.6);
-      transition: 0.22s ease-out;
+      transition: background var(--transition-fast),
+                  box-shadow var(--transition-fast),
+                  transform var(--transition-fast);
     }
 
     #loadMoreBtn:hover {
       transform: translateY(-2px);
+      background: #f5f5f5;
+      box-shadow: 0 16px 45px rgba(0,0,0,0.85);
     }
 
-    #statusMessage {
-      margin-top: 24px;
-      font-size: 13px;
-      color: var(--text-muted);
+    #loadMoreBtn:active {
+      transform: translateY(0);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.6);
     }
+
+    #statusMessage { margin-top: 24px; font-size: 13px; color: var(--text-muted); }
+
   </style>
 </head>
-
 <body>
-<div id="portfolio-wrapper">
-  <div id="filterBar">
-    <div class="filter-group">
-      <div class="filter-group-label">Kategorien</div>
-      <div id="categoryFilters"></div>
+
+  <div id="portfolio-wrapper">
+
+    <div id="filterBar">
+      <div class="filter-group">
+        <div class="filter-group-label">Kategorien</div>
+        <div id="categoryFilters"></div>
+      </div>
     </div>
+
+    <div id="portfolioGrid" class="portfolio-grid"></div>
+
+    <button id="loadMoreBtn">Mehr laden</button>
+
+    <div id="statusMessage"></div>
   </div>
 
-  <div id="portfolioGrid" class="portfolio-grid"></div>
+  <script>
+    (function () {
 
-  <button id="loadMoreBtn">Mehr laden</button>
+      const BASE = "https://www.flowingframes.media";
+      const PROXY = "https://flowingframes-proxy.florian-augustus-alexander.workers.dev/?url=";
 
-  <div id="statusMessage"></div>
-</div>
+      let allPosts = [];
+      let visibleCount = 50;
+      let nextPath = "/all-projekte?format=json-pretty";
+      let activeCategories = new Set();
 
-<script>
-(function () {
+      const gridEl = document.getElementById("portfolioGrid");
+      const filtersEl = document.getElementById("categoryFilters");
+      const loadMoreBtn = document.getElementById("loadMoreBtn");
+      const statusEl = document.getElementById("statusMessage");
 
-  const BASE = "https://www.flowingframes.media";
-  const PROXY =
-    "https://flowingframes-proxy.florian-augustus-alexander.workers.dev/?url=";
+      async function fetchPage(path) {
+        const url = PROXY + encodeURIComponent(BASE + path);
+        const res = await fetch(url);
+        if (!res.ok) throw new Error("Fehler beim Laden: " + res.status);
+        return res.json();
+      }
 
-  let allPosts = [];
-  let visibleCount = 50;
-  let nextPath = "/all-projekte?format=json-pretty";
-  let activeCategories = new Set();
+      /* Neue Funktion: lädt ALLE restlichen Seiten */
+      async function loadAllPages() {
+        while (nextPath) {
+          try {
+            const data = await fetchPage(nextPath);
+            allPosts = allPosts.concat(data.items || []);
 
-  const gridEl = document.getElementById("portfolioGrid");
-  const filtersEl = document.getElementById("categoryFilters");
-  const loadMoreBtn = document.getElementById("loadMoreBtn");
-  const statusEl = document.getElementById("statusMessage");
+            if (data.pagination?.nextPageUrl) {
+              nextPath = data.pagination.nextPageUrl.includes("format=")
+                ? data.pagination.nextPageUrl
+                : data.pagination.nextPageUrl + "&format=json-pretty";
+            } else {
+              nextPath = null;
+            }
 
-  /* ---------- FETCH FIX (robust) ---------- */
-  async function fetchPage(path) {
-    const isAbsolute = /^https?:\/\//i.test(path);
-    const finalUrl = isAbsolute ? path : BASE + path;
-    const full = PROXY + encodeURIComponent(finalUrl);
-
-    const res = await fetch(full);
-    if (!res.ok) {
-      throw new Error("Fehler beim Laden: " + res.status);
-    }
-    return res.json();
-  }
-
-  function getExcerptText(post) {
-    if (!post.excerpt) return "";
-    return post.excerpt.replace(/<[^>]+>/g, "").trim();
-  }
-
-  function getCategoryLabel(post) {
-    if (Array.isArray(post.categories) && post.categories.length > 0) {
-      return post.categories.join(" · ");
-    }
-    return "";
-  }
-
-  function buildFilters() {
-    filtersEl.innerHTML = "";
-
-    const counts = {};
-    allPosts.forEach((p) => {
-      (p.categories || []).forEach((c) => {
-        counts[c] = (counts[c] || 0) + 1;
-      });
-    });
-
-    const sorted = Object.keys(counts).sort((a, b) =>
-      counts[b] !== counts[a] ? counts[b] - counts[a] :
-      a.localeCompare(b, "de", { sensitivity: "base" })
-    );
-
-    sorted.forEach((cat) => {
-      const label = document.createElement("label");
-      label.className = "filter-pill";
-
-      const input = document.createElement("input");
-      input.type = "checkbox";
-      input.value = cat;
-
-      input.addEventListener("change", () => {
-        if (input.checked) {
-          activeCategories.add(cat);
-          label.classList.add("active");
-        } else {
-          activeCategories.delete(cat);
-          label.classList.remove("active");
+          } catch (err) {
+            console.error("Fehler beim Nachladen:", err);
+            nextPath = null;
+          }
         }
+      }
+
+      function getExcerptText(post) {
+        if (!post.excerpt) return "";
+        return post.excerpt.replace(/<[^>]+>/g, "").trim();
+      }
+
+      function getCategoryLabel(post) {
+        if (Array.isArray(post.categories) && post.categories.length > 0) {
+          return post.categories.join(" · ");
+        }
+        return "";
+      }
+
+      function buildFilters() {
+        filtersEl.innerHTML = "";
+        const counts = {};
+
+        allPosts.forEach((p) => {
+          (p.categories || []).forEach((c) => {
+            counts[c] = (counts[c] || 0) + 1;
+          });
+        });
+
+        const sorted = Object.keys(counts).sort((a, b) =>
+          counts[b] !== counts[a] ? counts[b] - counts[a] : a.localeCompare(b, "de")
+        );
+
+        sorted.forEach((cat) => {
+          const label = document.createElement("label");
+          label.className = "filter-pill";
+
+          const input = document.createElement("input");
+          input.type = "checkbox";
+          input.value = cat;
+
+          input.addEventListener("change", async () => {
+
+            if (input.checked) {
+              activeCategories.add(cat);
+              label.classList.add("active");
+            } else {
+              activeCategories.delete(cat);
+              label.classList.remove("active");
+            }
+
+            /* NEU: Bei aktivem Filter → ALLE Seiten laden */
+            if (activeCategories.size > 0 && nextPath) {
+              await loadAllPages();
+            }
+
+            renderPosts();
+          });
+
+          const text = document.createElement("span");
+          text.textContent = cat;
+
+          label.appendChild(input);
+          label.appendChild(text);
+          filtersEl.appendChild(label);
+        });
+      }
+
+      function getFilteredPosts() {
+        if (activeCategories.size === 0) return allPosts;
+        return allPosts.filter((p) =>
+          Array.isArray(p.categories) &&
+          p.categories.some((c) => activeCategories.has(c))
+        );
+      }
+
+      function renderPosts() {
+        const filtered = getFilteredPosts();
+        const toShow = filtered.slice(0, visibleCount);
+
+        gridEl.innerHTML = "";
+
+        toShow.forEach((p) => {
+          const a = document.createElement("a");
+          a.className = "card";
+          a.href = BASE + p.fullUrl;
+          a.target = "_top";
+          a.rel = "noopener";
+
+          const inner = document.createElement("div");
+          inner.className = "card-inner";
+
+          const mediaWrap = document.createElement("div");
+          mediaWrap.className = "card-media-wrap";
+
+          const img = document.createElement("img");
+          img.className = "card-img";
+          img.src = p.assetUrl;
+          img.alt = p.title || "";
+          img.loading = "lazy";
+
+          const overlay = document.createElement("div");
+          overlay.className = "card-media-overlay";
+
+          mediaWrap.appendChild(img);
+          mediaWrap.appendChild(overlay);
+
+          const text = document.createElement("div");
+          text.className = "card-text";
+
+          const catEl = document.createElement("div");
+          catEl.className = "card-category";
+          catEl.textContent = getCategoryLabel(p);
+
+          const titleEl = document.createElement("h3");
+          titleEl.className = "card-title";
+          titleEl.textContent = p.title;
+
+          const excerptEl = document.createElement("p");
+          excerptEl.className = "card-excerpt";
+          excerptEl.textContent = getExcerptText(p);
+
+          text.appendChild(catEl);
+          text.appendChild(titleEl);
+          if (excerptEl.textContent) text.appendChild(excerptEl);
+
+          inner.appendChild(mediaWrap);
+          inner.appendChild(text);
+          a.appendChild(inner);
+
+          gridEl.appendChild(a);
+        });
+
+        /* NEU: Bei aktivem Filter → NIE „Mehr laden“ */
+        if (activeCategories.size > 0) {
+          loadMoreBtn.style.display = "none";
+        } else {
+          const showButton =
+            filtered.length > visibleCount || nextPath !== null;
+          loadMoreBtn.style.display = showButton ? "block" : "none";
+        }
+
+        statusEl.textContent =
+          filtered.length === 0
+            ? "Keine Projekte für die gewählten Kategorien."
+            : "";
+      }
+
+      async function loadInitial() {
+        statusEl.textContent = "Lade Projekte …";
+
+        while (nextPath && allPosts.length < 50) {
+          const data = await fetchPage(nextPath);
+          allPosts = allPosts.concat(data.items || []);
+
+          if (data.pagination?.nextPageUrl) {
+            nextPath = data.pagination.nextPageUrl.includes("format=")
+              ? data.pagination.nextPageUrl
+              : data.pagination.nextPageUrl + "&format=json-pretty";
+          } else {
+            nextPath = null;
+          }
+        }
+
+        buildFilters();
         renderPosts();
+        statusEl.textContent = "";
+      }
+
+      async function handleLoadMore() {
+        const filteredBefore = getFilteredPosts();
+        const hadAllVisible = visibleCount >= filteredBefore.length;
+
+        if (hadAllVisible && nextPath) {
+          try {
+            const data = await fetchPage(nextPath);
+            allPosts = allPosts.concat(data.items || []);
+
+            if (data.pagination?.nextPageUrl) {
+              nextPath = data.pagination.nextPageUrl.includes("format=")
+                ? data.pagination.nextPageUrl
+                : data.pagination.nextPageUrl + "&format=json-pretty";
+            } else {
+              nextPath = null;
+            }
+
+          } catch (err) {
+            console.error(err);
+          }
+        }
+
+        visibleCount += 50;
+        renderPosts();
+      }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        loadMoreBtn.addEventListener("click", handleLoadMore);
+        loadInitial();
       });
+    })();
+  </script>
 
-      const text = document.createElement("span");
-      text.textContent = cat;
 
-      label.appendChild(input);
-      label.appendChild(text);
-      filtersEl.appendChild(label);
-    });
-  }
-
-  function getFilteredPosts() {
-    if (activeCategories.size === 0) return allPosts;
-    return allPosts.filter((p) =>
-      Array.isArray(p.categories)
-      && p.categories.some((c) => activeCategories.has(c))
-    );
-  }
-
-  function renderPosts() {
-    const filtered = getFilteredPosts();
-    const toShow = filtered.slice(0, visibleCount);
-
-    gridEl.innerHTML = "";
-
-    toShow.forEach((p) => {
-      const href = BASE + p.fullUrl;
-
-      const a = document.createElement("a");
-      a.className = "card";
-      a.href = href;
-      a.target = "_top";
-      a.rel = "noopener";
-
-      const img = document.createElement("img");
-      img.className = "card-img";
-      img.src = p.assetUrl;
-      img.alt = p.title || "";
-      img.loading = "lazy";
-
-      const textBox = document.createElement("div");
-      textBox.className = "card-text";
-
-      const catEl = document.createElement("div");
-      catEl.className = "card-category";
-      catEl.textContent = getCategoryLabel(p);
-
-      const titleEl = document.createElement("h3");
-      titleEl.className = "card-title";
-      titleEl.textContent = p.title || "";
-
-      const excerptEl = document.createElement("p");
-      excerptEl.className = "card-excerpt";
-      excerptEl.textContent = getExcerptText(p);
-
-      textBox.appendChild(catEl);
-      textBox.appendChild(titleEl);
-      if (excerptEl.textContent) textBox.appendChild(excerptEl);
-
-      a.appendChild(img);
-      a.appendChild(textBox);
-      gridEl.appendChild(a);
-    });
-
-    loadMoreBtn.style.display =
-      filtered.length > visibleCount || nextPath ? "block" : "none";
-
-    statusEl.textContent = filtered.length === 0
-      ? "Keine Projekte für die gewählten Kategorien."
-      : "";
+  <!-- Height messaging to Squarespace iframe -->
+  <script>
+    function sendHeight() {
+      const height = document.documentElement.scrollHeight;
+      parent.postMessage({ portfolioHeight: height }, "*");
+    }
 
     sendHeight();
-  }
-
-  async function loadInitial() {
-    try {
-      statusEl.textContent = "Lade Projekte …";
-
-      while (nextPath && allPosts.length < 50) {
-        const data = await fetchPage(nextPath);
-
-        allPosts = allPosts.concat(data.items || []);
-
-        if (data.pagination?.nextPageUrl) {
-          nextPath =
-            data.pagination.nextPageUrl.includes("format=")
-            ? data.pagination.nextPageUrl
-            : data.pagination.nextPageUrl + "&format=json-pretty";
-        } else {
-          nextPath = null;
-        }
-      }
-
-      buildFilters();
-      renderPosts();
-      statusEl.textContent = "";
-
-    } catch (error) {
-      console.error(error);
-      statusEl.textContent = "Fehler beim Laden.";
-    }
-  }
-
-  async function handleLoadMore() {
-    if (nextPath) {
-      try {
-        const data = await fetchPage(nextPath);
-        allPosts = allPosts.concat(data.items || []);
-
-        if (data.pagination?.nextPageUrl) {
-          nextPath = data.pagination.nextPageUrl.includes("format=")
-            ? data.pagination.nextPageUrl
-            : data.pagination.nextPageUrl + "&format=json-pretty";
-        } else {
-          nextPath = null;
-        }
-      } catch (e) {
-        console.error(e);
-      }
-    }
-
-    visibleCount += 50;
-    renderPosts();
-  }
-
-  document.addEventListener("DOMContentLoaded", () => {
-    loadMoreBtn.addEventListener("click", handleLoadMore);
-    loadInitial();
-  });
-
-  /* --------- HEIGHT TO PARENT --------- */
-  function sendHeight() {
-    const height = document.documentElement.scrollHeight;
-    window.parent.postMessage({ portfolioHeight: height }, "*");
-  }
-
-  const obs = new MutationObserver(sendHeight);
-  obs.observe(document.body, { subtree: true, childList: true });
-
-  window.addEventListener("load", sendHeight);
-
-})();
-</script>
+    setInterval(sendHeight, 300);
+  </script>
 
 </body>
 </html>
