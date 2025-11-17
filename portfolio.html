@@ -225,7 +225,7 @@ body {
   const statusEl = document.getElementById("statusMessage");
 
   let visibleCount = 0;
-  const BATCH = 30; // ← 30 Cards pro Scroll-Ladung
+  const BATCH = 30; // 30 Cards pro Scroll-Ladung
 
 
   /* ---------------------------
@@ -293,18 +293,15 @@ body {
           gridEl.classList.add("fade-out");
           await new Promise(r => setTimeout(r, 250));
 
-          // Load all posts if needed
+          // All pages nachladen, falls nötig
           if (activeCategories.size > 0 && nextPath)
             await loadAllPages();
 
-          // Reset grid
+          // Grid komplett zurücksetzen
           visibleCount = 0;
           gridEl.innerHTML = "";
 
-          // reset sentinel
-          gridEl.after(sentinel);
-
-          // Re-render
+          // Neu rendern
           renderCards();
 
           // Fade In
@@ -359,7 +356,7 @@ body {
       const img = document.createElement("img");
       img.className = "card-img";
       img.src = post.assetUrl;
-      img.alt = post.title;
+      img.alt = post.title || "";
       img.loading = "lazy";
 
       const overlay = document.createElement("div");
@@ -377,7 +374,7 @@ body {
 
       const titleEl = document.createElement("h3");
       titleEl.className = "card-title";
-      titleEl.textContent = post.title;
+      titleEl.textContent = post.title || "";
 
       const excerptEl = document.createElement("p");
       excerptEl.className = "card-excerpt";
@@ -389,7 +386,6 @@ body {
 
       inner.appendChild(media);
       inner.appendChild(text);
-
       a.appendChild(inner);
       gridEl.appendChild(a);
 
@@ -459,7 +455,7 @@ body {
 
     buildFilters();
     renderCards();
-    renderCards(); // 2 batches für „volleres“ initial Layout
+    renderCards(); // zweites Batch für volleres Initiallayout
 
     statusEl.textContent = "";
   }
