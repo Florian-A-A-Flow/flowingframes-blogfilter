@@ -7,16 +7,14 @@
 
   <style>
     :root {
-      --bg: #1B1B1B;          /* Seiten-Hintergrund */
-      --card-bg: #1B1B1B;     /* Karten-/Textbox-Hintergrund */
+      --bg: #1B1B1B;
+      --card-bg: #1B1B1B;
       --text-main: #f5f5f5;
       --text-muted: #a0a0a0;
       --accent: #ffffff;
       --border-radius: 10px;
       --transition-fast: 0.22s ease-out;
-      --shadow-soft: 0 18px 55px rgba(0, 0, 0, 0.6);
-      /* V1.5: dezenter, „härterer“ Hover-Schatten */
-      --shadow-hover: 0 6px 16px rgba(0, 0, 0, 0.3);
+      --shadow-hover: 0 6px 16px rgba(0,0,0,0.3);
     }
 
     * {
@@ -28,9 +26,8 @@
       padding: 40px 0 60px;
       background: var(--bg);
       color: var(--text-main);
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
-        "Helvetica Neue", Arial, sans-serif;
-      -webkit-font-smoothing: antialiased;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont,
+        "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
     }
 
     #portfolio-wrapper {
@@ -39,7 +36,6 @@
       padding: 0 16px;
     }
 
-    /* Filter Bar */
     #filterBar {
       margin-bottom: 32px;
     }
@@ -52,20 +48,14 @@
       margin-bottom: 10px;
     }
 
-    /* Sortierteres Layout: Grid statt „chaotischem“ Flex */
     #categoryFilters {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(140px, auto));
-      column-gap: 14px;
-      row-gap: 10px;
-      align-items: stretch;
+      gap: 14px 10px;
     }
 
     .filter-pill {
       position: relative;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
       padding: 6px 12px;
       border-radius: 999px;
       background: rgba(255, 255, 255, 0.03);
@@ -75,20 +65,17 @@
       letter-spacing: 0.12em;
       color: var(--text-muted);
       cursor: pointer;
-      transition: background var(--transition-fast),
-                  border-color var(--transition-fast),
-                  color var(--transition-fast),
-                  transform var(--transition-fast);
+      transition: 0.22s ease-out;
       text-align: center;
       white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
     }
 
-    /* Checkbox unsichtbar – nur Pill sichtbar */
     .filter-pill input {
-      position: absolute;
       opacity: 0;
-      width: 0;
-      height: 0;
+      position: absolute;
       pointer-events: none;
     }
 
@@ -99,68 +86,45 @@
 
     .filter-pill.active {
       background: rgba(255, 255, 255, 0.07);
-      border-color: rgba(255, 255, 255, 0.7);
-      color: #ffffff;
+      border-color: rgba(255, 255, 255, 0.75);
+      color: #fff;
     }
 
-    /* Grid */
     .portfolio-grid {
       display: grid;
       gap: 34px;
       grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
     }
 
-    /* Card */
     .card {
-      display: block;
       text-decoration: none;
       color: inherit;
       background: var(--card-bg);
       border-radius: var(--border-radius);
       overflow: hidden;
-      /* Kein Schatten im Idle-Zustand */
-      box-shadow: none;
-      transform: translate3d(0, 0, 0);
-      transition:
-        transform var(--transition-fast),
-        box-shadow var(--transition-fast),
-        background var(--transition-fast);
+      transition: transform 0.22s ease-out,
+                  box-shadow 0.22s ease-out;
     }
 
-    .card-inner {
-      display: flex;
-      flex-direction: column;
-      height: 100%;
-    }
-
-    .card-media-wrap {
-      position: relative;
-      overflow: hidden;
-      border-radius: var(--border-radius);
+    .card:hover {
+      transform: translateY(-6px) scale(1.015);
+      box-shadow: var(--shadow-hover);
     }
 
     .card-img {
       width: 100%;
-      aspect-ratio: 16 / 9;
+      aspect-ratio: 16/9;
       object-fit: cover;
-      display: block;
-      transition: transform 0.45s cubic-bezier(0.19, 1, 0.22, 1),
-                  filter 0.45s cubic-bezier(0.19, 1, 0.22, 1);
-      transform-origin: center;
+      transition: transform 0.4s ease, filter 0.4s ease;
     }
 
-    .card-media-overlay {
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(circle at center, transparent 0, rgba(0,0,0,0.4) 80%);
-      opacity: 0;
-      transition: opacity 0.45s ease-out;
-      pointer-events: none;
+    .card:hover .card-img {
+      transform: scale(1.06);
+      filter: saturate(1.05);
     }
 
     .card-text {
       padding: 18px 18px 20px;
-      background: var(--card-bg);
     }
 
     .card-category {
@@ -173,36 +137,15 @@
 
     .card-title {
       font-size: 20px;
-      line-height: 1.2;
-      font-weight: 600;
       margin: 0 0 6px;
-      color: var(--text-main);
     }
 
     .card-excerpt {
       font-size: 13px;
-      line-height: 1.5;
       color: var(--text-muted);
       margin: 0;
     }
 
-    /* Hover Effekt – Tiefe, Zoom, Schatten */
-    .card:hover {
-      transform: translate3d(0, -6px, 0) scale(1.015);
-      box-shadow: var(--shadow-hover);
-      background: #202020;
-    }
-
-    .card:hover .card-img {
-      transform: scale(1.06);
-      filter: saturate(1.05) contrast(1.02);
-    }
-
-    .card:hover .card-media-overlay {
-      opacity: 1;
-    }
-
-    /* Load More Button */
     #loadMoreBtn {
       margin: 40px auto 0;
       display: none;
@@ -217,381 +160,254 @@
       letter-spacing: 0.16em;
       text-transform: uppercase;
       box-shadow: 0 10px 30px rgba(0,0,0,0.6);
-      transition:
-        background var(--transition-fast),
-        transform var(--transition-fast),
-        box-shadow var(--transition-fast),
-        color var(--transition-fast);
+      transition: 0.22s ease-out;
     }
 
     #loadMoreBtn:hover {
       transform: translateY(-2px);
-      background: #f5f5f5;
-      box-shadow: 0 16px 45px rgba(0,0,0,0.85);
     }
 
-    #loadMoreBtn:active {
-      transform: translateY(0);
-      box-shadow: 0 8px 20px rgba(0,0,0,0.6);
-    }
-
-    /* Info / Fehler */
     #statusMessage {
       margin-top: 24px;
       font-size: 13px;
       color: var(--text-muted);
-      background: var(--bg);
-    }
-
-    @media (max-width: 768px) {
-      body {
-        padding: 24px 0 40px;
-      }
-
-      #portfolio-wrapper {
-        padding: 0 12px;
-      }
-
-      .portfolio-grid {
-        gap: 26px;
-        grid-template-columns: 1fr;
-      }
-
-      .card-text {
-        padding: 16px 14px 18px;
-      }
-
-      .card-title {
-        font-size: 18px;
-      }
-
-      #categoryFilters {
-        grid-template-columns: repeat(auto-fit, minmax(120px, auto));
-      }
     }
   </style>
 </head>
+
 <body>
-  <div id="portfolio-wrapper">
-    <!-- Filter -->
-    <div id="filterBar">
-      <div class="filter-group">
-        <div class="filter-group-label">Kategorien</div>
-        <div id="categoryFilters"></div>
-      </div>
+<div id="portfolio-wrapper">
+  <div id="filterBar">
+    <div class="filter-group">
+      <div class="filter-group-label">Kategorien</div>
+      <div id="categoryFilters"></div>
     </div>
-
-    <!-- Grid -->
-    <div id="portfolioGrid" class="portfolio-grid"></div>
-
-    <!-- Load More -->
-    <button id="loadMoreBtn" class="load-more">Mehr laden</button>
-
-    <div id="statusMessage"></div>
   </div>
 
-  <script>
-    (function () {
-      const BASE = "https://www.flowingframes.media";
-      const PROXY =
-        "https://flowingframes-proxy.florian-augustus-alexander.workers.dev/?url=";
+  <div id="portfolioGrid" class="portfolio-grid"></div>
 
-      let allPosts = [];
-      let visibleCount = 50;
-      let nextPath = "/all-projekte?format=json-pretty";
-      let activeCategories = new Set();
+  <button id="loadMoreBtn">Mehr laden</button>
 
-      const gridEl = document.getElementById("portfolioGrid");
-      const filtersEl = document.getElementById("categoryFilters");
-      const loadMoreBtn = document.getElementById("loadMoreBtn");
-      const statusEl = document.getElementById("statusMessage");
+  <div id="statusMessage"></div>
+</div>
 
-      async function fetchPage(path) {
-        const url = PROXY + encodeURIComponent(BASE + path);
-        const res = await fetch(url);
-        if (!res.ok) {
-          throw new Error("Fehler beim Laden: " + res.status);
-        }
-        return res.json();
-      }
+<script>
+(function () {
 
-      function getExcerptText(post) {
-        if (!post.excerpt) return "";
-        return post.excerpt.replace(/<[^>]+>/g, "").trim();
-      }
+  const BASE = "https://www.flowingframes.media";
+  const PROXY =
+    "https://flowingframes-proxy.florian-augustus-alexander.workers.dev/?url=";
 
-      function getCategoryLabel(post) {
-        if (Array.isArray(post.categories) && post.categories.length > 0) {
-          return post.categories.join(" · ");
-        }
-        return "";
-      }
+  let allPosts = [];
+  let visibleCount = 50;
+  let nextPath = "/all-projekte?format=json-pretty";
+  let activeCategories = new Set();
 
-      function buildFilters() {
-        filtersEl.innerHTML = "";
+  const gridEl = document.getElementById("portfolioGrid");
+  const filtersEl = document.getElementById("categoryFilters");
+  const loadMoreBtn = document.getElementById("loadMoreBtn");
+  const statusEl = document.getElementById("statusMessage");
 
-        // Kategorien + Häufigkeit zählen
-        const counts = {};
-        allPosts.forEach((p) => {
-          (p.categories || []).forEach((c) => {
-            counts[c] = (counts[c] || 0) + 1;
-          });
-        });
+  /* ---------- FETCH FIX (robust) ---------- */
+  async function fetchPage(path) {
+    const isAbsolute = /^https?:\/\//i.test(path);
+    const finalUrl = isAbsolute ? path : BASE + path;
+    const full = PROXY + encodeURIComponent(finalUrl);
 
-        const sorted = Object.keys(counts).sort((a, b) => {
-          // Erst nach Anzahl (desc), dann alphabetisch
-          if (counts[b] !== counts[a]) {
-            return counts[b] - counts[a];
-          }
-          return a.localeCompare(b, "de", { sensitivity: "base" });
-        });
+    const res = await fetch(full);
+    if (!res.ok) {
+      throw new Error("Fehler beim Laden: " + res.status);
+    }
+    return res.json();
+  }
 
-        sorted.forEach((cat) => {
-          const label = document.createElement("label");
-          label.className = "filter-pill";
+  function getExcerptText(post) {
+    if (!post.excerpt) return "";
+    return post.excerpt.replace(/<[^>]+>/g, "").trim();
+  }
 
-          const input = document.createElement("input");
-          input.type = "checkbox";
-          input.value = cat;
+  function getCategoryLabel(post) {
+    if (Array.isArray(post.categories) && post.categories.length > 0) {
+      return post.categories.join(" · ");
+    }
+    return "";
+  }
 
-          input.addEventListener("change", () => {
-            if (input.checked) {
-              activeCategories.add(cat);
-              label.classList.add("active");
-            } else {
-              activeCategories.delete(cat);
-              label.classList.remove("active");
-            }
-            renderPosts();
-          });
+  function buildFilters() {
+    filtersEl.innerHTML = "";
 
-          const text = document.createElement("span");
-          text.textContent = cat;
-
-          label.appendChild(input);
-          label.appendChild(text);
-          filtersEl.appendChild(label);
-        });
-      }
-
-      function getFilteredPosts() {
-        if (activeCategories.size === 0) {
-          return allPosts;
-        }
-        return allPosts.filter((p) => {
-          if (!Array.isArray(p.categories)) return false;
-          return p.categories.some((c) => activeCategories.has(c));
-        });
-      }
-
-      function renderPosts() {
-        const filtered = getFilteredPosts();
-        const toShow = filtered.slice(0, visibleCount);
-
-        gridEl.innerHTML = "";
-
-        toShow.forEach((p) => {
-          const href = BASE + p.fullUrl;
-
-          const a = document.createElement("a");
-          a.className = "card";
-          a.href = href;
-          a.target = "_top"; // raus aus dem Embed
-          a.rel = "noopener";
-
-          const inner = document.createElement("div");
-          inner.className = "card-inner";
-
-          const mediaWrap = document.createElement("div");
-          mediaWrap.className = "card-media-wrap";
-
-          const img = document.createElement("img");
-          img.className = "card-img";
-          img.src = p.assetUrl;
-          img.alt = p.title || "";
-          img.loading = "lazy";
-
-          const overlay = document.createElement("div");
-          overlay.className = "card-media-overlay";
-
-          mediaWrap.appendChild(img);
-          mediaWrap.appendChild(overlay);
-
-          const text = document.createElement("div");
-          text.className = "card-text";
-
-          const catEl = document.createElement("div");
-          catEl.className = "card-category";
-          catEl.textContent = getCategoryLabel(p);
-
-          const titleEl = document.createElement("h3");
-          titleEl.className = "card-title";
-          titleEl.textContent = p.title || "";
-
-          const excerptEl = document.createElement("p");
-          excerptEl.className = "card-excerpt";
-          excerptEl.textContent = getExcerptText(p);
-
-          text.appendChild(catEl);
-          text.appendChild(titleEl);
-          if (excerptEl.textContent) {
-            text.appendChild(excerptEl);
-          }
-
-          inner.appendChild(mediaWrap);
-          inner.appendChild(text);
-          a.appendChild(inner);
-          gridEl.appendChild(a);
-        });
-
-        const hasMoreInFiltered = filtered.length > visibleCount;
-        const canLoadMoreFromServer = !!nextPath;
-
-        if (hasMoreInFiltered || canLoadMoreFromServer) {
-          loadMoreBtn.style.display = "block";
-        } else {
-          loadMoreBtn.style.display = "none";
-        }
-
-        statusEl.textContent =
-          filtered.length === 0
-            ? "Keine Projekte für die gewählten Kategorien."
-            : "";
-      }
-
-      async function loadInitial() {
-        try {
-          statusEl.textContent = "Lade Projekte ...";
-
-          // Lade Seiten, bis wir mindestens 50 haben oder keine weiteren Seiten
-          while (nextPath && allPosts.length < 50) {
-            const data = await fetchPage(nextPath);
-            allPosts = allPosts.concat(data.items || []);
-
-            if (data.pagination && data.pagination.nextPage) {
-              let np = data.pagination.nextPageUrl;
-              if (!np.includes("format=")) {
-                np += (np.includes("?") ? "&" : "?") + "format=json-pretty";
-              }
-              nextPath = np;
-            } else {
-              nextPath = null;
-            }
-          }
-
-          buildFilters();
-          renderPosts();
-          statusEl.textContent = "";
-        } catch (err) {
-          console.error(err);
-          statusEl.textContent =
-            "Beim Laden der Projekte ist ein Fehler aufgetreten.";
-        }
-      }
-
-      async function handleLoadMore() {
-        const filteredBefore = getFilteredPosts();
-        const hadAllVisible = visibleCount >= filteredBefore.length;
-
-        if (hadAllVisible && nextPath) {
-          try {
-            const data = await fetchPage(nextPath);
-            allPosts = allPosts.concat(data.items || []);
-
-            if (data.pagination && data.pagination.nextPage) {
-              let np = data.pagination.nextPageUrl;
-              if (!np.includes("format=")) {
-                np += (np.includes("?") ? "&" : "?") + "format=json-pretty";
-              }
-              nextPath = np;
-            } else {
-              nextPath = null;
-            }
-          } catch (err) {
-            console.error(err);
-          }
-        }
-
-        visibleCount += 50;
-        renderPosts();
-      }
-
-      document.addEventListener("DOMContentLoaded", () => {
-        loadMoreBtn.addEventListener("click", handleLoadMore);
-        loadInitial();
+    const counts = {};
+    allPosts.forEach((p) => {
+      (p.categories || []).forEach((c) => {
+        counts[c] = (counts[c] || 0) + 1;
       });
-    })();
-  </script>
+    });
 
-  <script>
-function sendHeight() {
-  const height = document.documentElement.scrollHeight;
-  parent.postMessage({ portfolioHeight: height }, "*");
-}
-
-// initial
-sendHeight();
-
-// if content changes dynamically
-setInterval(sendHeight, 300);
-</script>
-
-  <script>
-function postHeight() {
-  const newHeight = document.documentElement.scrollHeight;
-
-  // Sofort senden
-  window.parent.postMessage(
-    { portfolioHeight: newHeight },
-    "*"
-  );
-
-  // Ein zweites Mal nach Reflow
-  setTimeout(() => {
-    window.parent.postMessage(
-      { portfolioHeight: document.documentElement.scrollHeight },
-      "*"
+    const sorted = Object.keys(counts).sort((a, b) =>
+      counts[b] !== counts[a] ? counts[b] - counts[a] :
+      a.localeCompare(b, "de", { sensitivity: "base" })
     );
-  }, 120);
-}
 
-// Höhe senden beim initialen Laden
-window.addEventListener("load", postHeight);
+    sorted.forEach((cat) => {
+      const label = document.createElement("label");
+      label.className = "filter-pill";
 
-// Höhe senden nach Filter-Änderung oder "Mehr laden"
-const observer = new MutationObserver(postHeight);
-observer.observe(document.body, { childList: true, subtree: true });
+      const input = document.createElement("input");
+      input.type = "checkbox";
+      input.value = cat;
 
+      input.addEventListener("change", () => {
+        if (input.checked) {
+          activeCategories.add(cat);
+          label.classList.add("active");
+        } else {
+          activeCategories.delete(cat);
+          label.classList.remove("active");
+        }
+        renderPosts();
+      });
 
+      const text = document.createElement("span");
+      text.textContent = cat;
 
+      label.appendChild(input);
+      label.appendChild(text);
+      filtersEl.appendChild(label);
+    });
+  }
 
+  function getFilteredPosts() {
+    if (activeCategories.size === 0) return allPosts;
+    return allPosts.filter((p) =>
+      Array.isArray(p.categories)
+      && p.categories.some((c) => activeCategories.has(c))
+    );
+  }
 
-    function sendHeight() {
-  const height = document.body.scrollHeight;
+  function renderPosts() {
+    const filtered = getFilteredPosts();
+    const toShow = filtered.slice(0, visibleCount);
 
-  window.parent.postMessage(
-    { portfolioHeight: height },
-    "*"
-  );
-}
+    gridEl.innerHTML = "";
 
-/* Sofort senden beim Load */
-window.addEventListener("load", () => {
-  sendHeight();
-});
+    toShow.forEach((p) => {
+      const href = BASE + p.fullUrl;
 
-/* Nach Filterklick: Fade starten */
-function triggerPortfolioFade() {
-  window.parent.postMessage({ portfolioFade: "start" }, "*");
+      const a = document.createElement("a");
+      a.className = "card";
+      a.href = href;
+      a.target = "_top";
+      a.rel = "noopener";
 
-  setTimeout(() => {
+      const img = document.createElement("img");
+      img.className = "card-img";
+      img.src = p.assetUrl;
+      img.alt = p.title || "";
+      img.loading = "lazy";
+
+      const textBox = document.createElement("div");
+      textBox.className = "card-text";
+
+      const catEl = document.createElement("div");
+      catEl.className = "card-category";
+      catEl.textContent = getCategoryLabel(p);
+
+      const titleEl = document.createElement("h3");
+      titleEl.className = "card-title";
+      titleEl.textContent = p.title || "";
+
+      const excerptEl = document.createElement("p");
+      excerptEl.className = "card-excerpt";
+      excerptEl.textContent = getExcerptText(p);
+
+      textBox.appendChild(catEl);
+      textBox.appendChild(titleEl);
+      if (excerptEl.textContent) textBox.appendChild(excerptEl);
+
+      a.appendChild(img);
+      a.appendChild(textBox);
+      gridEl.appendChild(a);
+    });
+
+    loadMoreBtn.style.display =
+      filtered.length > visibleCount || nextPath ? "block" : "none";
+
+    statusEl.textContent = filtered.length === 0
+      ? "Keine Projekte für die gewählten Kategorien."
+      : "";
+
     sendHeight();
-    window.parent.postMessage({ portfolioFade: "end" }, "*");
-  }, 250);
-}
+  }
 
+  async function loadInitial() {
+    try {
+      statusEl.textContent = "Lade Projekte …";
+
+      while (nextPath && allPosts.length < 50) {
+        const data = await fetchPage(nextPath);
+
+        allPosts = allPosts.concat(data.items || []);
+
+        if (data.pagination?.nextPageUrl) {
+          nextPath =
+            data.pagination.nextPageUrl.includes("format=")
+            ? data.pagination.nextPageUrl
+            : data.pagination.nextPageUrl + "&format=json-pretty";
+        } else {
+          nextPath = null;
+        }
+      }
+
+      buildFilters();
+      renderPosts();
+      statusEl.textContent = "";
+
+    } catch (error) {
+      console.error(error);
+      statusEl.textContent = "Fehler beim Laden.";
+    }
+  }
+
+  async function handleLoadMore() {
+    if (nextPath) {
+      try {
+        const data = await fetchPage(nextPath);
+        allPosts = allPosts.concat(data.items || []);
+
+        if (data.pagination?.nextPageUrl) {
+          nextPath = data.pagination.nextPageUrl.includes("format=")
+            ? data.pagination.nextPageUrl
+            : data.pagination.nextPageUrl + "&format=json-pretty";
+        } else {
+          nextPath = null;
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    visibleCount += 50;
+    renderPosts();
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    loadMoreBtn.addEventListener("click", handleLoadMore);
+    loadInitial();
+  });
+
+  /* --------- HEIGHT TO PARENT --------- */
+  function sendHeight() {
+    const height = document.documentElement.scrollHeight;
+    window.parent.postMessage({ portfolioHeight: height }, "*");
+  }
+
+  const obs = new MutationObserver(sendHeight);
+  obs.observe(document.body, { subtree: true, childList: true });
+
+  window.addEventListener("load", sendHeight);
+
+})();
 </script>
-
 
 </body>
 </html>
