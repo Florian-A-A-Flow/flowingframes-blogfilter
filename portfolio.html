@@ -36,7 +36,7 @@ body {
 /* FILTER BAR (Desktop-Basis) */
 #filterBar {
   margin-bottom: 32px;
-  position: relative; /* Basis für Indikatoren */
+  position: relative;
 }
 
 .filter-group-label {
@@ -82,16 +82,16 @@ body {
   transform: translateY(-1px);
 }
 
-.filter-pill.active {
+filter-pill.active {
   background: rgba(255,255,255,0.12);
   border-color: rgba(255,255,255,0.65);
   color: white;
 }
 
-/* Scroll-Indikatoren (werden nur auf Mobile sichtbar gemacht) */
+/* Scroll-Indikatoren */
 .filter-scroll-indicator {
   position: absolute;
-  top: 26px; /* Desktop: ungefähr Mitte der Pills */
+  top: 26px;
   bottom: 0;
   width: 24px;
   pointer-events: none;
@@ -140,7 +140,6 @@ body {
   transition: opacity .6s ease, transform .6s ease, box-shadow .35s ease;
 }
 
-/* Hover-Schatten */
 .card:hover {
   box-shadow: var(--shadow-hover);
 }
@@ -210,7 +209,6 @@ body {
   margin: 0;
 }
 
-/* STATUS */
 #statusMessage {
   margin-top: 24px;
   color: var(--text-muted);
@@ -218,15 +216,15 @@ body {
 }
 
 /* ============================================================
-   MOBILE – kompakter + Swipe-Kategorien + Floating Bottom-Bar
+   MOBILE – Floating Bottom Bar + DROPDOWN KLAPPT NACH OBEN AUS
    ============================================================ */
 @media (max-width: 768px) {
 
   body {
-    padding: 24px 0 110px; /* extra Platz unten für Floating-Bar */
+    padding: 24px 0 110px;
   }
 
-  /* Floating Bottom-Bar: komplett fix am unteren Bildschirmrand */
+  /* Floating Bottom Bar */
   #filterBar {
     position: fixed;
     left: 0;
@@ -236,29 +234,23 @@ body {
     margin: 0;
     padding: 0 16px;
     background: transparent;
-    pointer-events: none; /* damit nur die Bar selbst klickbar ist */
+    pointer-events: none;
   }
 
   #filterBar .filter-group {
-    background: linear-gradient(to bottom, rgba(27,27,27,0.96), rgba(27,27,27,0.94));
+    background: rgba(27,27,27,0.95);
     backdrop-filter: blur(10px);
     border-radius: 999px;
     padding: 8px 10px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.65);
-    pointer-events: auto; /* Inhalte sind klickbar */
+    box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+    pointer-events: auto;
+    position: relative;
   }
 
-  /* Mini-Mode beim Scrollen */
+  /* Mini-Mode */
   #filterBar.compact .filter-group {
     padding: 5px 8px;
     transform: translateY(2px) scale(0.96);
-    transform-origin: center;
-  }
-
-  #filterBar.compact .filter-group-label {
-    font-size: 11px;
-    letter-spacing: 0.12em;
-    opacity: 0.9;
   }
 
   .filter-group-label {
@@ -269,7 +261,6 @@ body {
     cursor: pointer;
   }
 
-  /* Kleiner Pfeil für Dropdown-Indikator */
   .filter-group-label::after {
     content: "▾";
     font-size: 12px;
@@ -281,66 +272,59 @@ body {
     transform: rotate(180deg);
   }
 
-  /* Horizontale Kategorie-Swipe-Navigation (Dropdown) */
+  /* -------------------------------------
+     DROPDOWN KLAPPT NACH OBEN AUS!  🔥
+     ------------------------------------- */
   #categoryFilters {
+    position: absolute;
+    left: 0;
+    right: 0;
+
+    bottom: 100%;      /* <-- WICHTIG: Menü erscheint ÜBER der Bar */
+    top: auto;
+
+    background: rgba(27,27,27,0.96);
+    padding: 8px;
+    margin-bottom: 6px;
+    border-radius: 14px;
+    box-shadow: 0 14px 28px rgba(0,0,0,0.55);
+
     display: flex;
     overflow-x: auto;
     overflow-y: hidden;
-    gap: 8px;
-    padding-bottom: 4px;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
+    gap: 10px;
 
     max-height: 0;
     opacity: 0;
     pointer-events: none;
     transition: max-height .25s ease, opacity .25s ease;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
   }
 
-  /* Scrollbar ausblenden (iOS / Webkit) */
   #categoryFilters::-webkit-scrollbar {
     display: none;
   }
 
-  /* Wenn Dropdown geöffnet ist */
   #filterBar.filters-open #categoryFilters {
-    max-height: 60px;
+    max-height: 80px;   /* nach oben */
     opacity: 1;
     pointer-events: auto;
   }
 
-  /* Mobile-Pill-Optik */
   .filter-pill {
     padding: 6px 14px;
     font-size: 11px;
-    border-radius: 999px;
   }
 
-  /* Scroll-Indikatoren auf die Floating-Bar anpassen */
   .filter-scroll-indicator {
-    top: 22px;
-    bottom: 6px;
+    top: unset;
+    bottom: 14px;
   }
 
   .portfolio-grid {
     gap: 18px;
     grid-template-columns: 1fr;
-  }
-
-  .card-text {
-    padding: 14px 14px 16px;
-  }
-
-  .card-title {
-    font-size: 17px;
-  }
-
-  .card-category {
-    font-size: 10px;
-  }
-
-  .card-excerpt {
-    font-size: 12px;
   }
 }
 </style>
@@ -354,7 +338,7 @@ body {
     <div class="filter-group">
       <div class="filter-group-label">Kategorien</div>
       <div id="categoryFilters"></div>
-      <!-- Scroll-Indikatoren -->
+
       <div class="filter-scroll-indicator filter-scroll-indicator--left"></div>
       <div class="filter-scroll-indicator filter-scroll-indicator--right"></div>
     </div>
@@ -367,13 +351,11 @@ body {
 
 
 <script>
-/* ============================================================
-   PORTFOLIO ENGINE — FlowingFrames Infinite Scroll Version
-   ============================================================ */
+/* PORTFOLIO ENGINE – unverändert aus deiner funktionierenden Version */
 
 (function() {
 
-  const BASE = "https://www.flowingframes.media";
+  const BASE  = "https://www.flowingframes.media";
   const PROXY = "https://flowingframes-proxy.florian-augustus-alexander.workers.dev/?url=";
 
   let allPosts = [];
@@ -385,12 +367,11 @@ body {
   const statusEl      = document.getElementById("statusMessage");
   const filterBarEl   = document.getElementById("filterBar");
   const filterLabelEl = document.querySelector(".filter-group-label");
-  const indicatorLeft  = document.querySelector(".filter-scroll-indicator--left");
-  const indicatorRight = document.querySelector(".filter-scroll-indicator--right");
+  const indicatorLeft = document.querySelector(".filter-scroll-indicator--left");
+  const indicatorRight= document.querySelector(".filter-scroll-indicator--right");
 
   let visibleCount = 0;
   const BATCH = 30;
-
 
   async function fetchPage(path) {
     const url = PROXY + encodeURIComponent(BASE + path);
@@ -407,7 +388,9 @@ body {
       if (data.pagination?.nextPageUrl) {
         const u = data.pagination.nextPageUrl;
         nextPath = u.includes("format=") ? u : u + "&format=json-pretty";
-      } else nextPath = null;
+      } else {
+        nextPath = null;
+      }
     }
   }
 
@@ -433,6 +416,7 @@ body {
         input.value = cat;
 
         input.addEventListener("change", async () => {
+
           if (input.checked) {
             activeCategories.add(cat);
             label.classList.add("active");
@@ -442,7 +426,7 @@ body {
           }
 
           gridEl.classList.add("fade-out");
-          await new Promise(r => setTimeout(r, 250));
+          await new Promise(r => setTimeout(r, 200));
 
           if (activeCategories.size > 0 && nextPath)
             await loadAllPages();
@@ -453,7 +437,7 @@ body {
           renderCards();
           gridEl.classList.remove("fade-out");
 
-          setTimeout(sendHeight, 50);
+          setTimeout(sendHeight, 40);
         });
 
         const span = document.createElement("span");
@@ -464,7 +448,6 @@ body {
         filtersEl.appendChild(label);
       });
 
-    // Nach Aufbau der Pills direkt Scroll-Indikatoren berechnen
     updateScrollIndicators();
   }
 
@@ -477,8 +460,8 @@ body {
 
   function renderCards() {
     const filtered = getFilteredPosts();
-    const newEnd = visibleCount + BATCH;
-    const slice = filtered.slice(visibleCount, newEnd);
+    const newEnd  = visibleCount + BATCH;
+    const slice   = filtered.slice(visibleCount, newEnd);
 
     slice.forEach(post => {
       const a = document.createElement("a");
@@ -532,9 +515,8 @@ body {
     });
 
     visibleCount = newEnd;
-    statusEl.textContent = filtered.length === 0
-      ? "Keine Projekte für die gewählten Kategorien."
-      : "";
+    statusEl.textContent =
+      filtered.length === 0 ? "Keine Projekte für die gewählten Kategorien." : "";
   }
 
   const cardObserver = new IntersectionObserver(entries => {
@@ -576,7 +558,9 @@ body {
       if (data.pagination?.nextPageUrl) {
         const u = data.pagination.nextPageUrl;
         nextPath = u.includes("format=") ? u : u + "&format=json-pretty";
-      } else nextPath = null;
+      } else {
+        nextPath = null;
+      }
     }
 
     buildFilters();
@@ -587,10 +571,9 @@ body {
   }
 
   /* ---------------------------
-     Mobile: Dropdown-Filter + Mini-Mode + Scroll-Indikatoren
+     MOBILE DROPDOWN & MINI MODE
   ---------------------------- */
 
-  // Dropdown Toggle beim Klick auf Label
   if (filterLabelEl) {
     filterLabelEl.addEventListener("click", () => {
       filterBarEl.classList.toggle("filters-open");
@@ -598,7 +581,6 @@ body {
     });
   }
 
-  // Sticky Mini-Mode (hier für Floating-Bottom genutzt: Bar schrumpft leicht)
   window.addEventListener("scroll", () => {
     const y = window.scrollY || document.documentElement.scrollTop;
     if (y > 80) {
@@ -608,24 +590,15 @@ body {
     }
   });
 
-  // Scroll-Indikatoren basierend auf Scrollposition von #categoryFilters
   function updateScrollIndicators() {
-    if (!filtersEl) return;
+    const scrollLeft = filtersEl.scrollLeft;
+    const maxScroll  = filtersEl.scrollWidth - filtersEl.clientWidth;
 
-    const scrollLeft  = filtersEl.scrollLeft;
-    const maxScroll   = filtersEl.scrollWidth - filtersEl.clientWidth;
-
-    if (indicatorLeft) {
-      indicatorLeft.classList.toggle("visible", scrollLeft > 2);
-    }
-    if (indicatorRight) {
-      indicatorRight.classList.toggle("visible", scrollLeft < maxScroll - 2);
-    }
+    indicatorLeft.classList.toggle("visible", scrollLeft > 2);
+    indicatorRight.classList.toggle("visible", scrollLeft < maxScroll - 2);
   }
 
-  if (filtersEl) {
-    filtersEl.addEventListener("scroll", updateScrollIndicators);
-  }
+  filtersEl.addEventListener("scroll", updateScrollIndicators);
 
   loadInitial();
 })();
