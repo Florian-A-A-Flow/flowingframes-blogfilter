@@ -17,10 +17,9 @@
 
 /* RESET */
 * { box-sizing: border-box; }
-
 body {
   margin: 0;
-  padding: 40px 0 120px; /* Platz für Bottom-Bar */
+  padding: 40px 0 60px;
   background: var(--bg);
   color: var(--text-main);
   font-family: system-ui, Helvetica, Arial, sans-serif;
@@ -34,13 +33,34 @@ body {
 }
 
 /* ============================================================
-   FILTER BAR — DESKTOP (oben, normal)
+   FILTER BAR — Base Style (nicht sticky)
    ============================================================ */
 #filterBar {
   margin-bottom: 32px;
-  position: relative;
+  background: transparent;
+  transition: all .25s ease;
+  z-index: 50;
 }
 
+/* Sticky Mode (aktiviert nach 100px Scroll) */
+#filterBar.sticky {
+  position: sticky;
+  top: 0px; /* bleibt unter Squarespace Header */
+  padding: 12px 0;
+  background: rgba(27,27,27,0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  margin-bottom: 20px;
+}
+
+/* MINI MODE (weiteres Verkleinern beim starken Scrollen) */
+#filterBar.compact {
+  padding: 8px 0;
+  transform: translateY(-2px) scale(0.97);
+  opacity: 0.96;
+}
+
+/* Label – Desktop */
 .filter-group-label {
   font-size: 12px;
   text-transform: uppercase;
@@ -49,13 +69,14 @@ body {
   margin-bottom: 10px;
 }
 
-/* Desktop Grid */
+/* Desktop Filters = Grid */
 #categoryFilters {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(140px, auto));
   gap: 12px;
 }
 
+/* Pills */
 .filter-pill {
   display: inline-flex;
   padding: 6px 12px;
@@ -63,20 +84,51 @@ body {
   background: rgba(255,255,255,0.05);
   border: 1px solid rgba(255,255,255,0.12);
   font-size: 11px;
-  text-transform: uppercase;
   letter-spacing: .12em;
+  text-transform: uppercase;
   color: var(--text-muted);
   cursor: pointer;
   transition: .25s;
   white-space: nowrap;
 }
-
-.filter-pill input { opacity: 0; position: absolute; pointer-events: none; }
-.filter-pill:hover { border-color: rgba(255,255,255,0.35); }
 .filter-pill.active {
   background: rgba(255,255,255,0.14);
   border-color: rgba(255,255,255,0.8);
-  color:white;
+  color: white;
+}
+.filter-pill input {
+  opacity: 0;
+  position: absolute;
+  pointer-events: none;
+}
+
+/* ============================================================
+   MOBILE – horizontale Swipe-Leiste
+   ============================================================ */
+
+@media (max-width: 768px) {
+
+  body {
+    padding-bottom: 120px;
+  }
+
+  #filterBar {
+    margin-bottom: 12px;
+  }
+
+  #categoryFilters {
+    display: flex;
+    overflow-x: auto;
+    gap: 10px;
+    padding-bottom: 4px;
+    scrollbar-width: none;
+  }
+  #categoryFilters::-webkit-scrollbar { display: none; }
+
+  .filter-pill {
+    padding: 7px 18px;
+    font-size: 12px;
+  }
 }
 
 /* ============================================================
@@ -98,13 +150,12 @@ body {
   opacity: 0;
   transition: opacity .6s ease, transform .6s ease, box-shadow .35s ease;
 }
+
 .card.visible {
   opacity: 1;
   transform: translateY(0);
 }
-.card:hover {
-  box-shadow: var(--shadow-hover);
-}
+.card:hover { box-shadow: var(--shadow-hover); }
 
 .card-media-wrap { position: relative; border-radius: var(--border-radius); overflow: hidden; }
 .card-img {
@@ -117,67 +168,23 @@ body {
 
 .card-media-overlay {
   position: absolute; inset: 0;
-  background: radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.35) 80%);
   opacity: 0;
   transition: opacity .45s ease;
+  background: radial-gradient(circle at center,
+    transparent 0%, rgba(0,0,0,0.35) 80%);
 }
 .card:hover .card-media-overlay { opacity: 1; }
 
 .card-text { padding: 18px; }
-.card-category { font-size: 11px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px; }
+.card-category { font-size: 11px; color: var(--text-muted); margin-bottom: 6px; }
 .card-title { font-size: 20px; margin: 0 0 6px; }
-.card-excerpt { font-size: 13px; color: var(--text-muted); margin: 0; }
+.card-excerpt { font-size: 13px; color: var(--text-muted); }
 
 /* STATUS */
 #statusMessage {
   margin-top: 24px;
   text-align: center;
   color: var(--text-muted);
-}
-
-/* ============================================================
-   MOBILE — Floating Bottom-Bar (Vollbreit, Swipe-Leiste)
-   ============================================================ */
-@media (max-width: 768px) {
-
-  body {
-    padding-bottom: 130px; /* mehr Platz für Bar */
-  }
-
-  /* Bottom Bar — Vollbreit wie Sticky Header (aber unten) */
-  #filterBar {
-    position: fixed;
-    left: 0;
-    right: 0;
-    bottom: 0;
-
-    padding: 14px 12px;
-    background: rgba(27,27,27,0.92);
-    backdrop-filter: blur(12px);
-
-    border-top: 1px solid rgba(255,255,255,0.08);
-    z-index: 60;
-  }
-
-  /* keine Überschrift – spart Platz */
-  .filter-group-label {
-    display: none;
-  }
-
-  /* Horizontale Swipe-Leiste */
-  #categoryFilters {
-    display: flex;
-    overflow-x: auto;
-    gap: 10px;
-    padding-bottom: 4px;
-    scrollbar-width: none;
-  }
-  #categoryFilters::-webkit-scrollbar { display: none; }
-
-  .filter-pill {
-    padding: 7px 18px;
-    font-size: 12px;
-  }
 }
 </style>
 </head>
@@ -199,7 +206,11 @@ body {
   <div id="statusMessage"></div>
 </div>
 
+
 <script>
+/* ============================================================
+   PORTFOLIO ENGINE
+   ============================================================ */
 (function() {
 
   const BASE  = "https://www.flowingframes.media";
@@ -211,18 +222,17 @@ body {
 
   const gridEl    = document.getElementById("portfolioGrid");
   const filtersEl = document.getElementById("categoryFilters");
+  const filterBar = document.getElementById("filterBar");
   const statusEl  = document.getElementById("statusMessage");
 
   let visibleCount = 0;
   const BATCH = 30;
 
   async function fetchPage(path) {
-    const url = PROXY + encodeURIComponent(BASE + path);
-    const res = await fetch(url);
+    const res = await fetch(PROXY + encodeURIComponent(BASE + path));
     return res.json();
   }
 
-  /* ---------------- LOAD INITIAL ---------------- */
   async function loadInitial() {
     statusEl.textContent = "Lade Projekte …";
 
@@ -243,7 +253,7 @@ body {
     statusEl.textContent = "";
   }
 
-  /* ---------------- FILTER SYSTEM ---------------- */
+  /* FILTERS */
   function buildFilters() {
     filtersEl.innerHTML = "";
 
@@ -254,53 +264,35 @@ body {
       )
     );
 
-    Object.keys(counts)
-      .sort()
-      .forEach(cat => {
+    Object.keys(counts).sort().forEach(cat => {
+      const pill = document.createElement("label");
+      pill.className = "filter-pill";
 
-        const pill = document.createElement("label");
-        pill.className = "filter-pill";
+      const input = document.createElement("input");
+      input.type = "checkbox";
+      input.value = cat;
 
-        const input = document.createElement("input");
-        input.type = "checkbox";
-        input.value = cat;
+      input.addEventListener("change", async () => {
+        if (input.checked) {
+          activeCategories.add(cat);
+          pill.classList.add("active");
+        } else {
+          activeCategories.delete(cat);
+          pill.classList.remove("active");
+        }
 
-        input.addEventListener("change", async () => {
-          if (input.checked) {
-            activeCategories.add(cat);
-            pill.classList.add("active");
-          } else {
-            activeCategories.delete(cat);
-            pill.classList.remove("active");
-          }
+        gridEl.innerHTML = "";
+        visibleCount = 0;
 
-          gridEl.innerHTML = "";
-          visibleCount = 0;
-
-          if (activeCategories.size > 0 && nextPath)
-            await loadAllPages();
-
-          renderCards();
-          renderCards();
-          sendHeight();
-        });
-
-        pill.appendChild(input);
-        pill.appendChild(document.createTextNode(cat));
-        filtersEl.appendChild(pill);
+        renderCards();
+        renderCards();
+        sendHeight();
       });
-  }
 
-  async function loadAllPages() {
-    while (nextPath) {
-      const data = await fetchPage(nextPath);
-      allPosts.push(...(data.items || []));
-
-      if (data.pagination?.nextPageUrl) {
-        const u = data.pagination.nextPageUrl;
-        nextPath = u.includes("format=") ? u : u + "&format=json-pretty";
-      } else nextPath = null;
-    }
+      pill.appendChild(input);
+      pill.appendChild(document.createTextNode(cat));
+      filtersEl.appendChild(pill);
+    });
   }
 
   function getFiltered() {
@@ -310,7 +302,7 @@ body {
     );
   }
 
-  /* ---------------- RENDER CARDS ---------------- */
+  /* RENDER */
   function renderCards() {
     const filtered = getFiltered();
     const slice = filtered.slice(visibleCount, visibleCount + BATCH);
@@ -324,7 +316,7 @@ body {
       a.innerHTML = `
         <div class="card-inner">
           <div class="card-media-wrap">
-            <img class="card-img" src="${post.assetUrl}" loading="lazy" alt="${post.title}">
+            <img class="card-img" src="${post.assetUrl}" loading="lazy" alt="">
             <div class="card-media-overlay"></div>
           </div>
           <div class="card-text">
@@ -359,14 +351,31 @@ body {
 
   const scrollObs = new IntersectionObserver(entries => {
     if (!entries[0].isIntersecting) return;
-
     const filtered = getFiltered();
     if (visibleCount >= filtered.length) return;
-
     renderCards();
     sendHeight();
   });
   scrollObs.observe(sentinel);
+
+  /* ============================================================
+     STICKY-FILTERBAR NACH 100px SCROLL
+     ============================================================ */
+  window.addEventListener("scroll", () => {
+    const y = window.scrollY;
+
+    if (y > 100) {
+      filterBar.classList.add("sticky");
+    } else {
+      filterBar.classList.remove("sticky");
+    }
+
+    if (y > 260) {
+      filterBar.classList.add("compact");
+    } else {
+      filterBar.classList.remove("compact");
+    }
+  });
 
   loadInitial();
 
@@ -379,8 +388,8 @@ function sendHeight(){
   parent.postMessage({ portfolioHeight: document.documentElement.scrollHeight }, "*");
 }
 new MutationObserver(sendHeight).observe(document.body, { childList:true, subtree:true });
-window.addEventListener("load", sendHeight);
 setInterval(sendHeight, 300);
+window.addEventListener("load", sendHeight);
 </script>
 
 </body>
