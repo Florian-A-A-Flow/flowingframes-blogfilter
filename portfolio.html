@@ -44,6 +44,7 @@ body {
   margin-bottom: 10px;
 }
 
+/* Desktop-Layout: Grid wie bisher */
 #categoryFilters {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(140px, auto));
@@ -110,6 +111,7 @@ body {
   transition: opacity .6s ease, transform .6s ease, box-shadow .35s ease;
 }
 
+/* Hover-Schatten */
 .card:hover {
   box-shadow: var(--shadow-hover);
 }
@@ -187,7 +189,7 @@ body {
 }
 
 /* ============================================================
-   MOBILE – kompakter + horizontale Swipe-Kategorien
+   MOBILE – kompakter + horizontale Swipe-Kategorien (Version A)
    ============================================================ */
 @media (max-width: 768px) {
 
@@ -203,6 +205,11 @@ body {
     margin-bottom: 8px;
   }
 
+  /* Wrapper für Gradient-Fades */
+  .filter-group {
+    position: relative;
+  }
+
   /* Horizontale Kategorie-Swipe-Navigation */
   #categoryFilters {
     display: flex;
@@ -213,6 +220,8 @@ body {
 
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
+
+    scroll-snap-type: x proximity;
   }
 
   #categoryFilters::-webkit-scrollbar {
@@ -223,6 +232,29 @@ body {
     padding: 5px 12px;
     font-size: 10px;
     border-radius: 999px;
+    scroll-snap-align: start;
+  }
+
+  /* Gradient-Fades links/rechts (Instagram-Style) */
+  .filter-group::before,
+  .filter-group::after {
+    content: "";
+    position: absolute;
+    top: 18px;
+    height: 34px;
+    width: 28px;
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  .filter-group::before {
+    left: 0;
+    background: linear-gradient(to right, var(--bg) 0%, transparent 100%);
+  }
+
+  .filter-group::after {
+    right: 0;
+    background: linear-gradient(to left, var(--bg) 0%, transparent 100%);
   }
 
   .portfolio-grid {
@@ -269,6 +301,7 @@ body {
 <script>
 /* ============================================================
    PORTFOLIO ENGINE — FlowingFrames Infinite Scroll Version
+   (unverändert zur letzten funktionierenden Version)
    ============================================================ */
 
 (function() {
@@ -470,7 +503,7 @@ body {
         const u = data.pagination.nextPageUrl;
         nextPath = u.includes("format=") ? u : u + "&format=json-pretty";
       } else nextPath = null;
-    }
+      }
 
     buildFilters();
     renderCards();
@@ -482,7 +515,6 @@ body {
   loadInitial();
 })();
 </script>
-
 
 <!-- HEIGHT MESSAGE TO SQUARESPACE -->
 <script>
