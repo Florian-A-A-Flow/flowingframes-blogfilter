@@ -38,14 +38,17 @@ body {
 a { text-decoration: none; color: inherit; }
 
 /* WRAPPER ------------------------------------------------- */
+/* Grid soll Desktop voll breit sein */
 #portfolio-wrapper {
-  max-width: 1400px;
-  margin: 0 auto;
+  width: 100%;
+  max-width: none;
+  margin: 0;
   padding: 0 16px;
 }
 
 /* -----------------------------------------------------------
    FILTER BAR — DESKTOP (Minimal, Flat)
+   Filter-Bar ist separat, mit eigenem max-width Container
 ----------------------------------------------------------- */
 
 #filterBar {
@@ -53,6 +56,14 @@ a { text-decoration: none; color: inherit; }
   position: relative;
   padding: 14px 0;
   z-index: 2;
+}
+
+/* innerer Container für die Filter-Bar (wie früheres Wrapper-Maß) */
+.filter-inner {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 16px;
+  position: relative; /* Basis für Fades */
 }
 
 .filter-group-label {
@@ -75,7 +86,8 @@ a { text-decoration: none; color: inherit; }
   display: inline-flex;
   justify-content: center;
   align-items: center;
-  padding: 9px 20px;
+
+  padding: 9px 24px;
   border-radius: var(--pill-radius);
   background: rgba(255,255,255,0.05);
   border: 1px solid rgba(255,255,255,0.12);
@@ -105,6 +117,33 @@ a { text-decoration: none; color: inherit; }
   position: absolute;
   opacity: 0;
   pointer-events: none;
+}
+
+/* Edge-Fades für mobile Swipe – standardmäßig versteckt */
+.filter-scroll-indicator {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 26px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .25s ease;
+  z-index: 3;
+  display: none; /* nur auf Mobile aktiv */
+}
+
+.filter-scroll-indicator--left {
+  left: 16px;
+  background: linear-gradient(to right, rgba(28,28,28,1), rgba(28,28,28,0));
+}
+
+.filter-scroll-indicator--right {
+  right: 16px;
+  background: linear-gradient(to left, rgba(28,28,28,1), rgba(28,28,28,0));
+}
+
+.filter-scroll-indicator.visible {
+  opacity: 1;
 }
 
 /* -----------------------------------------------------------
@@ -198,7 +237,8 @@ a { text-decoration: none; color: inherit; }
 }
 
 /* -----------------------------------------------------------
-   MOBILE — GLASS FILTERBAR + 1-ZEILIG + HORIZONTAL SCROLL
+   MOBILE — MODERN GLASS FILTERBAR
+   (scrollt normal mit, 1-zeilig, horizontal scroll + Fades)
 ----------------------------------------------------------- */
 @media (max-width: 768px) {
 
@@ -207,39 +247,37 @@ a { text-decoration: none; color: inherit; }
   }
 
   #filterBar {
-    position: relative;
-    top: 0;
+    margin-bottom: 20px;
+    padding: 0; /* padding kommt über .filter-inner */
+  }
+
+  .filter-inner {
+    max-width: 1400px;
+    margin: 0;
+    padding: 0 0;
+    /* full-bleed Look über negative Margin in Bar */
+  }
+
+  #filterBar {
     background: var(--glass-bg);
     backdrop-filter: blur(18px) saturate(180%);
-    border: 1px solid var(--glass-border);
-    border-left: none;
-    border-right: none;
-
-    padding: 12px 12px;
-    margin: 0 -16px 20px;
-
-    z-index: 40;
+    border-top: 1px solid var(--glass-border);
+    border-bottom: 1px solid var(--glass-border);
+    margin: 0 0 20px;
     box-shadow: var(--shadow-glass);
-
-    /* Gradient Overlays */
-    overflow: visible;
   }
 
   .filter-group-label {
     display: none;
   }
 
-  /* --- MOBILE: 1 Zeile + horizontal scroll --- */
+  /* Horizontale Swipe-Leiste */
   #categoryFilters {
     display: flex;
-    flex-wrap: nowrap;
     overflow-x: auto;
-    overflow-y: hidden;
     gap: 12px;
-    white-space: nowrap;
+    padding: 10px 16px 10px 16px;
     scrollbar-width: none;
-    padding-bottom: 3px;
-    position: relative;
   }
   #categoryFilters::-webkit-scrollbar {
     display: none;
@@ -251,30 +289,12 @@ a { text-decoration: none; color: inherit; }
     flex-shrink: 0;
   }
 
-  /* Left Fade */
-  #categoryFilters::before {
-    content: "";
-    position: absolute;
-    left: 0;
+  /* Edge-Fades nur auf Mobile sichtbar,
+     fix relativ zum äußeren Container, scrollt NICHT mit Inhalt */
+  .filter-scroll-indicator {
+    display: block;
     top: 0;
     bottom: 0;
-    width: 28px;
-    background: linear-gradient(to right, rgba(28,28,28,0.85), rgba(28,28,28,0));
-    pointer-events: none;
-    z-index: 5;
-  }
-
-  /* Right Fade */
-  #categoryFilters::after {
-    content: "";
-    position: absolute;
-    right: 0;
-    top: 0;
-    bottom: 0;
-    width: 28px;
-    background: linear-gradient(to left, rgba(28,28,28,0.85), rgba(28,28,28,0));
-    pointer-events: none;
-    z-index: 5;
   }
 }
 </style>
@@ -282,11 +302,16 @@ a { text-decoration: none; color: inherit; }
 
 <body>
 
-<!-- FILTERBAR STEHT ÜBER DEM GRID -->
+<!-- FILTERBAR steht ÜBER dem Wrapper -->
 <div id="filterBar">
-  <div class="filter-group">
-    <div class="filter-group-label">Kategorien</div>
-    <div id="categoryFilters"></div>
+  <div class="filter-inner">
+    <div class="filter-group">
+      <div class="filter-group-label">Kategorien</div>
+      <div id="categoryFilters"></div>
+    </div>
+    <!-- Edge-Fades (bleiben fix, Inhalt scrollt darunter) -->
+    <div class="filter-scroll-indicator filter-scroll-indicator--left"></div>
+    <div class="filter-scroll-indicator filter-scroll-indicator--right"></div>
   </div>
 </div>
 
@@ -297,7 +322,7 @@ a { text-decoration: none; color: inherit; }
 
 <script>
 /* ============================================================
-   PORTFOLIO ENGINE – unverändert
+   PORTFOLIO ENGINE – Filters nach Count (DESC), mit Edge-Fades
 ============================================================ */
 
 (function() {
@@ -309,9 +334,11 @@ a { text-decoration: none; color: inherit; }
   let nextPath = "/all-projekte?format=json-pretty";
   let activeCategories = new Set();
 
-  const gridEl    = document.getElementById("portfolioGrid");
-  const filtersEl = document.getElementById("categoryFilters");
-  const statusEl  = document.getElementById("statusMessage");
+  const gridEl        = document.getElementById("portfolioGrid");
+  const filtersEl     = document.getElementById("categoryFilters");
+  const statusEl      = document.getElementById("statusMessage");
+  const indicatorLeft  = document.querySelector(".filter-scroll-indicator--left");
+  const indicatorRight = document.querySelector(".filter-scroll-indicator--right");
 
   let visibleCount = 0;
   const BATCH = 30;
@@ -328,10 +355,11 @@ a { text-decoration: none; color: inherit; }
       const data = await fetchPage(nextPath);
       allPosts.push(...(data.items || []));
       if (data.pagination?.nextPageUrl) {
-        nextPath = data.pagination.nextPageUrl.includes("format=")
-          ? data.pagination.nextPageUrl
-          : data.pagination.nextPageUrl + "&format=json-pretty";
-      } else nextPath = null;
+        const u = data.pagination.nextPageUrl;
+        nextPath = u.includes("format=") ? u : u + "&format=json-pretty";
+      } else {
+        nextPath = null;
+      }
     }
 
     buildFilters();
@@ -339,6 +367,7 @@ a { text-decoration: none; color: inherit; }
     renderCards();
 
     statusEl.textContent = "";
+    updateScrollIndicators();
   }
 
   function buildFilters() {
@@ -346,15 +375,14 @@ a { text-decoration: none; color: inherit; }
 
     const counts = {};
     allPosts.forEach(p =>
-      (p.categories || []).forEach(c =>
-        counts[c] = (counts[c] || 0) + 1
-      )
+      (p.categories || []).forEach(c => {
+        counts[c] = (counts[c] || 0) + 1;
+      })
     );
 
     Object.keys(counts)
       .sort((a,b) => counts[b] - counts[a] || a.localeCompare(b))
       .forEach(cat => {
-
         const pill = document.createElement("label");
         pill.className = "filter-pill";
 
@@ -374,8 +402,9 @@ a { text-decoration: none; color: inherit; }
           gridEl.innerHTML = "";
           visibleCount = 0;
 
-          if (activeCategories.size > 0 && nextPath)
+          if (activeCategories.size > 0 && nextPath) {
             await loadAllPages();
+          }
 
           renderCards();
           renderCards();
@@ -386,6 +415,8 @@ a { text-decoration: none; color: inherit; }
         pill.appendChild(document.createTextNode(cat));
         filtersEl.appendChild(pill);
       });
+
+    updateScrollIndicators();
   }
 
   async function loadAllPages() {
@@ -393,10 +424,11 @@ a { text-decoration: none; color: inherit; }
       const data = await fetchPage(nextPath);
       allPosts.push(...(data.items || []));
       if (data.pagination?.nextPageUrl) {
-        nextPath = data.pagination.nextPageUrl.includes("format=")
-          ? data.pagination.nextPageUrl
-          : data.pagination.nextPageUrl + "&format=json-pretty";
-      } else nextPath = null;
+        const u = data.pagination.nextPageUrl;
+        nextPath = u.includes("format=") ? u : u + "&format=json-pretty";
+      } else {
+        nextPath = null;
+      }
     }
   }
 
@@ -419,7 +451,7 @@ a { text-decoration: none; color: inherit; }
       a.innerHTML = `
         <div class="card-inner">
           <div class="card-media-wrap">
-            <img class="card-img" src="${post.assetUrl}" loading="lazy">
+            <img class="card-img" src="${post.assetUrl}" loading="lazy" alt="">
             <div class="card-media-overlay"></div>
           </div>
           <div class="card-text">
@@ -458,6 +490,28 @@ a { text-decoration: none; color: inherit; }
     sendHeight();
   });
   scrollObs.observe(sentinel);
+
+  // Edge-Fade Logik – läuft stabil, Fades scrollen NICHT horizontal mit
+  function updateScrollIndicators() {
+    if (!filtersEl || !indicatorLeft || !indicatorRight) return;
+
+    const maxScroll = filtersEl.scrollWidth - filtersEl.clientWidth;
+    if (maxScroll <= 0) {
+      indicatorLeft.classList.remove("visible");
+      indicatorRight.classList.remove("visible");
+      return;
+    }
+
+    const sl = filtersEl.scrollLeft;
+    indicatorLeft.classList.toggle("visible", sl > 2);
+    indicatorRight.classList.toggle("visible", sl < maxScroll - 2);
+  }
+
+  filtersEl.addEventListener("scroll", updateScrollIndicators);
+  window.addEventListener("resize", () => {
+    // nach Resize kurz warten, dann neu berechnen
+    setTimeout(updateScrollIndicators, 80);
+  });
 
   loadInitial();
 
