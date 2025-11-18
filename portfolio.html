@@ -108,10 +108,10 @@ body {
   transition:
     opacity .6s ease,
     transform .6s ease,
-    box-shadow .35s ease;  /* ← für Hover-Shadow */
+    box-shadow .35s ease;
 }
 
-/* Hover-Schatten (NEU) */
+/* Hover-Schatten */
 .card:hover {
   box-shadow: var(--shadow-hover);
 }
@@ -188,12 +188,53 @@ body {
   text-align: center;
 }
 
-/* MOBILE */
+/* ============================================================
+   MOBILE OPTIMIERUNG – kompakter, enger, aber klar lesbar
+   ============================================================ */
 @media (max-width: 768px) {
-  .portfolio-grid { gap: 24px; }
-  .card-title { font-size: 18px; }
-}
 
+  body {
+    padding: 24px 0 40px;
+  }
+
+  #filterBar {
+    margin-bottom: 22px;
+  }
+
+  #categoryFilters {
+    gap: 8px;
+    grid-template-columns: repeat(auto-fit, minmax(110px, auto));
+  }
+
+  .filter-pill {
+    padding: 4px 10px;
+    font-size: 10px;
+    letter-spacing: .1em;
+  }
+
+  .portfolio-grid {
+    gap: 18px;
+    grid-template-columns: 1fr;
+  }
+
+  .card-text {
+    padding: 14px 14px 16px;
+  }
+
+  .card-title {
+    font-size: 17px;
+    margin-bottom: 4px;
+  }
+
+  .card-category {
+    font-size: 10px;
+    margin-bottom: 4px;
+  }
+
+  .card-excerpt {
+    font-size: 12px;
+  }
+}
 </style>
 </head>
 
@@ -233,12 +274,9 @@ body {
   const statusEl = document.getElementById("statusMessage");
 
   let visibleCount = 0;
-  const BATCH = 30; // 30 Cards pro Scroll-Ladung
+  const BATCH = 30;
 
 
-  /* ---------------------------
-      Fetch Helper
-  ---------------------------- */
   async function fetchPage(path) {
     const url = PROXY + encodeURIComponent(BASE + path);
     const res = await fetch(url);
@@ -246,10 +284,6 @@ body {
     return res.json();
   }
 
-
-  /* ---------------------------
-      Load ALL pages (for filter)
-  ---------------------------- */
   async function loadAllPages() {
     while (nextPath) {
       const data = await fetchPage(nextPath);
@@ -262,22 +296,18 @@ body {
     }
   }
 
-
-  /* ---------------------------
-      Build Filters
-  ---------------------------- */
   function buildFilters() {
     filtersEl.innerHTML = "";
 
     const counts = {};
-    allPosts.forEach(p => {
-      (p.categories || []).forEach(cat => {
-        counts[cat] = (counts[cat] || 0) + 1;
-      });
-    });
+    allPosts.forEach(p =>
+      (p.categories || []).forEach(cat =>
+        counts[cat] = (counts[cat] || 0) + 1
+      )
+    );
 
     Object.keys(counts)
-      .sort((a,b) => counts[b] - counts[a] || a.localeCompare(b))
+      .sort((a,b) => counts[b]-counts[a] || a.localeCompare(b))
       .forEach(cat => {
 
         const label = document.createElement("label");
@@ -288,7 +318,6 @@ body {
         input.value = cat;
 
         input.addEventListener("change", async () => {
-
           if (input.checked) {
             activeCategories.add(cat);
             label.classList.add("active");
@@ -297,25 +326,18 @@ body {
             label.classList.remove("active");
           }
 
-          // Fade out
           gridEl.classList.add("fade-out");
           await new Promise(r => setTimeout(r, 250));
 
-          // All pages nachladen, falls nötig
           if (activeCategories.size > 0 && nextPath)
             await loadAllPages();
 
-          // Grid komplett zurücksetzen
           visibleCount = 0;
           gridEl.innerHTML = "";
 
-          // Neu rendern
           renderCards();
-
-          // Fade In
           gridEl.classList.remove("fade-out");
 
-          // Height sync
           setTimeout(sendHeight, 50);
         });
 
@@ -328,24 +350,15 @@ body {
       });
   }
 
-
-  /* ---------------------------
-      Filter logic
-  ---------------------------- */
   function getFilteredPosts() {
     if (activeCategories.size === 0) return allPosts;
-    return allPosts.filter(post =>
-      post.categories?.some(c => activeCategories.has(c))
+    return allPosts.filter(p =>
+      p.categories?.some(c => activeCategories.has(c))
     );
   }
 
-
-  /* ---------------------------
-      Render cards in batches
-  ---------------------------- */
   function renderCards() {
     const filtered = getFilteredPosts();
-
     const newEnd = visibleCount + BATCH;
     const slice = filtered.slice(visibleCount, newEnd);
 
@@ -401,16 +414,11 @@ body {
     });
 
     visibleCount = newEnd;
-
     statusEl.textContent = filtered.length === 0
       ? "Keine Projekte für die gewählten Kategorien."
       : "";
   }
 
-
-  /* ---------------------------
-      CARD LAZY ANIMATION
-  ---------------------------- */
   const cardObserver = new IntersectionObserver(entries => {
     entries.forEach(e => {
       if (e.isIntersecting) {
@@ -424,10 +432,6 @@ body {
     cardObserver.observe(card);
   }
 
-
-  /* ---------------------------
-      INFINITE SCROLL OBSERVER
-  ---------------------------- */
   const sentinel = document.createElement("div");
   sentinel.style.height = "1px";
   gridEl.after(sentinel);
@@ -444,10 +448,6 @@ body {
 
   scrollObserver.observe(sentinel);
 
-
-  /* ---------------------------
-      INITIAL LOAD
-  ---------------------------- */
   async function loadInitial() {
     statusEl.textContent = "Lade Projekte …";
 
@@ -463,16 +463,14 @@ body {
 
     buildFilters();
     renderCards();
-    renderCards(); // zweites Batch für volleres Initiallayout
+    renderCards();
 
     statusEl.textContent = "";
   }
 
   loadInitial();
-
 })();
 </script>
-
 
 
 <!-- HEIGHT MESSAGE TO SQUARESPACE -->
@@ -488,7 +486,6 @@ new MutationObserver(() => sendHeight())
 setInterval(sendHeight, 300);
 window.addEventListener("load", sendHeight);
 </script>
-
 
 </body>
 </html>
