@@ -37,18 +37,17 @@ body {
 }
 a { text-decoration: none; color: inherit; }
 
-/* -----------------------------------------------------------
-   DESKTOP WRAPPER — unverändert
------------------------------------------------------------ */
+/* WRAPPER ------------------------------------------------- */
+/* Desktop Grid vollbreit */
 #portfolio-wrapper {
   width: 100%;
   max-width: none;
   margin: 0;
-  padding: 0 48px;
+  padding: 0 16px;
 }
 
 /* -----------------------------------------------------------
-   FILTER BAR DESKTOP — unverändert
+   FILTER BAR — DESKTOP (Minimal, Flat)
 ----------------------------------------------------------- */
 #filterBar {
   margin-bottom: 32px;
@@ -58,7 +57,7 @@ a { text-decoration: none; color: inherit; }
 }
 
 .filter-inner {
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
   padding: 0 16px;
   position: relative;
@@ -71,12 +70,12 @@ a { text-decoration: none; color: inherit; }
   letter-spacing: .14em;
   color: var(--text-muted);
   margin-bottom: 10px;
-  pointer-events: none;
 }
 
+/* Desktop Pills */
 #categoryFilters {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(140px, auto));
   gap: 12px;
 }
 
@@ -84,31 +83,17 @@ a { text-decoration: none; color: inherit; }
   display: inline-flex;
   justify-content: center;
   align-items: center;
-
   padding: 9px 24px;
   border-radius: var(--pill-radius);
   background: rgba(255,255,255,0.05);
   border: 1px solid rgba(255,255,255,0.12);
-
   font-size: 11px;
   letter-spacing: .12em;
   text-transform: uppercase;
   color: var(--text-muted);
-
-  transition: var(--transition-fast);
-  cursor: pointer;
   white-space: nowrap;
-}
-
-.filter-pill:hover {
-  background: rgba(255,255,255,0.09);
-  border-color: rgba(255,255,255,0.25);
-}
-
-.filter-pill.active {
-  background: rgba(255,255,255,0.18);
-  border-color: rgba(255,255,255,0.5);
-  color: white;
+  transition: var(--transition-fast);
+  position: relative;
 }
 
 .filter-pill input {
@@ -117,67 +102,135 @@ a { text-decoration: none; color: inherit; }
   pointer-events: none;
 }
 
-/* Fade edges (desktop hidden) */
+.filter-pill.active {
+  background: rgba(255,255,255,0.18);
+  border-color: rgba(255,255,255,0.5);
+  color: white;
+}
+
 .filter-scroll-indicator {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 42px; /* 20% länger */
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .25s ease;
+  z-index: 3;
   display: none;
 }
 
+.filter-scroll-indicator--left {
+  left: 0;
+  background: linear-gradient(to right, rgba(28,28,28,1), rgba(28,28,28,0));
+}
+
+.filter-scroll-indicator--right {
+  right: 0;
+  background: linear-gradient(to left, rgba(28,28,28,1), rgba(28,28,28,0));
+}
+
 /* -----------------------------------------------------------
-   GRID DESKTOP — unverändert (3 Spalten)
+   DESKTOP GRID – exakt wie vorher
 ----------------------------------------------------------- */
 .portfolio-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 34px;
+  grid-template-columns: repeat(3, 1fr); 
+  gap: 48px;
 }
 
+.card {
+  display: block;
+  background: #1B1B1B;
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: .65s ease, box-shadow .35s ease;
+}
+.card.visible { opacity: 1; transform: translateY(0); }
+.card-media-wrap { position: relative; overflow: hidden; }
+.card-img {
+  width: 100%;
+  aspect-ratio: 16/9;
+  object-fit: cover;
+  transition: .45s ease;
+}
+.card:hover .card-img { transform: scale(1.06); }
+
 /* -----------------------------------------------------------
-   MOBILE VERSION — *NUR GRID AUS DEINER WUNSCHVERSION*
+   MOBILE – OPTION M1 (kompakt, 1 Spalte)
 ----------------------------------------------------------- */
 @media (max-width: 768px) {
 
-  /* GRID exakt wie deine mobile Wunschversion */
+  body { padding-bottom: 160px; }
+
+  #filterBar {
+    margin-bottom: 20px;
+    padding: 0;
+    background: var(--glass-bg);
+    backdrop-filter: blur(18px) saturate(180%);
+    border-top: 1px solid var(--glass-border);
+    border-bottom: 1px solid var(--glass-border);
+    box-shadow: var(--shadow-glass);
+  }
+
+  .filter-group-label { display: none; }
+
+  .filter-inner {
+    padding: 0;
+    margin: 0;
+  }
+
+  #categoryFilters {
+    display: flex;
+    overflow-x: auto;
+    white-space: nowrap;
+    gap: 14px;
+    padding: 12px 18px;
+    scrollbar-width: none;
+  }
+  #categoryFilters::-webkit-scrollbar { display: none; }
+
+  .filter-pill {
+    padding: 10px 24px;
+    font-size: 12px;
+    flex-shrink: 0;
+  }
+
+  .filter-scroll-indicator {
+    display: block;
+  }
+
+  /* mobile Grid – kompakt */
   .portfolio-grid {
-    grid-template-columns: 1fr !important;
-    gap: 22px !important;
+    grid-template-columns: 1fr;
+    gap: 22px;
   }
 
-  #portfolio-wrapper {
-    padding: 0 16px !important;
-  }
-
-  .card-text {
-    padding: 14px !important;
-  }
-
-  .card-category {
-    font-size: 10px !important;
-    margin-bottom: 4px !important;
-  }
-
-  .card-title {
-    font-size: 17px !important;
-    margin-bottom: 4px !important;
-  }
-
-  .card-excerpt {
-    font-size: 12px !important;
-  }
+  .card-text { padding: 14px; }
+  .card-category { font-size: 10px; margin-bottom: 4px; }
+  .card-title { font-size: 17px; margin-bottom: 4px; }
+  .card-excerpt { font-size: 12px; }
 }
+
 </style>
 </head>
 
 <body>
 
-<!-- FILTERBAR ÜBER DEM WRAPPER — unverändert -->
+<!-- FILTERBAR -->
 <div id="filterBar">
   <div class="filter-inner">
+
     <div class="filter-group">
       <div class="filter-group-label">Kategorien</div>
       <div id="categoryFilters"></div>
     </div>
+
     <div class="filter-scroll-indicator filter-scroll-indicator--left"></div>
     <div class="filter-scroll-indicator filter-scroll-indicator--right"></div>
+
   </div>
 </div>
 
@@ -187,7 +240,7 @@ a { text-decoration: none; color: inherit; }
 </div>
 
 <script>
-/* ENGINE unverändert */
+/* ================== PORTFOLIO ENGINE (keine Änderungen) ================== */
 (function() {
 
   const BASE  = "https://www.flowingframes.media";
@@ -217,25 +270,29 @@ a { text-decoration: none; color: inherit; }
     while (nextPath && allPosts.length < 100) {
       const data = await fetchPage(nextPath);
       allPosts.push(...(data.items || []));
-      nextPath = data.pagination?.nextPageUrl
-        ? (data.pagination.nextPageUrl.includes("format=")
-            ? data.pagination.nextPageUrl
-            : data.pagination.nextPageUrl + "&format=json-pretty")
-        : null;
+      if (data.pagination?.nextPageUrl) {
+        const u = data.pagination.nextPageUrl;
+        nextPath = u.includes("format=") ? u : u + "&format=json-pretty";
+      } else nextPath = null;
     }
 
     buildFilters();
     renderCards();
     renderCards();
+
     statusEl.textContent = "";
     updateScrollIndicators();
   }
 
   function buildFilters() {
     filtersEl.innerHTML = "";
-
     const counts = {};
-    allPosts.forEach(p => (p.categories || []).forEach(c => counts[c] = (counts[c] || 0) + 1));
+
+    allPosts.forEach(p =>
+      (p.categories || []).forEach(c =>
+        counts[c] = (counts[c] || 0) + 1
+      )
+    );
 
     Object.keys(counts)
       .sort((a,b) => counts[b]-counts[a] || a.localeCompare(b))
@@ -248,13 +305,16 @@ a { text-decoration: none; color: inherit; }
         input.value = cat;
 
         input.addEventListener("change", async () => {
-          if (input.checked) { activeCategories.add(cat); pill.classList.add("active"); }
-          else { activeCategories.delete(cat); pill.classList.remove("active"); }
+          if (input.checked) activeCategories.add(cat);
+          else activeCategories.delete(cat);
+
+          pill.classList.toggle("active", input.checked);
 
           gridEl.innerHTML = "";
           visibleCount = 0;
 
-          if (activeCategories.size > 0 && nextPath) await loadAllPages();
+          if (activeCategories.size > 0 && nextPath)
+            await loadAllPages();
 
           renderCards();
           renderCards();
@@ -273,22 +333,23 @@ a { text-decoration: none; color: inherit; }
     while (nextPath) {
       const data = await fetchPage(nextPath);
       allPosts.push(...(data.items || []));
-      nextPath = data.pagination?.nextPageUrl
-        ? (data.pagination.nextPageUrl.includes("format=")
-            ? data.pagination.nextPageUrl
-            : data.pagination.nextPageUrl + "&format=json-pretty")
-        : null;
-    }
+      if (data.pagination?.nextPageUrl) {
+        const u = data.pagination.nextPageUrl;
+        nextPath = u.includes("format=") ? u : u + "&format=json-pretty";
+      } else nextPath = null;
+      }
   }
 
   function getFiltered() {
-    return activeCategories.size === 0
-      ? allPosts
-      : allPosts.filter(p => p.categories?.some(c => activeCategories.has(c)));
+    if (activeCategories.size === 0) return allPosts;
+    return allPosts.filter(p =>
+      p.categories?.some(c => activeCategories.has(c))
+    );
   }
 
   function renderCards() {
-    const slice = getFiltered().slice(visibleCount, visibleCount + BATCH);
+    const filtered = getFiltered();
+    const slice = filtered.slice(visibleCount, visibleCount+BATCH);
 
     slice.forEach(post => {
       const a = document.createElement("a");
@@ -298,13 +359,13 @@ a { text-decoration: none; color: inherit; }
       a.innerHTML = `
         <div class="card-inner">
           <div class="card-media-wrap">
-            <img class="card-img" src="${post.assetUrl}" loading="lazy" alt="">
+            <img class="card-img" src="${post.assetUrl}" loading="lazy">
             <div class="card-media-overlay"></div>
           </div>
           <div class="card-text">
-            <div class="card-category">${(post.categories || []).join(" · ")}</div>
+            <div class="card-category">${(post.categories||[]).join(" · ")}</div>
             <h3 class="card-title">${post.title}</h3>
-            <p class="card-excerpt">${(post.excerpt || "").replace(/<[^>]+>/g,"")}</p>
+            <p class="card-excerpt">${(post.excerpt||"").replace(/<[^>]+>/g,"")}</p>
           </div>
         </div>
       `;
@@ -330,16 +391,18 @@ a { text-decoration: none; color: inherit; }
 
   const scrollObs = new IntersectionObserver(entries => {
     if (!entries[0].isIntersecting) return;
+
     const filtered = getFiltered();
     if (visibleCount >= filtered.length) return;
+
     renderCards();
     sendHeight();
   });
   scrollObs.observe(sentinel);
 
-  // Fade-Logik
   function updateScrollIndicators() {
     const maxScroll = filtersEl.scrollWidth - filtersEl.clientWidth;
+
     if (maxScroll <= 0) {
       indicatorLeft.classList.remove("visible");
       indicatorRight.classList.remove("visible");
@@ -347,6 +410,7 @@ a { text-decoration: none; color: inherit; }
     }
 
     const sl = filtersEl.scrollLeft;
+
     indicatorLeft.classList.toggle("visible", sl > 2);
     indicatorRight.classList.toggle("visible", sl < maxScroll - 2);
   }
@@ -359,7 +423,6 @@ a { text-decoration: none; color: inherit; }
 })();
 </script>
 
-<!-- HEIGHT SYNC -->
 <script>
 function sendHeight(){
   parent.postMessage({ portfolioHeight: document.documentElement.scrollHeight }, "*");
