@@ -107,6 +107,12 @@ body {
   transition: opacity .6s ease, transform .6s ease, box-shadow .35s ease;
 }
 
+/* 🔧 NEU: sichtbarer Zustand */
+.card.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
 .card:hover {
   box-shadow: var(--shadow-hover);
 }
@@ -176,12 +182,14 @@ body {
   color: var(--text-muted);
   text-align: center;
 }
+
 </style>
 </head>
 
 <body>
 
 <div id="portfolio-wrapper">
+
   <div id="filterBar">
     <div class="filter-group">
       <div class="filter-group-label">Kategorien</div>
@@ -193,6 +201,7 @@ body {
 
   <div id="statusMessage"></div>
 </div>
+
 
 <script>
 (function() {
@@ -211,12 +220,13 @@ body {
   let visibleCount = 0;
   const BATCH = 30;
 
-  // ORIGINAL funktionierendes Muster: Proxy + encodeURIComponent
+  // Proxy-Fetch (wie bei dir zuletzt funktionierend)
   async function fetchPage(path) {
-    const url = PROXY + encodeURIComponent(BASE + path);
+    const url = PROXY + BASE + path;
     const res = await fetch(url);
     if (!res.ok) {
-      throw new Error("Fehler beim Laden: " + res.status + " für " + url);
+      console.warn("Proxy fetch failed", res.status, url);
+      return { items: [], pagination: {} };
     }
     return res.json();
   }
@@ -228,9 +238,7 @@ body {
       if (data.pagination?.nextPageUrl) {
         const u = data.pagination.nextPageUrl;
         nextPath = u.includes("format=") ? u : u + "&format=json-pretty";
-      } else {
-        nextPath = null;
-      }
+      } else nextPath = null;
     }
   }
 
@@ -255,21 +263,21 @@ body {
         input.addEventListener("change", async () => {
           if (input.checked) {
             activeCategories.add(cat);
-            label.classList.add("active");
+            label.classList.add("active");   // 🔧 NEU: Optik
           } else {
             activeCategories.delete(cat);
-            label.classList.remove("active");
+            label.classList.remove("active"); // 🔧 NEU: Optik
           }
 
           gridEl.classList.add("fade-out");
           await new Promise(r => setTimeout(r, 250));
 
-          if (activeCategories.size > 0 && nextPath) {
+          if (activeCategories.size > 0 && nextPath)
             await loadAllPages();
-          }
 
           visibleCount = 0;
           gridEl.innerHTML = "";
+          gridEl.after(sentinel);
 
           renderCards();
           gridEl.classList.remove("fade-out");
@@ -312,7 +320,7 @@ body {
       const img = document.createElement("img");
       img.className = "card-img";
       img.src = post.assetUrl;
-      img.alt = post.title || "";
+      img.alt = post.title;
       img.loading = "lazy";
 
       const overlay = document.createElement("div");
@@ -330,7 +338,7 @@ body {
 
       const titleEl = document.createElement("h3");
       titleEl.className = "card-title";
-      titleEl.textContent = post.title || "";
+      titleEl.textContent = post.title;
 
       const excerptEl = document.createElement("p");
       excerptEl.className = "card-excerpt";
@@ -346,7 +354,8 @@ body {
       a.appendChild(inner);
       gridEl.appendChild(a);
 
-      observeCard(a); // Lazy-Fade-in per IntersectionObserver
+      // 🔧 Sichtbar machen (nutzt .card.visible im CSS)
+      a.classList.add("visible");
     });
 
     visibleCount += BATCH;
@@ -356,60 +365,40 @@ body {
       : "";
   }
 
-  // Lazy-Animation beim Sichtbarwerden
-  const cardObserver = new IntersectionObserver(entries => {
-    entries.forEach(e => {
-      if (e.isIntersecting) {
-        e.target.classList.add("visible");
-        cardObserver.unobserve(e.target);
-      }
-    });
-  }, { threshold: 0.2 });
-
-  function observeCard(card) {
-    cardObserver.observe(card);
-  }
-
-  // Infinite Scroll Sentinel
   const sentinel = document.createElement("div");
   sentinel.style.height = "1px";
   gridEl.after(sentinel);
 
   const scrollObserver = new IntersectionObserver(entries => {
-    if (!entries[0].isIntersecting) return;
-    const filtered = getFilteredPosts();
-    if (visibleCount >= filtered.length) return;
-    renderCards();
-    sendHeight();
+    if (entries[0].isIntersecting) {
+      const filtered = getFilteredPosts();
+      if (visibleCount < filtered.length) {
+        renderCards();
+        sendHeight();
+      }
+    }
   });
 
   scrollObserver.observe(sentinel);
 
   async function loadInitial() {
-    try {
-      statusEl.textContent = "Lade Projekte …";
+    statusEl.textContent = "Lade Projekte …";
 
-      while (nextPath && allPosts.length < 100) {
-        const data = await fetchPage(nextPath);
-        allPosts = allPosts.concat(data.items || []);
+    while (nextPath && allPosts.length < 100) {
+      const data = await fetchPage(nextPath);
+      allPosts = allPosts.concat(data.items || []);
 
-        if (data.pagination?.nextPageUrl) {
-          const u = data.pagination.nextPageUrl;
-          nextPath = u.includes("format=") ? u : u + "&format=json-pretty";
-        } else {
-          nextPath = null;
-        }
-      }
-
-      buildFilters();
-      renderCards();
-      renderCards(); // zweites Batch für „volleres“ Initiallayout
-
-      statusEl.textContent = "";
-    } catch (err) {
-      console.error(err);
-      statusEl.textContent = "Beim Laden der Projekte ist ein Fehler aufgetreten.";
+      if (data.pagination?.nextPageUrl) {
+        const u = data.pagination.nextPageUrl;
+        nextPath = u.includes("format=") ? u : u + "&format=json-pretty";
+      } else nextPath = null;
     }
+
+    buildFilters();
+    renderCards();
+    renderCards();
+
+    statusEl.textContent = "";
   }
 
   loadInitial();
