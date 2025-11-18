@@ -107,12 +107,13 @@ body {
   transition: opacity .6s ease, transform .6s ease, box-shadow .35s ease;
 }
 
-/* 🔥 WICHTIG: Sichtbarer Zustand */
+/* Sichtbarer Zustand für Lazy-Fade */
 .card.visible {
   opacity: 1;
   transform: translateY(0);
 }
 
+/* Hover-Schatten */
 .card:hover {
   box-shadow: var(--shadow-hover);
 }
@@ -220,7 +221,7 @@ body {
   let visibleCount = 0;
   const BATCH = 30;
 
-  /* Proxy-Aufruf ohne Encoding laut deiner aktuellen Version */
+  // Proxy-Aufruf ohne Encoding (so wie deine aktuelle Worker-Logik es erwartet)
   async function fetchPage(path) {
     const url = PROXY + BASE + path;
     const res = await fetch(url);
@@ -238,7 +239,9 @@ body {
       if (data.pagination?.nextPageUrl) {
         const u = data.pagination.nextPageUrl;
         nextPath = u.includes("format=") ? u : u + "&format=json-pretty";
-      } else nextPath = null;
+      } else {
+        nextPath = null;
+      }
     }
   }
 
@@ -261,14 +264,20 @@ body {
         input.value = cat;
 
         input.addEventListener("change", async () => {
-          if (input.checked) activeCategories.add(cat);
-          else activeCategories.delete(cat);
+          if (input.checked) {
+            activeCategories.add(cat);
+            label.classList.add("active");      // ✅ visuelles Feedback
+          } else {
+            activeCategories.delete(cat);
+            label.classList.remove("active");
+          }
 
           gridEl.classList.add("fade-out");
           await new Promise(r => setTimeout(r, 250));
 
-          if (activeCategories.size > 0 && nextPath)
+          if (activeCategories.size > 0 && nextPath) {
             await loadAllPages();
+          }
 
           visibleCount = 0;
           gridEl.innerHTML = "";
@@ -315,7 +324,7 @@ body {
       const img = document.createElement("img");
       img.className = "card-img";
       img.src = post.assetUrl;
-      img.alt = post.title;
+      img.alt = post.title || "";
       img.loading = "lazy";
 
       const overlay = document.createElement("div");
@@ -333,7 +342,7 @@ body {
 
       const titleEl = document.createElement("h3");
       titleEl.className = "card-title";
-      titleEl.textContent = post.title;
+      titleEl.textContent = post.title || "";
 
       const excerptEl = document.createElement("p");
       excerptEl.className = "card-excerpt";
@@ -349,8 +358,8 @@ body {
       a.appendChild(inner);
       gridEl.appendChild(a);
 
-      // Sichtbar machen (triggert Transition .card.visible)
-      a.classList.add("visible");
+      // ✅ Lazy-Fade über IntersectionObserver
+      observeCard(a);
     });
 
     visibleCount += BATCH;
@@ -360,6 +369,21 @@ body {
       : "";
   }
 
+  // ✅ Lazy-Loading Animation: Cards werden erst beim Scrollen sichtbar
+  const cardObserver = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add("visible");
+        cardObserver.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.2 });
+
+  function observeCard(card) {
+    cardObserver.observe(card);
+  }
+
+  // Sentinel für Infinite Scroll
   const sentinel = document.createElement("div");
   sentinel.style.height = "1px";
   gridEl.after(sentinel);
@@ -379,19 +403,22 @@ body {
   async function loadInitial() {
     statusEl.textContent = "Lade Projekte …";
 
-    while (nextPath && allPosts.length < 100) {
+    // ✅ ALLE Seiten laden (kein künstliches 100er Limit mehr)
+    while (nextPath) {
       const data = await fetchPage(nextPath);
       allPosts = allPosts.concat(data.items || []);
 
       if (data.pagination?.nextPageUrl) {
         const u = data.pagination.nextPageUrl;
         nextPath = u.includes("format=") ? u : u + "&format=json-pretty";
-      } else nextPath = null;
+      } else {
+        nextPath = null;
+      }
     }
 
     buildFilters();
-    renderCards();
-    renderCards();
+    renderCards(); // erste 30
+    renderCards(); // nächste 30 → 60 initial
 
     statusEl.textContent = "";
   }
