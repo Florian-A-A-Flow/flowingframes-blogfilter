@@ -238,7 +238,8 @@ a { text-decoration: none; color: inherit; }
 
 /* -----------------------------------------------------------
    MOBILE — MODERN GLASS FILTERBAR
-   (scrollt normal mit, 1-zeilig, horizontal scroll + Fades)
+   (scrollt normal mit, 1-zeilig, horizontal scroll + Fades,
+    kompakteres Grid & kleinere Typo)
 ----------------------------------------------------------- */
 @media (max-width: 768px) {
 
@@ -249,22 +250,17 @@ a { text-decoration: none; color: inherit; }
   #filterBar {
     margin-bottom: 20px;
     padding: 0; /* padding kommt über .filter-inner */
+    background: var(--glass-bg);
+    backdrop-filter: blur(18px) saturate(180%);
+    border-top: 1px solid var(--glass-border);
+    border-bottom: 1px solid var(--glass-border);
+    box-shadow: var(--shadow-glass);
   }
 
   .filter-inner {
     max-width: 1400px;
     margin: 0;
-    padding: 0 0;
-    /* full-bleed Look über negative Margin in Bar */
-  }
-
-  #filterBar {
-    background: var(--glass-bg);
-    backdrop-filter: blur(18px) saturate(180%);
-    border-top: 1px solid var(--glass-border);
-    border-bottom: 1px solid var(--glass-border);
-    margin: 0 0 20px;
-    box-shadow: var(--shadow-glass);
+    padding: 0;
   }
 
   .filter-group-label {
@@ -290,11 +286,35 @@ a { text-decoration: none; color: inherit; }
   }
 
   /* Edge-Fades nur auf Mobile sichtbar,
-     fix relativ zum äußeren Container, scrollt NICHT mit Inhalt */
+     fix relativ zum äußeren Container, scrollt NICHT horizontal mit */
   .filter-scroll-indicator {
     display: block;
     top: 0;
     bottom: 0;
+  }
+
+  /* Kompakteres Grid & kleinere Typo auf Mobile */
+  .portfolio-grid {
+    grid-template-columns: 1fr;
+    gap: 22px;
+  }
+
+  .card-text {
+    padding: 14px;
+  }
+
+  .card-category {
+    font-size: 10px;
+    margin-bottom: 4px;
+  }
+
+  .card-title {
+    font-size: 17px;
+    margin-bottom: 4px;
+  }
+
+  .card-excerpt {
+    font-size: 12px;
   }
 }
 </style>
@@ -345,6 +365,7 @@ a { text-decoration: none; color: inherit; }
 
   async function fetchPage(path) {
     const res = await fetch(PROXY + encodeURIComponent(BASE + path));
+    if (!res.ok) throw new Error("Fehler: " + res.status);
     return res.json();
   }
 
@@ -491,7 +512,7 @@ a { text-decoration: none; color: inherit; }
   });
   scrollObs.observe(sentinel);
 
-  // Edge-Fade Logik – läuft stabil, Fades scrollen NICHT horizontal mit
+  // Edge-Fade Logik
   function updateScrollIndicators() {
     if (!filtersEl || !indicatorLeft || !indicatorRight) return;
 
@@ -509,7 +530,6 @@ a { text-decoration: none; color: inherit; }
 
   filtersEl.addEventListener("scroll", updateScrollIndicators);
   window.addEventListener("resize", () => {
-    // nach Resize kurz warten, dann neu berechnen
     setTimeout(updateScrollIndicators, 80);
   });
 
