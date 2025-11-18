@@ -11,13 +11,9 @@
   --card-bg: #1B1B1B;
   --text-main: #f5f5f5;
   --text-muted: #a0a0a0;
-  --border-radius: 12px;
+  --border-radius: 10px;
   --transition-fast: 0.22s ease-out;
   --shadow-hover: 0 6px 16px rgba(0,0,0,0.3);
-
-  --pill-bg: rgba(255,255,255,0.06);
-  --pill-border: rgba(255,255,255,0.18);
-  --pill-active-bg: rgba(255,255,255,0.22);
 }
 
 /* Basic Reset */
@@ -37,11 +33,10 @@ body {
   padding: 0 16px;
 }
 
-/* ============================================================
-   FILTER BAR — DESKTOP
-   ============================================================ */
+/* FILTER BAR */
 #filterBar {
   margin-bottom: 32px;
+  position: relative; /* Basis für Indikatoren */
 }
 
 .filter-group-label {
@@ -49,13 +44,13 @@ body {
   text-transform: uppercase;
   letter-spacing: 0.14em;
   color: var(--text-muted);
-  margin-bottom: 12px;
+  margin-bottom: 10px;
 }
 
-/* MODERN DESKTOP GRID */
+/* Desktop: Grid-Layout für Kategorien */
 #categoryFilters {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, auto));
   gap: 12px;
 }
 
@@ -63,29 +58,17 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 8px 16px;
+  padding: 6px 12px;
   border-radius: 999px;
-  background: var(--pill-bg);
-  border: 1px solid var(--pill-border);
-  font-size: 12px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  font-size: 11px;
   text-transform: uppercase;
   letter-spacing: .12em;
   color: var(--text-muted);
   cursor: pointer;
-  transition: all .25s;
+  transition: .25s;
   white-space: nowrap;
-  backdrop-filter: blur(6px);
-}
-
-.filter-pill:hover {
-  border-color: rgba(255,255,255,0.35);
-  background: rgba(255,255,255,0.12);
-}
-
-.filter-pill.active {
-  background: var(--pill-active-bg);
-  border-color: rgba(255,255,255,0.65);
-  color: white;
 }
 
 .filter-pill input {
@@ -94,67 +77,44 @@ body {
   position: absolute;
 }
 
-/* ============================================================
-   MOBILE — Sticky Swipe-Bar
-   ============================================================ */
-@media (max-width: 768px) {
-
-  #filterBar {
-    position: sticky;
-    top: 0;
-    z-index: 50;
-    padding: 12px 0 16px;
-    background: linear-gradient(var(--bg), var(--bg));
-    backdrop-filter: blur(12px);
-  }
-
-  #categoryFilters {
-    display: flex;
-    overflow-x: auto;
-    overflow-y: hidden;
-    gap: 10px;
-    padding: 4px 4px 10px;
-    scrollbar-width: none;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  #categoryFilters::-webkit-scrollbar {
-    display: none;
-  }
-
-  /* Larger mobile pills */
-  .filter-pill {
-    padding: 10px 20px;
-    font-size: 13px;
-    border-radius: 999px;
-  }
-
-  /* Fade shadows left & right */
-  #filterBar::before,
-  #filterBar::after {
-    content: "";
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    width: 24px;
-    pointer-events: none;
-    z-index: 60;
-  }
-
-  #filterBar::before {
-    left: 0;
-    background: linear-gradient(to right, var(--bg) 0%, transparent 100%);
-  }
-
-  #filterBar::after {
-    right: 0;
-    background: linear-gradient(to left, var(--bg) 0%, transparent 100%);
-  }
+.filter-pill:hover {
+  border-color: rgba(255,255,255,0.35);
+  transform: translateY(-1px);
 }
 
-/* ============================================================
-   GRID + CARDS
-   ============================================================ */
+.filter-pill.active {
+  background: rgba(255,255,255,0.12);
+  border-color: rgba(255,255,255,0.65);
+  color: white;
+}
+
+/* Scroll-Indikatoren (werden nur auf Mobile sichtbar gemacht) */
+.filter-scroll-indicator {
+  position: absolute;
+  top: 26px; /* ungefähr Mitte der Pills */
+  bottom: 0;
+  width: 24px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .25s ease;
+  z-index: 2;
+}
+
+.filter-scroll-indicator--left {
+  left: 0;
+  background: linear-gradient(to right, rgba(27,27,27,1), rgba(27,27,27,0));
+}
+
+.filter-scroll-indicator--right {
+  right: 0;
+  background: linear-gradient(to left, rgba(27,27,27,1), rgba(27,27,27,0));
+}
+
+.filter-scroll-indicator.visible {
+  opacity: 1;
+}
+
+/* GRID */
 .portfolio-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px,1fr));
@@ -167,6 +127,7 @@ body {
   opacity: 0;
 }
 
+/* CARD */
 .card {
   display: block;
   text-decoration: none;
@@ -179,6 +140,7 @@ body {
   transition: opacity .6s ease, transform .6s ease, box-shadow .35s ease;
 }
 
+/* Hover-Schatten */
 .card:hover {
   box-shadow: var(--shadow-hover);
 }
@@ -186,6 +148,12 @@ body {
 .card.visible {
   opacity: 1;
   transform: translateY(0);
+}
+
+.card-inner {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .card-media-wrap {
@@ -198,6 +166,7 @@ body {
   width: 100%;
   aspect-ratio: 16/9;
   object-fit: cover;
+  display: block;
   transition: transform .45s ease, filter .45s ease;
 }
 
@@ -205,13 +174,14 @@ body {
   position: absolute;
   inset: 0;
   opacity: 0;
-  background: radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.45) 80%);
+  background: radial-gradient(circle at center,
+             transparent 0%, rgba(0,0,0,0.4) 80%);
   transition: opacity .45s ease;
 }
 
 .card:hover .card-img {
   transform: scale(1.06);
-  filter: saturate(1.15);
+  filter: saturate(1.1);
 }
 
 .card:hover .card-media-overlay {
@@ -237,21 +207,130 @@ body {
 .card-excerpt {
   font-size: 13px;
   color: var(--text-muted);
+  margin: 0;
 }
 
+/* STATUS */
 #statusMessage {
   margin-top: 24px;
-  text-align: center;
   color: var(--text-muted);
+  text-align: center;
 }
 
-/* Mobile layout adjustments */
+/* ============================================================
+   MOBILE – kompakter + Swipe-Kategorien + Sticky + Dropdown
+   ============================================================ */
 @media (max-width: 768px) {
-  .portfolio-grid { gap: 20px; grid-template-columns: 1fr; }
-  .card-text { padding: 14px 14px 16px; }
-  .card-title { font-size: 18px; }
-  .card-category { font-size: 10px; }
-  .card-excerpt { font-size: 12px; }
+
+  body {
+    padding: 24px 0 40px;
+  }
+
+  /* Sticky-Filterbar mit Mini-Mode */
+  #filterBar {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+    background: linear-gradient(to bottom, rgba(27,27,27,0.96), rgba(27,27,27,0.92));
+    backdrop-filter: blur(10px);
+  }
+
+  #filterBar.compact {
+    padding-top: 6px;
+    padding-bottom: 6px;
+    transform: translateY(-2px);
+  }
+
+  #filterBar.compact .filter-group-label {
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    opacity: 0.9;
+  }
+
+  .filter-group-label {
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+  }
+
+  /* Kleiner Pfeil für Dropdown-Indikator */
+  .filter-group-label::after {
+    content: "▾";
+    font-size: 12px;
+    margin-left: 8px;
+    transition: transform .2s ease;
+  }
+
+  #filterBar.filters-open .filter-group-label::after {
+    transform: rotate(180deg);
+  }
+
+  /* Horizontale Kategorie-Swipe-Navigation (Dropdown) */
+  #categoryFilters {
+    display: flex;
+    overflow-x: auto;
+    overflow-y: hidden;
+    gap: 8px;
+    padding-bottom: 4px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+
+    max-height: 0;
+    opacity: 0;
+    pointer-events: none;
+    transition: max-height .25s ease, opacity .25s ease;
+  }
+
+  /* Scrollbar ausblenden (iOS / Webkit) */
+  #categoryFilters::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Wenn Dropdown geöffnet ist */
+  #filterBar.filters-open #categoryFilters {
+    max-height: 60px;
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* Mobile-Pill-Optik etwas kompakter */
+  .filter-pill {
+    padding: 6px 14px;
+    font-size: 11px;
+    border-radius: 999px;
+  }
+
+  /* Scroll-Indikatoren nur auf Mobile sichtbar */
+  .filter-scroll-indicator {
+    top: 30px;
+    bottom: 8px;
+  }
+
+  .portfolio-grid {
+    gap: 18px;
+    grid-template-columns: 1fr;
+  }
+
+  .card-text {
+    padding: 14px 14px 16px;
+  }
+
+  .card-title {
+    font-size: 17px;
+  }
+
+  .card-category {
+    font-size: 10px;
+  }
+
+  .card-excerpt {
+    font-size: 12px;
+  }
 }
 </style>
 </head>
@@ -264,17 +343,21 @@ body {
     <div class="filter-group">
       <div class="filter-group-label">Kategorien</div>
       <div id="categoryFilters"></div>
+      <!-- Scroll-Indikatoren -->
+      <div class="filter-scroll-indicator filter-scroll-indicator--left"></div>
+      <div class="filter-scroll-indicator filter-scroll-indicator--right"></div>
     </div>
   </div>
 
   <div id="portfolioGrid" class="portfolio-grid"></div>
-  <div id="statusMessage"></div>
 
+  <div id="statusMessage"></div>
 </div>
+
 
 <script>
 /* ============================================================
-   PORTFOLIO ENGINE — Infinite Scroll + Filter
+   PORTFOLIO ENGINE — FlowingFrames Infinite Scroll Version
    ============================================================ */
 
 (function() {
@@ -286,9 +369,13 @@ body {
   let nextPath = "/all-projekte?format=json-pretty";
   let activeCategories = new Set();
 
-  const gridEl = document.getElementById("portfolioGrid");
-  const filtersEl = document.getElementById("categoryFilters");
-  const statusEl = document.getElementById("statusMessage");
+  const gridEl        = document.getElementById("portfolioGrid");
+  const filtersEl     = document.getElementById("categoryFilters");
+  const statusEl      = document.getElementById("statusMessage");
+  const filterBarEl   = document.getElementById("filterBar");
+  const filterLabelEl = document.querySelector(".filter-group-label");
+  const indicatorLeft  = document.querySelector(".filter-scroll-indicator--left");
+  const indicatorRight = document.querySelector(".filter-scroll-indicator--right");
 
   let visibleCount = 0;
   const BATCH = 30;
@@ -305,6 +392,7 @@ body {
     while (nextPath) {
       const data = await fetchPage(nextPath);
       allPosts = allPosts.concat(data.items || []);
+
       if (data.pagination?.nextPageUrl) {
         const u = data.pagination.nextPageUrl;
         nextPath = u.includes("format=") ? u : u + "&format=json-pretty";
@@ -316,9 +404,9 @@ body {
     filtersEl.innerHTML = "";
 
     const counts = {};
-    allPosts.forEach(post =>
-      (post.categories || []).forEach(c =>
-        counts[c] = (counts[c] || 0) + 1
+    allPosts.forEach(p =>
+      (p.categories || []).forEach(cat =>
+        counts[cat] = (counts[cat] || 0) + 1
       )
     );
 
@@ -334,9 +422,13 @@ body {
         input.value = cat;
 
         input.addEventListener("change", async () => {
-          input.checked
-            ? (activeCategories.add(cat), label.classList.add("active"))
-            : (activeCategories.delete(cat), label.classList.remove("active"));
+          if (input.checked) {
+            activeCategories.add(cat);
+            label.classList.add("active");
+          } else {
+            activeCategories.delete(cat);
+            label.classList.remove("active");
+          }
 
           gridEl.classList.add("fade-out");
           await new Promise(r => setTimeout(r, 250));
@@ -360,21 +452,24 @@ body {
         label.appendChild(span);
         filtersEl.appendChild(label);
       });
+
+    // Nach Aufbau der Pills direkt Scroll-Indikatoren berechnen
+    updateScrollIndicators();
   }
 
   function getFilteredPosts() {
     if (activeCategories.size === 0) return allPosts;
-    return allPosts.filter(post =>
-      post.categories?.some(c => activeCategories.has(c))
+    return allPosts.filter(p =>
+      p.categories?.some(c => activeCategories.has(c))
     );
   }
 
   function renderCards() {
     const filtered = getFilteredPosts();
     const newEnd = visibleCount + BATCH;
-    const batch = filtered.slice(visibleCount, newEnd);
+    const slice = filtered.slice(visibleCount, newEnd);
 
-    batch.forEach(post => {
+    slice.forEach(post => {
       const a = document.createElement("a");
       a.className = "card";
       a.href = BASE + post.fullUrl;
@@ -389,33 +484,33 @@ body {
       const img = document.createElement("img");
       img.className = "card-img";
       img.src = post.assetUrl;
-      img.alt = post.title;
+      img.alt = post.title || "";
       img.loading = "lazy";
 
-      const ov = document.createElement("div");
-      ov.className = "card-media-overlay";
+      const overlay = document.createElement("div");
+      overlay.className = "card-media-overlay";
 
       media.appendChild(img);
-      media.appendChild(ov);
+      media.appendChild(overlay);
 
       const text = document.createElement("div");
       text.className = "card-text";
 
-      const cat = document.createElement("div");
-      cat.className = "card-category";
-      cat.textContent = (post.categories || []).join(" · ");
+      const catEl = document.createElement("div");
+      catEl.className = "card-category";
+      catEl.textContent = (post.categories || []).join(" · ");
 
-      const title = document.createElement("h3");
-      title.className = "card-title";
-      title.textContent = post.title;
+      const titleEl = document.createElement("h3");
+      titleEl.className = "card-title";
+      titleEl.textContent = post.title || "";
 
-      const excerpt = document.createElement("p");
-      excerpt.className = "card-excerpt";
-      excerpt.textContent = post.excerpt?.replace(/<[^>]+>/g, "") || "";
+      const excerptEl = document.createElement("p");
+      excerptEl.className = "card-excerpt";
+      excerptEl.textContent = post.excerpt?.replace(/<[^>]+>/g,"") || "";
 
-      text.appendChild(cat);
-      text.appendChild(title);
-      if (excerpt.textContent) text.appendChild(excerpt);
+      text.appendChild(catEl);
+      text.appendChild(titleEl);
+      if (excerptEl.textContent) text.appendChild(excerptEl);
 
       inner.appendChild(media);
       inner.appendChild(text);
@@ -426,9 +521,9 @@ body {
     });
 
     visibleCount = newEnd;
-
-    statusEl.textContent =
-      filtered.length === 0 ? "Keine Projekte für die gewählten Kategorien." : "";
+    statusEl.textContent = filtered.length === 0
+      ? "Keine Projekte für die gewählten Kategorien."
+      : "";
   }
 
   const cardObserver = new IntersectionObserver(entries => {
@@ -448,13 +543,14 @@ body {
   sentinel.style.height = "1px";
   gridEl.after(sentinel);
 
-  const scrollObserver = new IntersectionObserver(entries => {
+  const scrollObserver = new IntersectionObserver(async (entries) => {
     if (!entries[0].isIntersecting) return;
+
     const filtered = getFilteredPosts();
-    if (visibleCount < filtered.length) {
-      renderCards();
-      sendHeight();
-    }
+    if (visibleCount >= filtered.length) return;
+
+    renderCards();
+    sendHeight();
   });
 
   scrollObserver.observe(sentinel);
@@ -462,33 +558,81 @@ body {
   async function loadInitial() {
     statusEl.textContent = "Lade Projekte …";
 
-    while (nextPath && allPosts.length < 120) {
+    while (nextPath && allPosts.length < 100) {
       const data = await fetchPage(nextPath);
       allPosts = allPosts.concat(data.items || []);
-      nextPath = data.pagination?.nextPageUrl
-        ? (data.pagination.nextPageUrl.includes("format=")
-            ? data.pagination.nextPageUrl
-            : data.pagination.nextPageUrl + "&format=json-pretty")
-        : null;
+
+      if (data.pagination?.nextPageUrl) {
+        const u = data.pagination.nextPageUrl;
+        nextPath = u.includes("format=") ? u : u + "&format=json-pretty";
+      } else nextPath = null;
     }
 
     buildFilters();
     renderCards();
     renderCards();
+
     statusEl.textContent = "";
   }
 
-  loadInitial();
+  /* ---------------------------
+     Mobile: Dropdown-Filter + Mini-Mode + Scroll-Indikatoren
+  ---------------------------- */
 
+  // Dropdown Toggle beim Klick auf Label (vor allem relevant auf Mobile)
+  if (filterLabelEl) {
+    filterLabelEl.addEventListener("click", () => {
+      // Nur sinnvoll auf Mobile; Desktop ignoriert die Klasse per CSS
+      filterBarEl.classList.toggle("filters-open");
+      // Nach Öffnen/Schließen Indikatoren aktualisieren
+      setTimeout(updateScrollIndicators, 50);
+    });
+  }
+
+  // Sticky Mini-Mode
+  let lastScrollY = 0;
+  window.addEventListener("scroll", () => {
+    const y = window.scrollY || document.documentElement.scrollTop;
+    if (y > 80) {
+      filterBarEl.classList.add("compact");
+    } else {
+      filterBarEl.classList.remove("compact");
+    }
+    lastScrollY = y;
+  });
+
+  // Scroll-Indikatoren basierend auf Scrollposition von #categoryFilters
+  function updateScrollIndicators() {
+    if (!filtersEl) return;
+
+    const scrollLeft  = filtersEl.scrollLeft;
+    const maxScroll   = filtersEl.scrollWidth - filtersEl.clientWidth;
+
+    if (indicatorLeft) {
+      indicatorLeft.classList.toggle("visible", scrollLeft > 2);
+    }
+    if (indicatorRight) {
+      indicatorRight.classList.toggle("visible", scrollLeft < maxScroll - 2);
+    }
+  }
+
+  if (filtersEl) {
+    filtersEl.addEventListener("scroll", updateScrollIndicators);
+  }
+
+  loadInitial();
 })();
 </script>
 
+
+<!-- HEIGHT MESSAGE TO SQUARESPACE -->
 <script>
 function sendHeight() {
-  parent.postMessage({ portfolioHeight: document.documentElement.scrollHeight }, "*");
+  const h = document.documentElement.scrollHeight;
+  parent.postMessage({ portfolioHeight: h }, "*");
 }
 
-new MutationObserver(sendHeight)
+new MutationObserver(() => sendHeight())
   .observe(document.body, { childList: true, subtree: true });
 
 setInterval(sendHeight, 300);
