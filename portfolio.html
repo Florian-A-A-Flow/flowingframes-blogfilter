@@ -7,25 +7,23 @@
 
 <style>
 /* -----------------------------------------------------------
-   DESIGN CORE — Apple-Inspired Modern Glass
+   DESIGN CORE
 ----------------------------------------------------------- */
 :root {
   --bg: #1C1C1C;
-
-  --glass-bg: rgba(28,28,28,0.55);
-  --glass-border: rgba(255,255,255,0.10);
-  --glass-border-strong: rgba(255,255,255,0.18);
+  --glass-bg: rgba(28,28,28,0.65);
+  --glass-border: rgba(255,255,255,0.08);
 
   --text-main: #F5F5F5;
-  --text-muted: #A0A0A0;
+  --text-muted: #9B9B9B;
 
+  --border-radius: 14px;
   --pill-radius: 999px;
-  --card-radius: 14px;
 
-  --shadow-hover: 0 8px 22px rgba(0,0,0,0.40);
-  --shadow-glass: 0 6px 24px rgba(0,0,0,0.45);
+  --shadow-hover: 0 8px 22px rgba(0,0,0,0.38);
+  --shadow-glass: 0 4px 22px rgba(0,0,0,0.45);
 
-  --transition: 0.22s ease-out;
+  --transition-fast: 0.22s ease-out;
 }
 
 /* RESET --------------------------------------------------- */
@@ -34,8 +32,8 @@ body {
   margin: 0;
   padding: 40px 0 120px;
   background: var(--bg);
-  color: var(--text-main);
   font-family: system-ui, Helvetica, Arial, sans-serif;
+  color: var(--text-main);
 }
 a { text-decoration: none; color: inherit; }
 
@@ -47,13 +45,13 @@ a { text-decoration: none; color: inherit; }
 }
 
 /* -----------------------------------------------------------
-   FILTER BAR — Desktop (Flat Minimalist)
+   FILTER BAR — DESKTOP (Minimal, Flat)
 ----------------------------------------------------------- */
 
 #filterBar {
   margin-bottom: 32px;
-  padding: 12px 0;
   position: relative;
+  padding: 14px 0;
 }
 
 .filter-group-label {
@@ -62,51 +60,46 @@ a { text-decoration: none; color: inherit; }
   text-transform: uppercase;
   letter-spacing: .14em;
   color: var(--text-muted);
-  margin-bottom: 12px;
+  margin-bottom: 10px;
+  pointer-events: none;
 }
 
+/* Desktop: Pills variabel + größerer Innenabstand */
 #categoryFilters {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, auto));
+  display: flex;
+  flex-wrap: wrap;
   gap: 12px;
 }
-
-/* -----------------------------------------------------------
-   FILTER PILLS — Variable Width (Fix for long entries)
------------------------------------------------------------ */
 
 .filter-pill {
   display: inline-flex;
   align-items: center;
   justify-content: center;
 
-  padding: 7px 16px;
-  max-width: 100%;             /* verhindert Überlaufen */
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-
+  padding: 10px 22px;                 /* EXTRA Inside Padding */
   border-radius: var(--pill-radius);
   background: rgba(255,255,255,0.05);
-  border: 1px solid var(--glass-border);
+  border: 1px solid rgba(255,255,255,0.12);
 
   font-size: 11px;
-  text-transform: uppercase;
   letter-spacing: .12em;
+  text-transform: uppercase;
   color: var(--text-muted);
 
-  transition: var(--transition);
+  transition: var(--transition-fast);
   cursor: pointer;
+  white-space: nowrap;
+  line-height: 1;                     /* Fix for tall fonts */
 }
 
 .filter-pill:hover {
   background: rgba(255,255,255,0.09);
-  border-color: var(--glass-border-strong);
+  border-color: rgba(255,255,255,0.25);
 }
 
 .filter-pill.active {
-  background: rgba(255,255,255,0.17);
-  border-color: rgba(255,255,255,0.45);
+  background: rgba(255,255,255,0.18);
+  border-color: rgba(255,255,255,0.5);
   color: white;
 }
 
@@ -128,7 +121,7 @@ a { text-decoration: none; color: inherit; }
 .card {
   display: block;
   background: #1B1B1B;
-  border-radius: var(--card-radius);
+  border-radius: var(--border-radius);
   overflow: hidden;
 
   opacity: 0;
@@ -207,35 +200,38 @@ a { text-decoration: none; color: inherit; }
 }
 
 /* -----------------------------------------------------------
-   MOBILE — Glass Sticky Bar (Modern)
+   MOBILE — MODERN GLASS FILTERBAR
 ----------------------------------------------------------- */
 @media (max-width: 768px) {
 
-  body { padding-bottom: 160px; }
+  body {
+    padding-bottom: 160px;
+  }
 
   #filterBar {
     position: sticky;
-    top: 100px;
+    top: 100px; /* Sticky offset */
     background: var(--glass-bg);
     backdrop-filter: blur(18px) saturate(180%);
-
     border: 1px solid var(--glass-border);
     border-left: none;
     border-right: none;
 
-    padding: 12px 14px;
+    padding: 12px 12px;
     margin: 0 -16px 20px;
-    z-index: 40;
 
+    z-index: 40;
     box-shadow: var(--shadow-glass);
   }
 
   #filterBar.compact {
     backdrop-filter: blur(22px) saturate(220%);
-    padding: 7px 12px;
+    padding: 8px 12px;
   }
 
-  .filter-group-label { display: none; }
+  .filter-group-label {
+    display: none;
+  }
 
   #categoryFilters {
     display: flex;
@@ -244,10 +240,12 @@ a { text-decoration: none; color: inherit; }
     padding-bottom: 4px;
     scrollbar-width: none;
   }
-  #categoryFilters::-webkit-scrollbar { display: none; }
+  #categoryFilters::-webkit-scrollbar {
+    display: none;
+  }
 
   .filter-pill {
-    padding: 8px 18px;
+    padding: 9px 24px;          /* EXTRA padding on mobile */
     font-size: 12px;
   }
 }
@@ -272,7 +270,7 @@ a { text-decoration: none; color: inherit; }
 
 <script>
 /* ============================================================
-   ENGINE — Sorted by Count + Infinite Scroll
+   PORTFOLIO ENGINE — Filters sorted by count (DESC)
 ============================================================ */
 
 (function() {
@@ -303,12 +301,11 @@ a { text-decoration: none; color: inherit; }
     while (nextPath && allPosts.length < 100) {
       const data = await fetchPage(nextPath);
       allPosts.push(...(data.items || []));
-
-      nextPath = data.pagination?.nextPageUrl
-        ? (data.pagination.nextPageUrl.includes("format=")
-            ? data.pagination.nextPageUrl
-            : data.pagination.nextPageUrl + "&format=json-pretty")
-        : null;
+      if (data.pagination?.nextPageUrl) {
+        nextPath = data.pagination.nextPageUrl.includes("format=")
+          ? data.pagination.nextPageUrl
+          : data.pagination.nextPageUrl + "&format=json-pretty";
+      } else nextPath = null;
     }
 
     buildFilters();
@@ -318,6 +315,7 @@ a { text-decoration: none; color: inherit; }
     statusEl.textContent = "";
   }
 
+  /* Build Filters ---------------------- */
   function buildFilters() {
     filtersEl.innerHTML = "";
 
@@ -340,6 +338,7 @@ a { text-decoration: none; color: inherit; }
         input.value = cat;
 
         input.addEventListener("change", async () => {
+
           if (input.checked) {
             activeCategories.add(cat);
             pill.classList.add("active");
@@ -365,18 +364,20 @@ a { text-decoration: none; color: inherit; }
       });
   }
 
+  /* Load ALL pages when filtering -------- */
   async function loadAllPages() {
     while (nextPath) {
       const data = await fetchPage(nextPath);
       allPosts.push(...(data.items || []));
-      nextPath = data.pagination?.nextPageUrl
-        ? (data.pagination.nextPageUrl.includes("format=")
-            ? data.pagination.nextPageUrl
-            : data.pagination.nextPageUrl + "&format=json-pretty")
-        : null;
+      if (data.pagination?.nextPageUrl) {
+        nextPath = data.pagination.nextPageUrl.includes("format=")
+          ? data.pagination.nextPageUrl
+          : data.pagination.nextPageUrl + "&format=json-pretty";
+      } else nextPath = null;
     }
   }
 
+  /* Filters Applied ---------------------- */
   function getFiltered() {
     if (activeCategories.size === 0) return allPosts;
     return allPosts.filter(p =>
@@ -384,6 +385,7 @@ a { text-decoration: none; color: inherit; }
     );
   }
 
+  /* Render Cards ------------------------- */
   function renderCards() {
     const filtered = getFiltered();
     const slice = filtered.slice(visibleCount, visibleCount + BATCH);
@@ -414,6 +416,7 @@ a { text-decoration: none; color: inherit; }
     visibleCount += BATCH;
   }
 
+  /* Fade-in Observer --------------------- */
   const observer = new IntersectionObserver(entries => {
     entries.forEach(e => {
       if (e.isIntersecting) {
@@ -423,6 +426,7 @@ a { text-decoration: none; color: inherit; }
     });
   }, { threshold: 0.2 });
 
+  /* Infinite Scroll ---------------------- */
   const sentinel = document.createElement("div");
   sentinel.style.height = "1px";
   gridEl.after(sentinel);
@@ -436,12 +440,18 @@ a { text-decoration: none; color: inherit; }
   });
   scrollObs.observe(sentinel);
 
+  /* Sticky Mini Mode --------------------- */
+  window.addEventListener("scroll", () => {
+    if (window.scrollY > 140) filterBarEl.classList.add("compact");
+    else filterBarEl.classList.remove("compact");
+  });
+
   loadInitial();
 
 })();
 </script>
 
-<!-- HEIGHT SYNC FOR SQUARESPACE -->
+<!-- HEIGHT SYNC -->
 <script>
 function sendHeight(){
   parent.postMessage({ portfolioHeight: document.documentElement.scrollHeight }, "*");
