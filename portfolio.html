@@ -38,7 +38,6 @@ body {
 a { text-decoration: none; color: inherit; }
 
 /* WRAPPER ------------------------------------------------- */
-/* Desktop Grid vollbreit */
 #portfolio-wrapper {
   width: 100%;
   max-width: none;
@@ -47,7 +46,7 @@ a { text-decoration: none; color: inherit; }
 }
 
 /* -----------------------------------------------------------
-   FILTER BAR — DESKTOP (Minimal, Flat)
+   FILTER BAR — DESKTOP
 ----------------------------------------------------------- */
 #filterBar {
   margin-bottom: 32px;
@@ -72,7 +71,7 @@ a { text-decoration: none; color: inherit; }
   margin-bottom: 10px;
 }
 
-/* Desktop Pills */
+/* Desktop Pills Grid */
 #categoryFilters {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(140px, auto));
@@ -108,34 +107,51 @@ a { text-decoration: none; color: inherit; }
   color: white;
 }
 
+/* Scroll-Indicator Basis */
 .filter-scroll-indicator {
   position: absolute;
   top: 0;
   bottom: 0;
-  width: 42px; /* 20% länger */
+  width: 72px; /* EXTRA BREITER, hochwertiger Fade */
   pointer-events: none;
   opacity: 0;
-  transition: opacity .25s ease;
-  z-index: 3;
-  display: none;
+  transition: opacity .35s ease;
+  z-index: 6;
+  display: none; /* erst mobil */
+}
+
+.filter-scroll-indicator.visible {
+  opacity: 1;
 }
 
 .filter-scroll-indicator--left {
   left: 0;
-  background: linear-gradient(to right, rgba(28,28,28,1), rgba(28,28,28,0));
+  background: linear-gradient(
+    to right,
+    rgba(28,28,28,1) 0%,
+    rgba(28,28,28,0.85) 25%,
+    rgba(28,28,28,0.45) 55%,
+    rgba(28,28,28,0) 100%
+  );
 }
 
 .filter-scroll-indicator--right {
   right: 0;
-  background: linear-gradient(to left, rgba(28,28,28,1), rgba(28,28,28,0));
+  background: linear-gradient(
+    to left,
+    rgba(28,28,28,1) 0%,
+    rgba(28,28,28,0.85) 25%,
+    rgba(28,28,28,0.45) 55%,
+    rgba(28,28,28,0) 100%
+  );
 }
 
 /* -----------------------------------------------------------
-   DESKTOP GRID – exakt wie vorher
+   DESKTOP GRID
 ----------------------------------------------------------- */
 .portfolio-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr); 
+  grid-template-columns: repeat(3, 1fr);
   gap: 48px;
 }
 
@@ -159,7 +175,7 @@ a { text-decoration: none; color: inherit; }
 .card:hover .card-img { transform: scale(1.06); }
 
 /* -----------------------------------------------------------
-   MOBILE – OPTION M1 (kompakt, 1 Spalte)
+   MOBILE
 ----------------------------------------------------------- */
 @media (max-width: 768px) {
 
@@ -192,17 +208,17 @@ a { text-decoration: none; color: inherit; }
   }
   #categoryFilters::-webkit-scrollbar { display: none; }
 
+  /* MOBILE FADE-ACTIVATION */
+  .filter-scroll-indicator {
+    display: block;
+  }
+
   .filter-pill {
     padding: 10px 24px;
     font-size: 12px;
     flex-shrink: 0;
   }
 
-  .filter-scroll-indicator {
-    display: block;
-  }
-
-  /* mobile Grid – kompakt */
   .portfolio-grid {
     grid-template-columns: 1fr;
     gap: 22px;
@@ -213,7 +229,6 @@ a { text-decoration: none; color: inherit; }
   .card-title { font-size: 17px; margin-bottom: 4px; }
   .card-excerpt { font-size: 12px; }
 }
-
 </style>
 </head>
 
@@ -240,7 +255,7 @@ a { text-decoration: none; color: inherit; }
 </div>
 
 <script>
-/* ================== PORTFOLIO ENGINE (keine Änderungen) ================== */
+/* ================== PORTFOLIO ENGINE ================== */
 (function() {
 
   const BASE  = "https://www.flowingframes.media";
