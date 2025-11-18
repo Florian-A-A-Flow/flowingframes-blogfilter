@@ -50,7 +50,7 @@ a { text-decoration: none; color: inherit; }
 
 #filterBar {
   margin-bottom: 32px;
-  position: relative; /* NICHT sticky */
+  position: relative;
   padding: 14px 0;
   z-index: 2;
 }
@@ -75,7 +75,6 @@ a { text-decoration: none; color: inherit; }
   display: inline-flex;
   justify-content: center;
   align-items: center;
-
   padding: 9px 20px;
   border-radius: var(--pill-radius);
   background: rgba(255,255,255,0.05);
@@ -189,6 +188,9 @@ a { text-decoration: none; color: inherit; }
   margin: 0;
 }
 
+/* -----------------------------------------------------------
+   STATUS
+----------------------------------------------------------- */
 #statusMessage {
   text-align: center;
   margin-top: 24px;
@@ -196,7 +198,7 @@ a { text-decoration: none; color: inherit; }
 }
 
 /* -----------------------------------------------------------
-   MOBILE — GLASS BAR + FADES + 2-ZEILIG + SWIPE
+   MOBILE — GLASS FILTERBAR + 1-ZEILIG + HORIZONTAL SCROLL
 ----------------------------------------------------------- */
 @media (max-width: 768px) {
 
@@ -206,6 +208,7 @@ a { text-decoration: none; color: inherit; }
 
   #filterBar {
     position: relative;
+    top: 0;
     background: var(--glass-bg);
     backdrop-filter: blur(18px) saturate(180%);
     border: 1px solid var(--glass-border);
@@ -217,25 +220,26 @@ a { text-decoration: none; color: inherit; }
 
     z-index: 40;
     box-shadow: var(--shadow-glass);
+
+    /* Gradient Overlays */
+    overflow: visible;
   }
 
   .filter-group-label {
     display: none;
   }
 
-  /* ------ 2-ZEILIG & SWIPEBAR kombiniert ------ */
+  /* --- MOBILE: 1 Zeile + horizontal scroll --- */
   #categoryFilters {
     display: flex;
-    flex-wrap: wrap;
-    row-gap: 10px;
-    column-gap: 12px;
-
-    max-height: none;
+    flex-wrap: nowrap;
     overflow-x: auto;
-    overflow-y: visible;
-
+    overflow-y: hidden;
+    gap: 12px;
+    white-space: nowrap;
     scrollbar-width: none;
     padding-bottom: 3px;
+    position: relative;
   }
   #categoryFilters::-webkit-scrollbar {
     display: none;
@@ -247,26 +251,30 @@ a { text-decoration: none; color: inherit; }
     flex-shrink: 0;
   }
 
-  /* ------ FADES links/rechts ------ */
-
-  .filter-fade-left,
-  .filter-fade-right {
+  /* Left Fade */
+  #categoryFilters::before {
+    content: "";
     position: absolute;
+    left: 0;
     top: 0;
     bottom: 0;
     width: 28px;
+    background: linear-gradient(to right, rgba(28,28,28,0.85), rgba(28,28,28,0));
     pointer-events: none;
-    z-index: 50;
+    z-index: 5;
   }
 
-  .filter-fade-left {
-    left: 0;
-    background: linear-gradient(to right, rgba(28,28,28,1), rgba(28,28,28,0));
-  }
-
-  .filter-fade-right {
+  /* Right Fade */
+  #categoryFilters::after {
+    content: "";
+    position: absolute;
     right: 0;
-    background: linear-gradient(to left, rgba(28,28,28,1), rgba(28,28,28,0));
+    top: 0;
+    bottom: 0;
+    width: 28px;
+    background: linear-gradient(to left, rgba(28,28,28,0.85), rgba(28,28,28,0));
+    pointer-events: none;
+    z-index: 5;
   }
 }
 </style>
@@ -274,18 +282,13 @@ a { text-decoration: none; color: inherit; }
 
 <body>
 
-<!-- MOBILE FADES -->
-<div class="filter-fade-left"></div>
-<div class="filter-fade-right"></div>
-
-<!-- FILTERBAR steht ÜBER dem Wrapper -->
+<!-- FILTERBAR STEHT ÜBER DEM GRID -->
 <div id="filterBar">
   <div class="filter-group">
     <div class="filter-group-label">Kategorien</div>
     <div id="categoryFilters"></div>
   </div>
 </div>
-
 
 <div id="portfolio-wrapper">
   <div id="portfolioGrid" class="portfolio-grid"></div>
