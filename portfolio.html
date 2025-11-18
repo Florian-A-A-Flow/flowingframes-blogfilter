@@ -107,12 +107,6 @@ body {
   transition: opacity .6s ease, transform .6s ease, box-shadow .35s ease;
 }
 
-/* Sichtbar-Status für Lazy-Animation */
-.card.visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
 .card:hover {
   box-shadow: var(--shadow-hover);
 }
@@ -182,6 +176,7 @@ body {
   color: var(--text-muted);
   text-align: center;
 }
+
 </style>
 </head>
 
@@ -219,21 +214,18 @@ body {
   let visibleCount = 0;
   const BATCH = 30;
 
-  /* Robuste Proxy-URL-Erzeugung + Encoding */
+  /* FETCH */
   async function fetchPage(path) {
-    // Falls nextPageUrl absolut ist (https://...), nicht nochmal BASE davor klatschen
-    const isAbsolute = /^https?:\/\//i.test(path);
-    const finalUrl = isAbsolute ? path : BASE + path;
-    const url = PROXY + encodeURIComponent(finalUrl);
-
+    const url = PROXY + BASE + path;   // <- wie in deiner funktionierenden Version
     const res = await fetch(url);
     if (!res.ok) {
-      console.error("Proxy fetch failed", res.status, url);
-      throw new Error("Fehler beim Laden: " + res.status);
+      console.warn("Proxy fetch failed", res.status, url);
+      return { items: [], pagination: {} };
     }
     return res.json();
   }
 
+  /* ALLE SEITEN LADEN FÜR FILTER */
   async function loadAllPages() {
     while (nextPath) {
       const data = await fetchPage(nextPath);
@@ -241,12 +233,11 @@ body {
       if (data.pagination?.nextPageUrl) {
         const u = data.pagination.nextPageUrl;
         nextPath = u.includes("format=") ? u : u + "&format=json-pretty";
-      } else {
-        nextPath = null;
-      }
+      } else nextPath = null;
     }
   }
 
+  /* FILTER UI */
   function buildFilters() {
     filtersEl.innerHTML = "";
     const counts = {};
@@ -301,6 +292,21 @@ body {
     );
   }
 
+  /* LAZY FADE-IN OBSERVER */
+  const cardObserver = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add("visible");
+        cardObserver.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.2 });
+
+  function observeCard(card) {
+    cardObserver.observe(card);
+  }
+
+  /* RENDERING */
   function renderCards() {
     const filtered = getFilteredPosts();
     const slice = filtered.slice(visibleCount, visibleCount + BATCH);
@@ -320,7 +326,7 @@ body {
       const img = document.createElement("img");
       img.className = "card-img";
       img.src = post.assetUrl;
-      img.alt = post.title;
+      img.alt = post.title || "";
       img.loading = "lazy";
 
       const overlay = document.createElement("div");
@@ -338,7 +344,7 @@ body {
 
       const titleEl = document.createElement("h3");
       titleEl.className = "card-title";
-      titleEl.textContent = post.title;
+      titleEl.textContent = post.title || "";
 
       const excerptEl = document.createElement("p");
       excerptEl.className = "card-excerpt";
@@ -354,8 +360,8 @@ body {
       a.appendChild(inner);
       gridEl.appendChild(a);
 
-      // Lazy-Fade sichtbar schalten
-      a.classList.add("visible");
+      // LAZY-VISIBLE per IntersectionObserver
+      observeCard(a);
     });
 
     visibleCount += BATCH;
@@ -365,6 +371,7 @@ body {
       : "";
   }
 
+  /* SENTINEL + INFINITE SCROLL */
   const sentinel = document.createElement("div");
   sentinel.style.height = "1px";
   gridEl.after(sentinel);
@@ -381,31 +388,25 @@ body {
 
   scrollObserver.observe(sentinel);
 
+  /* INITIAL LOAD */
   async function loadInitial() {
-    try {
-      statusEl.textContent = "Lade Projekte …";
+    statusEl.textContent = "Lade Projekte …";
 
-      while (nextPath && allPosts.length < 100) {
-        const data = await fetchPage(nextPath);
-        allPosts = allPosts.concat(data.items || []);
+    while (nextPath && allPosts.length < 100) {
+      const data = await fetchPage(nextPath);
+      allPosts = allPosts.concat(data.items || []);
 
-        if (data.pagination?.nextPageUrl) {
-          const u = data.pagination.nextPageUrl;
-          nextPath = u.includes("format=") ? u : u + "&format=json-pretty";
-        } else {
-          nextPath = null;
-        }
-      }
-
-      buildFilters();
-      renderCards();
-      renderCards();
-
-      statusEl.textContent = "";
-    } catch (err) {
-      console.error(err);
-      statusEl.textContent = "Fehler beim Laden der Projekte.";
+      if (data.pagination?.nextPageUrl) {
+        const u = data.pagination.nextPageUrl;
+        nextPath = u.includes("format=") ? u : u + "&format=json-pretty";
+      } else nextPath = null;
     }
+
+    buildFilters();
+    renderCards();
+    renderCards();
+
+    statusEl.textContent = "";
   }
 
   loadInitial();
