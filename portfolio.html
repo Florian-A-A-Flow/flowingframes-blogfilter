@@ -107,13 +107,13 @@ body {
   transition: opacity .6s ease, transform .6s ease, box-shadow .35s ease;
 }
 
-/* Sichtbarer Zustand für Lazy-Fade */
+/* Sichtbarer Zustand (Lazy-Fade-In) */
 .card.visible {
   opacity: 1;
   transform: translateY(0);
 }
 
-/* Hover-Schatten */
+/* Hover Shadow */
 .card:hover {
   box-shadow: var(--shadow-hover);
 }
@@ -221,7 +221,7 @@ body {
   let visibleCount = 0;
   const BATCH = 30;
 
-  // Proxy-Aufruf ohne Encoding (so wie deine aktuelle Worker-Logik es erwartet)
+  // Proxy-Aufruf ohne Encoding (dein Worker arbeitet so)
   async function fetchPage(path) {
     const url = PROXY + BASE + path;
     const res = await fetch(url);
@@ -264,9 +264,10 @@ body {
         input.value = cat;
 
         input.addEventListener("change", async () => {
+          // 🟢 Visuelles Feedback + Logik
           if (input.checked) {
             activeCategories.add(cat);
-            label.classList.add("active");      // ✅ visuelles Feedback
+            label.classList.add("active");
           } else {
             activeCategories.delete(cat);
             label.classList.remove("active");
@@ -275,9 +276,9 @@ body {
           gridEl.classList.add("fade-out");
           await new Promise(r => setTimeout(r, 250));
 
-          if (activeCategories.size > 0 && nextPath) {
+          // Falls du später wieder Pagination nutzen willst:
+          if (activeCategories.size > 0 && nextPath)
             await loadAllPages();
-          }
 
           visibleCount = 0;
           gridEl.innerHTML = "";
@@ -324,7 +325,7 @@ body {
       const img = document.createElement("img");
       img.className = "card-img";
       img.src = post.assetUrl;
-      img.alt = post.title || "";
+      img.alt = post.title;
       img.loading = "lazy";
 
       const overlay = document.createElement("div");
@@ -342,7 +343,7 @@ body {
 
       const titleEl = document.createElement("h3");
       titleEl.className = "card-title";
-      titleEl.textContent = post.title || "";
+      titleEl.textContent = post.title;
 
       const excerptEl = document.createElement("p");
       excerptEl.className = "card-excerpt";
@@ -358,7 +359,7 @@ body {
       a.appendChild(inner);
       gridEl.appendChild(a);
 
-      // ✅ Lazy-Fade über IntersectionObserver
+      // 🟢 Lazy-Animation per IntersectionObserver
       observeCard(a);
     });
 
@@ -369,7 +370,7 @@ body {
       : "";
   }
 
-  // ✅ Lazy-Loading Animation: Cards werden erst beim Scrollen sichtbar
+  // 🟢 Lazy-In-Observer für Cards
   const cardObserver = new IntersectionObserver(entries => {
     entries.forEach(e => {
       if (e.isIntersecting) {
@@ -383,18 +384,17 @@ body {
     cardObserver.observe(card);
   }
 
-  // Sentinel für Infinite Scroll
+  // Sentinel für Infinite Scroll (DOM-Batches)
   const sentinel = document.createElement("div");
   sentinel.style.height = "1px";
   gridEl.after(sentinel);
 
   const scrollObserver = new IntersectionObserver(entries => {
-    if (entries[0].isIntersecting) {
-      const filtered = getFilteredPosts();
-      if (visibleCount < filtered.length) {
-        renderCards();
-        sendHeight();
-      }
+    if (!entries[0].isIntersecting) return;
+    const filtered = getFilteredPosts();
+    if (visibleCount < filtered.length) {
+      renderCards();
+      sendHeight();
     }
   });
 
@@ -403,7 +403,7 @@ body {
   async function loadInitial() {
     statusEl.textContent = "Lade Projekte …";
 
-    // ✅ ALLE Seiten laden (kein künstliches 100er Limit mehr)
+    // 🟢 ALLE Seiten laden (kein 100er-Limit mehr)
     while (nextPath) {
       const data = await fetchPage(nextPath);
       allPosts = allPosts.concat(data.items || []);
@@ -417,8 +417,8 @@ body {
     }
 
     buildFilters();
-    renderCards(); // erste 30
-    renderCards(); // nächste 30 → 60 initial
+    renderCards();
+    renderCards(); // zweites Batch für volleres Start-Layout
 
     statusEl.textContent = "";
   }
