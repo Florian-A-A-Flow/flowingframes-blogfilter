@@ -52,7 +52,7 @@ a { text-decoration: none; color: inherit; }
   margin-bottom: 32px;
   position: relative; /* NICHT sticky */
   padding: 14px 0;
-  z-index: 2; /* Damit sie über dem Grid bleibt */
+  z-index: 2;
 }
 
 .filter-group-label {
@@ -189,9 +189,6 @@ a { text-decoration: none; color: inherit; }
   margin: 0;
 }
 
-/* -----------------------------------------------------------
-   STATUS
------------------------------------------------------------ */
 #statusMessage {
   text-align: center;
   margin-top: 24px;
@@ -199,8 +196,7 @@ a { text-decoration: none; color: inherit; }
 }
 
 /* -----------------------------------------------------------
-   MOBILE — MODERN GLASS FILTERBAR
-   (NICHT STICKY, scrollt normal mit)
+   MOBILE — GLASS BAR + FADES + 2-ZEILIG + SWIPE
 ----------------------------------------------------------- */
 @media (max-width: 768px) {
 
@@ -209,8 +205,7 @@ a { text-decoration: none; color: inherit; }
   }
 
   #filterBar {
-    position: relative;  /* <-- WICHTIG: nicht sticky */
-    top: 0;
+    position: relative;
     background: var(--glass-bg);
     backdrop-filter: blur(18px) saturate(180%);
     border: 1px solid var(--glass-border);
@@ -228,10 +223,17 @@ a { text-decoration: none; color: inherit; }
     display: none;
   }
 
+  /* ------ 2-ZEILIG & SWIPEBAR kombiniert ------ */
   #categoryFilters {
     display: flex;
+    flex-wrap: wrap;
+    row-gap: 10px;
+    column-gap: 12px;
+
+    max-height: none;
     overflow-x: auto;
-    gap: 12px;
+    overflow-y: visible;
+
     scrollbar-width: none;
     padding-bottom: 3px;
   }
@@ -244,19 +246,46 @@ a { text-decoration: none; color: inherit; }
     font-size: 12px;
     flex-shrink: 0;
   }
+
+  /* ------ FADES links/rechts ------ */
+
+  .filter-fade-left,
+  .filter-fade-right {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 28px;
+    pointer-events: none;
+    z-index: 50;
+  }
+
+  .filter-fade-left {
+    left: 0;
+    background: linear-gradient(to right, rgba(28,28,28,1), rgba(28,28,28,0));
+  }
+
+  .filter-fade-right {
+    right: 0;
+    background: linear-gradient(to left, rgba(28,28,28,1), rgba(28,28,28,0));
+  }
 }
 </style>
 </head>
 
 <body>
 
-<!-- FILTERBAR steht JETZT ÜBER dem Wrapper -->
+<!-- MOBILE FADES -->
+<div class="filter-fade-left"></div>
+<div class="filter-fade-right"></div>
+
+<!-- FILTERBAR steht ÜBER dem Wrapper -->
 <div id="filterBar">
   <div class="filter-group">
     <div class="filter-group-label">Kategorien</div>
     <div id="categoryFilters"></div>
   </div>
 </div>
+
 
 <div id="portfolio-wrapper">
   <div id="portfolioGrid" class="portfolio-grid"></div>
@@ -265,7 +294,7 @@ a { text-decoration: none; color: inherit; }
 
 <script>
 /* ============================================================
-   PORTFOLIO ENGINE – funktioniert unverändert weiter
+   PORTFOLIO ENGINE – unverändert
 ============================================================ */
 
 (function() {
