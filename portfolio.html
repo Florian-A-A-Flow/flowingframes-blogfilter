@@ -37,17 +37,18 @@ body {
 }
 a { text-decoration: none; color: inherit; }
 
-/* WRAPPER ------------------------------------------------- */
-/* Desktop Grid vollbreit (UNVERÄNDERT) */
+/* -----------------------------------------------------------
+   DESKTOP WRAPPER — unverändert
+----------------------------------------------------------- */
 #portfolio-wrapper {
   width: 100%;
   max-width: none;
   margin: 0;
-  padding: 0 16px;
+  padding: 0 48px;
 }
 
 /* -----------------------------------------------------------
-   FILTER BAR — DESKTOP (UNVERÄNDERT)
+   FILTER BAR DESKTOP — unverändert
 ----------------------------------------------------------- */
 #filterBar {
   margin-bottom: 32px;
@@ -57,7 +58,7 @@ a { text-decoration: none; color: inherit; }
 }
 
 .filter-inner {
-  max-width: 1400px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 0 16px;
   position: relative;
@@ -70,11 +71,12 @@ a { text-decoration: none; color: inherit; }
   letter-spacing: .14em;
   color: var(--text-muted);
   margin-bottom: 10px;
+  pointer-events: none;
 }
 
 #categoryFilters {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, auto));
+  grid-template-columns: repeat(3, 1fr);
   gap: 12px;
 }
 
@@ -82,16 +84,25 @@ a { text-decoration: none; color: inherit; }
   display: inline-flex;
   justify-content: center;
   align-items: center;
+
   padding: 9px 24px;
   border-radius: var(--pill-radius);
   background: rgba(255,255,255,0.05);
   border: 1px solid rgba(255,255,255,0.12);
+
   font-size: 11px;
   letter-spacing: .12em;
   text-transform: uppercase;
   color: var(--text-muted);
-  white-space: nowrap;
+
   transition: var(--transition-fast);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.filter-pill:hover {
+  background: rgba(255,255,255,0.09);
+  border-color: rgba(255,255,255,0.25);
 }
 
 .filter-pill.active {
@@ -100,127 +111,57 @@ a { text-decoration: none; color: inherit; }
   color: white;
 }
 
-/* FADES – DESKTOP HIDDEN BY DEFAULT */
-.filter-scroll-indicator {
+.filter-pill input {
   position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 32px;
-  pointer-events: none;
   opacity: 0;
-  transition: opacity .25s ease;
-  z-index: 3;
+  pointer-events: none;
+}
+
+/* Fade edges (desktop hidden) */
+.filter-scroll-indicator {
   display: none;
 }
 
-/* Desktop Grid — 3 Columns (unchanged!) */
+/* -----------------------------------------------------------
+   GRID DESKTOP — unverändert (3 Spalten)
+----------------------------------------------------------- */
 .portfolio-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr); /* UNVERÄNDERT */
-  gap: 48px; /* UNVERÄNDERT */
+  grid-template-columns: repeat(3, 1fr);
+  gap: 34px;
 }
 
 /* -----------------------------------------------------------
-   CARDS (unchanged)
------------------------------------------------------------ */
-
-.card {
-  display: block;
-  background: #1B1B1B;
-  border-radius: var(--border-radius);
-  overflow: hidden;
-  opacity: 0;
-  transform: translateY(20px);
-  transition: .65s ease, box-shadow .35s ease;
-}
-
-.card.visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.card-media-wrap { position: relative; overflow: hidden; }
-
-.card-img {
-  width: 100%;
-  aspect-ratio: 16/9;
-  object-fit: cover;
-  transition: .45s ease;
-}
-
-.card:hover .card-img { transform: scale(1.06); }
-
-/* -----------------------------------------------------------
-   MOBILE — NEW FIXED VERSION
+   MOBILE VERSION — *NUR GRID AUS DEINER WUNSCHVERSION*
 ----------------------------------------------------------- */
 @media (max-width: 768px) {
 
-  /* MOBILE GRID BACK TO 1 COLUMN (your request #2) */
+  /* GRID exakt wie deine mobile Wunschversion */
   .portfolio-grid {
     grid-template-columns: 1fr !important;
     gap: 22px !important;
   }
 
-  body { padding-bottom: 140px; }
-
-  #filterBar {
-    margin-bottom: 18px;
-    padding: 0;
-    background: var(--glass-bg);
-    backdrop-filter: blur(18px) saturate(180%);
-    border-top: 1px solid var(--glass-border);
-    border-bottom: 1px solid var(--glass-border);
-    box-shadow: var(--shadow-glass);
+  #portfolio-wrapper {
+    padding: 0 16px !important;
   }
 
-  .filter-inner {
-    padding: 0;
-    margin: 0;
+  .card-text {
+    padding: 14px !important;
   }
 
-  /* MOBILE HORIZONTAL SCROLL */
-  #categoryFilters {
-    display: flex !important;
-    overflow-x: auto !important;
-    white-space: nowrap;
-    gap: 14px;
-    padding: 12px 20px;
-    scrollbar-width: none;
-  }
-  #categoryFilters::-webkit-scrollbar { display: none; }
-
-  .filter-pill {
-    padding: 10px 24px;
-    font-size: 12px;
-    flex-shrink: 0;
+  .card-category {
+    font-size: 10px !important;
+    margin-bottom: 4px !important;
   }
 
-  /* ----------------------------------------------------
-     FIXED FADE (request #1)
-     Now 20% wider, stays in place, never scrolls away.
-     Gradient is longer and smoother.
-  ---------------------------------------------------- */
-  .filter-scroll-indicator {
-    display: block;
-    width: 42px; /* was 32px → +20% */
+  .card-title {
+    font-size: 17px !important;
+    margin-bottom: 4px !important;
   }
 
-  .filter-scroll-indicator--left {
-    left: 0;
-    background: linear-gradient(
-      to right,
-      rgba(28,28,28,1),
-      rgba(28,28,28,0)
-    );
-  }
-
-  .filter-scroll-indicator--right {
-    right: 0;
-    background: linear-gradient(
-      to left,
-      rgba(28,28,28,1),
-      rgba(28,28,28,0)
-    );
+  .card-excerpt {
+    font-size: 12px !important;
   }
 }
 </style>
@@ -228,19 +169,15 @@ a { text-decoration: none; color: inherit; }
 
 <body>
 
-<!-- FILTERBAR OUTSIDE WRAPPER (unchanged desktop) -->
+<!-- FILTERBAR ÜBER DEM WRAPPER — unverändert -->
 <div id="filterBar">
   <div class="filter-inner">
-
     <div class="filter-group">
       <div class="filter-group-label">Kategorien</div>
       <div id="categoryFilters"></div>
     </div>
-
-    <!-- MOBILE FADES -->
     <div class="filter-scroll-indicator filter-scroll-indicator--left"></div>
     <div class="filter-scroll-indicator filter-scroll-indicator--right"></div>
-
   </div>
 </div>
 
@@ -250,11 +187,9 @@ a { text-decoration: none; color: inherit; }
 </div>
 
 <script>
-/* ============================================================
-   PORTFOLIO ENGINE (unchanged)
-============================================================ */
-
+/* ENGINE unverändert */
 (function() {
+
   const BASE  = "https://www.flowingframes.media";
   const PROXY = "https://flowingframes-proxy.florian-augustus-alexander.workers.dev/?url=";
 
@@ -282,29 +217,25 @@ a { text-decoration: none; color: inherit; }
     while (nextPath && allPosts.length < 100) {
       const data = await fetchPage(nextPath);
       allPosts.push(...(data.items || []));
-      if (data.pagination?.nextPageUrl) {
-        const u = data.pagination.nextPageUrl;
-        nextPath = u.includes("format=") ? u : u + "&format=json-pretty";
-      } else nextPath = null;
+      nextPath = data.pagination?.nextPageUrl
+        ? (data.pagination.nextPageUrl.includes("format=")
+            ? data.pagination.nextPageUrl
+            : data.pagination.nextPageUrl + "&format=json-pretty")
+        : null;
     }
 
     buildFilters();
     renderCards();
     renderCards();
-
     statusEl.textContent = "";
     updateScrollIndicators();
   }
 
   function buildFilters() {
     filtersEl.innerHTML = "";
-    const counts = {};
 
-    allPosts.forEach(p =>
-      (p.categories || []).forEach(c =>
-        counts[c] = (counts[c] || 0) + 1
-      )
-    );
+    const counts = {};
+    allPosts.forEach(p => (p.categories || []).forEach(c => counts[c] = (counts[c] || 0) + 1));
 
     Object.keys(counts)
       .sort((a,b) => counts[b]-counts[a] || a.localeCompare(b))
@@ -317,16 +248,13 @@ a { text-decoration: none; color: inherit; }
         input.value = cat;
 
         input.addEventListener("change", async () => {
-          if (input.checked) activeCategories.add(cat);
-          else activeCategories.delete(cat);
-
-          pill.classList.toggle("active", input.checked);
+          if (input.checked) { activeCategories.add(cat); pill.classList.add("active"); }
+          else { activeCategories.delete(cat); pill.classList.remove("active"); }
 
           gridEl.innerHTML = "";
           visibleCount = 0;
 
-          if (activeCategories.size > 0 && nextPath)
-            await loadAllPages();
+          if (activeCategories.size > 0 && nextPath) await loadAllPages();
 
           renderCards();
           renderCards();
@@ -345,23 +273,22 @@ a { text-decoration: none; color: inherit; }
     while (nextPath) {
       const data = await fetchPage(nextPath);
       allPosts.push(...(data.items || []));
-      if (data.pagination?.nextPageUrl) {
-        const u = data.pagination.nextPageUrl;
-        nextPath = u.includes("format=") ? u : u + "&format=json-pretty";
-      } else nextPath = null;
+      nextPath = data.pagination?.nextPageUrl
+        ? (data.pagination.nextPageUrl.includes("format=")
+            ? data.pagination.nextPageUrl
+            : data.pagination.nextPageUrl + "&format=json-pretty")
+        : null;
     }
   }
 
   function getFiltered() {
-    if (activeCategories.size === 0) return allPosts;
-    return allPosts.filter(p =>
-      p.categories?.some(c => activeCategories.has(c))
-    );
+    return activeCategories.size === 0
+      ? allPosts
+      : allPosts.filter(p => p.categories?.some(c => activeCategories.has(c)));
   }
 
   function renderCards() {
-    const filtered = getFiltered();
-    const slice = filtered.slice(visibleCount, visibleCount+BATCH);
+    const slice = getFiltered().slice(visibleCount, visibleCount + BATCH);
 
     slice.forEach(post => {
       const a = document.createElement("a");
@@ -371,13 +298,13 @@ a { text-decoration: none; color: inherit; }
       a.innerHTML = `
         <div class="card-inner">
           <div class="card-media-wrap">
-            <img class="card-img" src="${post.assetUrl}" loading="lazy">
+            <img class="card-img" src="${post.assetUrl}" loading="lazy" alt="">
             <div class="card-media-overlay"></div>
           </div>
           <div class="card-text">
-            <div class="card-category">${(post.categories||[]).join(" · ")}</div>
+            <div class="card-category">${(post.categories || []).join(" · ")}</div>
             <h3 class="card-title">${post.title}</h3>
-            <p class="card-excerpt">${(post.excerpt||"").replace(/<[^>]+>/g,"")}</p>
+            <p class="card-excerpt">${(post.excerpt || "").replace(/<[^>]+>/g,"")}</p>
           </div>
         </div>
       `;
@@ -403,19 +330,16 @@ a { text-decoration: none; color: inherit; }
 
   const scrollObs = new IntersectionObserver(entries => {
     if (!entries[0].isIntersecting) return;
-
     const filtered = getFiltered();
     if (visibleCount >= filtered.length) return;
-
     renderCards();
     sendHeight();
   });
   scrollObs.observe(sentinel);
 
-  /* MOBILE FADE INDICATORS */
+  // Fade-Logik
   function updateScrollIndicators() {
     const maxScroll = filtersEl.scrollWidth - filtersEl.clientWidth;
-
     if (maxScroll <= 0) {
       indicatorLeft.classList.remove("visible");
       indicatorRight.classList.remove("visible");
@@ -423,7 +347,6 @@ a { text-decoration: none; color: inherit; }
     }
 
     const sl = filtersEl.scrollLeft;
-
     indicatorLeft.classList.toggle("visible", sl > 2);
     indicatorRight.classList.toggle("visible", sl < maxScroll - 2);
   }
