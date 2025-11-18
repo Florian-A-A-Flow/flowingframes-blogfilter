@@ -107,6 +107,12 @@ body {
   transition: opacity .6s ease, transform .6s ease, box-shadow .35s ease;
 }
 
+/* Sichtbar-Status für Lazy-Animation */
+.card.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
 .card:hover {
   box-shadow: var(--shadow-hover);
 }
@@ -176,7 +182,6 @@ body {
   color: var(--text-muted);
   text-align: center;
 }
-
 </style>
 </head>
 
@@ -214,13 +219,17 @@ body {
   let visibleCount = 0;
   const BATCH = 30;
 
-  /* FIX — NO ENCODING!!! */
+  /* Robuste Proxy-URL-Erzeugung + Encoding */
   async function fetchPage(path) {
-    const url = PROXY + BASE + path;   // ← FIXED
+    // Falls nextPageUrl absolut ist (https://...), nicht nochmal BASE davor klatschen
+    const isAbsolute = /^https?:\/\//i.test(path);
+    const finalUrl = isAbsolute ? path : BASE + path;
+    const url = PROXY + encodeURIComponent(finalUrl);
+
     const res = await fetch(url);
     if (!res.ok) {
-      console.warn("Proxy fetch failed", res.status, url);
-      return { items: [], pagination: {} };
+      console.error("Proxy fetch failed", res.status, url);
+      throw new Error("Fehler beim Laden: " + res.status);
     }
     return res.json();
   }
@@ -232,7 +241,9 @@ body {
       if (data.pagination?.nextPageUrl) {
         const u = data.pagination.nextPageUrl;
         nextPath = u.includes("format=") ? u : u + "&format=json-pretty";
-      } else nextPath = null;
+      } else {
+        nextPath = null;
+      }
     }
   }
 
@@ -343,6 +354,7 @@ body {
       a.appendChild(inner);
       gridEl.appendChild(a);
 
+      // Lazy-Fade sichtbar schalten
       a.classList.add("visible");
     });
 
@@ -370,23 +382,30 @@ body {
   scrollObserver.observe(sentinel);
 
   async function loadInitial() {
-    statusEl.textContent = "Lade Projekte …";
+    try {
+      statusEl.textContent = "Lade Projekte …";
 
-    while (nextPath && allPosts.length < 100) {
-      const data = await fetchPage(nextPath);
-      allPosts = allPosts.concat(data.items || []);
+      while (nextPath && allPosts.length < 100) {
+        const data = await fetchPage(nextPath);
+        allPosts = allPosts.concat(data.items || []);
 
-      if (data.pagination?.nextPageUrl) {
-        const u = data.pagination.nextPageUrl;
-        nextPath = u.includes("format=") ? u : u + "&format=json-pretty";
-      } else nextPath = null;
+        if (data.pagination?.nextPageUrl) {
+          const u = data.pagination.nextPageUrl;
+          nextPath = u.includes("format=") ? u : u + "&format=json-pretty";
+        } else {
+          nextPath = null;
+        }
+      }
+
+      buildFilters();
+      renderCards();
+      renderCards();
+
+      statusEl.textContent = "";
+    } catch (err) {
+      console.error(err);
+      statusEl.textContent = "Fehler beim Laden der Projekte.";
     }
-
-    buildFilters();
-    renderCards();
-    renderCards();
-
-    statusEl.textContent = "";
   }
 
   loadInitial();
