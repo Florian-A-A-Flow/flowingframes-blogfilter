@@ -15,24 +15,27 @@
   --shadow-hover: 0 6px 16px rgba(0,0,0,0.3);
 }
 
-/* Basic Reset */
+/* RESET */
 * { box-sizing: border-box; }
+
 body {
   margin: 0;
-  padding: 40px 0 60px;
+  padding: 40px 0 120px; /* Platz für Bottom-Bar */
   background: var(--bg);
   color: var(--text-main);
   font-family: system-ui, Helvetica, Arial, sans-serif;
 }
 
-/* Wrapper */
+/* WRAPPER */
 #portfolio-wrapper {
   max-width: 1400px;
   margin: 0 auto;
   padding: 0 16px;
 }
 
-/* FILTER BAR – DESKTOP */
+/* ============================================================
+   FILTER BAR — DESKTOP (oben, normal)
+   ============================================================ */
 #filterBar {
   margin-bottom: 32px;
   position: relative;
@@ -46,6 +49,7 @@ body {
   margin-bottom: 10px;
 }
 
+/* Desktop Grid */
 #categoryFilters {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(140px, auto));
@@ -56,8 +60,8 @@ body {
   display: inline-flex;
   padding: 6px 12px;
   border-radius: 999px;
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.12);
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: .12em;
@@ -66,73 +70,60 @@ body {
   transition: .25s;
   white-space: nowrap;
 }
+
 .filter-pill input { opacity: 0; position: absolute; pointer-events: none; }
-.filter-pill:hover { border-color: rgba(255,255,255,0.35); transform: translateY(-1px); }
-.filter-pill.active { background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.65); color:white; }
+.filter-pill:hover { border-color: rgba(255,255,255,0.35); }
+.filter-pill.active {
+  background: rgba(255,255,255,0.14);
+  border-color: rgba(255,255,255,0.8);
+  color:white;
+}
 
-/* Scroll-Indikatoren */
-.filter-scroll-indicator {
-  position: absolute;
-  top: 26px;
-  bottom: 0;
-  width: 24px;
-  pointer-events: none;
-  opacity: 0;
-  transition: .25s ease;
-  z-index: 2;
-}
-.filter-scroll-indicator--left {
-  left: 0;
-  background: linear-gradient(to right, rgba(27,27,27,1), rgba(27,27,27,0));
-}
-.filter-scroll-indicator--right {
-  right: 0;
-  background: linear-gradient(to left, rgba(27,27,27,1), rgba(27,27,27,0));
-}
-.filter-scroll-indicator.visible { opacity: 1; }
-
-/* GRID */
+/* ============================================================
+   GRID + CARDS
+   ============================================================ */
 .portfolio-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px,1fr));
   gap: 34px;
-  transition: opacity .35s ease;
 }
 
-/* CARD */
 .card {
   display: block;
   color: inherit;
   background: var(--card-bg);
   border-radius: var(--border-radius);
   overflow: hidden;
-  opacity: 0;
   transform: translateY(20px);
+  opacity: 0;
   transition: opacity .6s ease, transform .6s ease, box-shadow .35s ease;
 }
-.card.visible { opacity: 1; transform: translateY(0); }
+.card.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.card:hover {
+  box-shadow: var(--shadow-hover);
+}
 
-.card:hover { box-shadow: var(--shadow-hover); }
-
-.card-media-wrap { position: relative; overflow: hidden; border-radius: var(--border-radius); }
+.card-media-wrap { position: relative; border-radius: var(--border-radius); overflow: hidden; }
 .card-img {
   width: 100%;
   aspect-ratio: 16/9;
   object-fit: cover;
-  transition: transform .45s ease, filter .45s ease;
+  transition: transform .45s ease;
 }
-.card:hover .card-img { transform: scale(1.06); filter: saturate(1.1); }
+.card:hover .card-img { transform: scale(1.06); }
 
 .card-media-overlay {
-  position: absolute;
-  inset: 0;
+  position: absolute; inset: 0;
+  background: radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.35) 80%);
   opacity: 0;
-  background: radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.4) 80%);
   transition: opacity .45s ease;
 }
 .card:hover .card-media-overlay { opacity: 1; }
 
-.card-text { padding: 18px 18px 20px; }
+.card-text { padding: 18px; }
 .card-category { font-size: 11px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px; }
 .card-title { font-size: 20px; margin: 0 0 6px; }
 .card-excerpt { font-size: 13px; color: var(--text-muted); margin: 0; }
@@ -145,83 +136,47 @@ body {
 }
 
 /* ============================================================
-   MOBILE — Floating BOTTOM Bar (B1) — stabil & funktionierend
+   MOBILE — Floating Bottom-Bar (Vollbreit, Swipe-Leiste)
    ============================================================ */
 @media (max-width: 768px) {
 
   body {
-    padding: 24px 0 120px; /* Platz für Floating-Bar */
+    padding-bottom: 130px; /* mehr Platz für Bar */
   }
 
-  /* Floating Bottom-Bar */
+  /* Bottom Bar — Vollbreit wie Sticky Header (aber unten) */
   #filterBar {
     position: fixed;
-    left: 50%;
-    bottom: 20px;
-    transform: translateX(-50%);
-    width: calc(100% - 40px);
-    max-width: 480px;
+    left: 0;
+    right: 0;
+    bottom: 0;
 
+    padding: 14px 12px;
     background: rgba(27,27,27,0.92);
     backdrop-filter: blur(12px);
-    border-radius: 999px;
-    padding: 12px 16px;
 
-    z-index: 50;
-    pointer-events: auto;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    z-index: 60;
   }
 
-  /* Mini-Mode */
-  #filterBar.compact {
-    transform: translateX(-50%) translateY(4px) scale(0.94);
-    padding: 8px 12px;
-  }
-
-  /* Label = Dropdown Toggle */
+  /* keine Überschrift – spart Platz */
   .filter-group-label {
-    display: flex;
-    justify-content: space-between;
-    cursor: pointer;
-    margin-bottom: 6px;
-  }
-  .filter-group-label::after {
-    content: "▴"; /* Dropdown klappt nach oben */
-    font-size: 12px;
-    margin-left: 6px;
-    transition: transform .2s ease;
-  }
-  #filterBar.filters-open .filter-group-label::after {
-    transform: rotate(180deg);
+    display: none;
   }
 
-  /* Dropdown */
+  /* Horizontale Swipe-Leiste */
   #categoryFilters {
     display: flex;
     overflow-x: auto;
-    gap: 8px;
+    gap: 10px;
     padding-bottom: 4px;
-    max-height: 0;
-    opacity: 0;
-    pointer-events: none;
-    transition: max-height .25s ease, opacity .25s ease;
+    scrollbar-width: none;
   }
-  #filterBar.filters-open #categoryFilters {
-    max-height: 60px;
-    opacity: 1;
-    pointer-events: auto;
-  }
-
   #categoryFilters::-webkit-scrollbar { display: none; }
 
   .filter-pill {
-    padding: 6px 14px;
-    font-size: 11px;
-  }
-
-  /* Indikatoren */
-  .filter-scroll-indicator {
-    top: 34px;
-    bottom: 10px;
+    padding: 7px 18px;
+    font-size: 12px;
   }
 }
 </style>
@@ -231,248 +186,49 @@ body {
 
 <div id="portfolio-wrapper">
 
+  <!-- FILTERBAR -->
   <div id="filterBar">
     <div class="filter-group">
       <div class="filter-group-label">Kategorien</div>
       <div id="categoryFilters"></div>
-
-      <div class="filter-scroll-indicator filter-scroll-indicator--left"></div>
-      <div class="filter-scroll-indicator filter-scroll-indicator--right"></div>
     </div>
   </div>
 
+  <!-- GRID -->
   <div id="portfolioGrid" class="portfolio-grid"></div>
   <div id="statusMessage"></div>
 </div>
 
-
-
-
 <script>
-/* ============================================================
-   PORTFOLIO ENGINE — FlowingFrames Infinite Scroll Version
-   ============================================================ */
-
 (function() {
 
-  const BASE = "https://www.flowingframes.media";
+  const BASE  = "https://www.flowingframes.media";
   const PROXY = "https://flowingframes-proxy.florian-augustus-alexander.workers.dev/?url=";
 
   let allPosts = [];
   let nextPath = "/all-projekte?format=json-pretty";
   let activeCategories = new Set();
 
-  const gridEl        = document.getElementById("portfolioGrid");
-  const filtersEl     = document.getElementById("categoryFilters");
-  const statusEl      = document.getElementById("statusMessage");
-  const filterBarEl   = document.getElementById("filterBar");
-  const filterLabelEl = document.querySelector(".filter-group-label");
-  const indicatorLeft  = document.querySelector(".filter-scroll-indicator--left");
-  const indicatorRight = document.querySelector(".filter-scroll-indicator--right");
+  const gridEl    = document.getElementById("portfolioGrid");
+  const filtersEl = document.getElementById("categoryFilters");
+  const statusEl  = document.getElementById("statusMessage");
 
   let visibleCount = 0;
   const BATCH = 30;
 
-
-  /* ------------------ FETCH ------------------ */
-
   async function fetchPage(path) {
     const url = PROXY + encodeURIComponent(BASE + path);
     const res = await fetch(url);
-    if (!res.ok) throw new Error("Fehler: " + res.status);
     return res.json();
   }
 
-
-  async function loadAllPages() {
-    while (nextPath) {
-      const data = await fetchPage(nextPath);
-      allPosts = allPosts.concat(data.items || []);
-
-      if (data.pagination?.nextPageUrl) {
-        const u = data.pagination.nextPageUrl;
-        nextPath = u.includes("format=") ? u : u + "&format=json-pretty";
-      } else nextPath = null;
-    }
-  }
-
-
-  /* ------------------ FILTERS ------------------ */
-
-  function buildFilters() {
-    filtersEl.innerHTML = "";
-
-    const counts = {};
-    allPosts.forEach(p =>
-      (p.categories || []).forEach(cat =>
-        counts[cat] = (counts[cat] || 0) + 1
-      )
-    );
-
-    Object.keys(counts)
-      .sort((a,b) => counts[b] - counts[a] || a.localeCompare(b))
-      .forEach(cat => {
-
-        const label = document.createElement("label");
-        label.className = "filter-pill";
-
-        const input = document.createElement("input");
-        input.type = "checkbox";
-        input.value = cat;
-
-        input.addEventListener("change", async () => {
-
-          if (input.checked) {
-            activeCategories.add(cat);
-            label.classList.add("active");
-          } else {
-            activeCategories.delete(cat);
-            label.classList.remove("active");
-          }
-
-          gridEl.style.opacity = 0.2;
-
-          if (activeCategories.size > 0 && nextPath)
-            await loadAllPages();
-
-          visibleCount = 0;
-          gridEl.innerHTML = "";
-
-          renderCards();
-          gridEl.style.opacity = 1;
-
-          setTimeout(sendHeight, 50);
-        });
-
-        const span = document.createElement("span");
-        span.textContent = cat;
-        label.appendChild(input);
-        label.appendChild(span);
-        filtersEl.appendChild(label);
-      });
-
-    updateScrollIndicators();
-  }
-
-
-  function getFilteredPosts() {
-    if (activeCategories.size === 0) return allPosts;
-    return allPosts.filter(p =>
-      p.categories?.some(c => activeCategories.has(c))
-    );
-  }
-
-
-  /* ------------------ RENDER CARDS ------------------ */
-
-  function renderCards() {
-    const filtered = getFilteredPosts();
-    const newEnd = visibleCount + BATCH;
-    const slice = filtered.slice(visibleCount, newEnd);
-
-    slice.forEach(post => {
-
-      const a = document.createElement("a");
-      a.className = "card";
-      a.href = BASE + post.fullUrl;
-      a.target = "_top";
-
-      const inner = document.createElement("div");
-      inner.className = "card-inner";
-
-      const media = document.createElement("div");
-      media.className = "card-media-wrap";
-
-      const img = document.createElement("img");
-      img.className = "card-img";
-      img.src = post.assetUrl;
-      img.alt = post.title || "";
-      img.loading = "lazy";
-
-      const overlay = document.createElement("div");
-      overlay.className = "card-media-overlay";
-
-      media.appendChild(img);
-      media.appendChild(overlay);
-
-      const text = document.createElement("div");
-      text.className = "card-text";
-
-      const catEl = document.createElement("div");
-      catEl.className = "card-category";
-      catEl.textContent = (post.categories || []).join(" · ");
-
-      const titleEl = document.createElement("h3");
-      titleEl.className = "card-title";
-      titleEl.textContent = post.title || "";
-
-      const excerptEl = document.createElement("p");
-      excerptEl.className = "card-excerpt";
-      excerptEl.textContent = post.excerpt?.replace(/<[^>]+>/g, "") || "";
-
-      text.appendChild(catEl);
-      text.appendChild(titleEl);
-      if (excerptEl.textContent) text.appendChild(excerptEl);
-
-      inner.appendChild(media);
-      inner.appendChild(text);
-      a.appendChild(inner);
-      gridEl.appendChild(a);
-
-      observeCard(a);
-    });
-
-    visibleCount = newEnd;
-
-    statusEl.textContent = filtered.length === 0
-      ? "Keine Projekte für die gewählten Kategorien."
-      : "";
-  }
-
-
-  /* ------------------ FADE-IN OBSERVER ------------------ */
-
-  const cardObserver = new IntersectionObserver(entries => {
-    entries.forEach(e => {
-      if (e.isIntersecting) {
-        e.target.classList.add("visible");
-        cardObserver.unobserve(e.target);
-      }
-    });
-  }, { threshold: 0.2 });
-
-  function observeCard(card) {
-    cardObserver.observe(card);
-  }
-
-
-  /* ------------------ INFINITE SCROLL ------------------ */
-
-  const sentinel = document.createElement("div");
-  sentinel.style.height = "1px";
-  gridEl.after(sentinel);
-
-  const scrollObserver = new IntersectionObserver(async entries => {
-    if (!entries[0].isIntersecting) return;
-
-    const filtered = getFilteredPosts();
-    if (visibleCount >= filtered.length) return;
-
-    renderCards();
-    sendHeight();
-  });
-
-  scrollObserver.observe(sentinel);
-
-
-  /* ------------------ INITIAL LOAD ------------------ */
-
+  /* ---------------- LOAD INITIAL ---------------- */
   async function loadInitial() {
     statusEl.textContent = "Lade Projekte …";
 
     while (nextPath && allPosts.length < 100) {
       const data = await fetchPage(nextPath);
-      allPosts = allPosts.concat(data.items || []);
+      allPosts.push(...(data.items || []));
 
       if (data.pagination?.nextPageUrl) {
         const u = data.pagination.nextPageUrl;
@@ -487,49 +243,145 @@ body {
     statusEl.textContent = "";
   }
 
+  /* ---------------- FILTER SYSTEM ---------------- */
+  function buildFilters() {
+    filtersEl.innerHTML = "";
 
-  /* ------------------ MOBILE INTERACTIONS ------------------ */
+    const counts = {};
+    allPosts.forEach(post =>
+      (post.categories || []).forEach(cat =>
+        counts[cat] = (counts[cat] || 0) + 1
+      )
+    );
 
-  if (filterLabelEl) {
-    filterLabelEl.addEventListener("click", () => {
-      filterBarEl.classList.toggle("filters-open");
-      setTimeout(updateScrollIndicators, 50);
+    Object.keys(counts)
+      .sort()
+      .forEach(cat => {
+
+        const pill = document.createElement("label");
+        pill.className = "filter-pill";
+
+        const input = document.createElement("input");
+        input.type = "checkbox";
+        input.value = cat;
+
+        input.addEventListener("change", async () => {
+          if (input.checked) {
+            activeCategories.add(cat);
+            pill.classList.add("active");
+          } else {
+            activeCategories.delete(cat);
+            pill.classList.remove("active");
+          }
+
+          gridEl.innerHTML = "";
+          visibleCount = 0;
+
+          if (activeCategories.size > 0 && nextPath)
+            await loadAllPages();
+
+          renderCards();
+          renderCards();
+          sendHeight();
+        });
+
+        pill.appendChild(input);
+        pill.appendChild(document.createTextNode(cat));
+        filtersEl.appendChild(pill);
+      });
+  }
+
+  async function loadAllPages() {
+    while (nextPath) {
+      const data = await fetchPage(nextPath);
+      allPosts.push(...(data.items || []));
+
+      if (data.pagination?.nextPageUrl) {
+        const u = data.pagination.nextPageUrl;
+        nextPath = u.includes("format=") ? u : u + "&format=json-pretty";
+      } else nextPath = null;
+    }
+  }
+
+  function getFiltered() {
+    if (activeCategories.size === 0) return allPosts;
+    return allPosts.filter(p =>
+      p.categories?.some(c => activeCategories.has(c))
+    );
+  }
+
+  /* ---------------- RENDER CARDS ---------------- */
+  function renderCards() {
+    const filtered = getFiltered();
+    const slice = filtered.slice(visibleCount, visibleCount + BATCH);
+
+    slice.forEach(post => {
+      const a = document.createElement("a");
+      a.className = "card";
+      a.href = BASE + post.fullUrl;
+      a.target = "_top";
+
+      a.innerHTML = `
+        <div class="card-inner">
+          <div class="card-media-wrap">
+            <img class="card-img" src="${post.assetUrl}" loading="lazy" alt="${post.title}">
+            <div class="card-media-overlay"></div>
+          </div>
+          <div class="card-text">
+            <div class="card-category">${(post.categories || []).join(" · ")}</div>
+            <h3 class="card-title">${post.title}</h3>
+            <p class="card-excerpt">${(post.excerpt || "").replace(/<[^>]+>/g,"")}</p>
+          </div>
+        </div>
+      `;
+
+      gridEl.appendChild(a);
+      observer.observe(a);
     });
+
+    visibleCount += BATCH;
   }
 
-  window.addEventListener("scroll", () => {
-    const y = window.scrollY;
-    if (y > 40) filterBarEl.classList.add("compact");
-    else filterBarEl.classList.remove("compact");
+  /* Fade-in */
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add("visible");
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.2 });
+
+  /* Infinite Scroll */
+  const sentinel = document.createElement("div");
+  sentinel.style.height = "1px";
+  gridEl.after(sentinel);
+
+  const scrollObs = new IntersectionObserver(entries => {
+    if (!entries[0].isIntersecting) return;
+
+    const filtered = getFiltered();
+    if (visibleCount >= filtered.length) return;
+
+    renderCards();
+    sendHeight();
   });
-
-
-  function updateScrollIndicators() {
-    if (!filtersEl) return;
-    const maxScroll = filtersEl.scrollWidth - filtersEl.clientWidth;
-
-    indicatorLeft.classList.toggle("visible", filtersEl.scrollLeft > 2);
-    indicatorRight.classList.toggle("visible", filtersEl.scrollLeft < maxScroll - 2);
-  }
-
-  filtersEl.addEventListener("scroll", updateScrollIndicators);
-
+  scrollObs.observe(sentinel);
 
   loadInitial();
+
 })();
 </script>
 
-
-<!-- HEIGHT MESSAGE TO SQUARESPACE -->
+<!-- HEIGHT MESSAGE -->
 <script>
-function sendHeight() {
-  const h = document.documentElement.scrollHeight;
-  parent.postMessage({ portfolioHeight: h }, "*");
+function sendHeight(){
+  parent.postMessage({ portfolioHeight: document.documentElement.scrollHeight }, "*");
 }
-
-new MutationObserver(() => sendHeight())
-  .observe(document.body, { childList: true, subtree: true });
-
-setInterval(sendHeight, 300);
+new MutationObserver(sendHeight).observe(document.body, { childList:true, subtree:true });
 window.addEventListener("load", sendHeight);
+setInterval(sendHeight, 300);
 </script>
+
+</body>
+</html>
