@@ -12,6 +12,7 @@
   --text-main: #f5f5f5;
   --text-muted: #a0a0a0;
   --border-radius: 10px;
+  --transition-fast: 0.22s ease-out;
   --shadow-hover: 0 6px 16px rgba(0,0,0,0.3);
 }
 
@@ -25,6 +26,10 @@ body {
   font-family: system-ui, Helvetica, Arial, sans-serif;
 }
 
+/* Entfernt unerwünschte Unterstreichungen */
+a { text-decoration: none !important; }
+.card * { text-decoration: none !important; }
+
 /* WRAPPER */
 #portfolio-wrapper {
   max-width: 1400px;
@@ -32,116 +37,87 @@ body {
   padding: 0 16px;
 }
 
-/* ============================================================
-   FILTER BAR — Base Style (nicht sticky)
-   ============================================================ */
+/* FILTER BAR */
 #filterBar {
   margin-bottom: 32px;
-  background: transparent;
-  transition: all .25s ease;
-  z-index: 50;
+  position: relative;
 }
 
-/* Sticky Mode (aktiviert nach 100px Scroll) */
-#filterBar.sticky {
-  position: sticky;
-  top: 0px; /* bleibt unter Squarespace Header */
-  padding: 12px 0;
-  background: rgba(27,27,27,0.92);
-  backdrop-filter: blur(12px);
-  border-bottom: 1px solid rgba(255,255,255,0.08);
-  margin-bottom: 20px;
-}
-
-/* MINI MODE (weiteres Verkleinern beim starken Scrollen) */
-#filterBar.compact {
-  padding: 8px 0;
-  transform: translateY(-2px) scale(0.97);
-  opacity: 0.96;
-}
-
-/* Label – Desktop */
 .filter-group-label {
   font-size: 12px;
   text-transform: uppercase;
-  letter-spacing: .14em;
+  letter-spacing: 0.14em;
   color: var(--text-muted);
   margin-bottom: 10px;
 }
 
-/* Desktop Filters = Grid */
+/* Desktop: Grid-Layout */
 #categoryFilters {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(140px, auto));
   gap: 12px;
 }
 
-/* Pills */
 .filter-pill {
   display: inline-flex;
+  align-items: center;
+  justify-content: center;
   padding: 6px 12px;
   border-radius: 999px;
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
   font-size: 11px;
-  letter-spacing: .12em;
   text-transform: uppercase;
+  letter-spacing: .12em;
   color: var(--text-muted);
   cursor: pointer;
   transition: .25s;
   white-space: nowrap;
 }
+.filter-pill input { opacity: 0; pointer-events: none; position: absolute; }
+.filter-pill:hover { border-color: rgba(255,255,255,0.35); transform: translateY(-1px); }
 .filter-pill.active {
-  background: rgba(255,255,255,0.14);
-  border-color: rgba(255,255,255,0.8);
+  background: rgba(255,255,255,0.12);
+  border-color: rgba(255,255,255,0.65);
   color: white;
 }
-.filter-pill input {
-  opacity: 0;
+
+/* Scroll-Indikatoren */
+.filter-scroll-indicator {
   position: absolute;
+  top: 26px;
+  bottom: 0;
+  width: 24px;
   pointer-events: none;
+  opacity: 0;
+  transition: opacity .25s ease;
+  z-index: 2;
 }
-
-/* ============================================================
-   MOBILE – horizontale Swipe-Leiste
-   ============================================================ */
-
-@media (max-width: 768px) {
-
-  body {
-    padding-bottom: 120px;
-  }
-
-  #filterBar {
-    margin-bottom: 12px;
-  }
-
-  #categoryFilters {
-    display: flex;
-    overflow-x: auto;
-    gap: 10px;
-    padding-bottom: 4px;
-    scrollbar-width: none;
-  }
-  #categoryFilters::-webkit-scrollbar { display: none; }
-
-  .filter-pill {
-    padding: 7px 18px;
-    font-size: 12px;
-  }
+.filter-scroll-indicator--left {
+  left: 0;
+  background: linear-gradient(to right, rgba(27,27,27,1), rgba(27,27,27,0));
 }
+.filter-scroll-indicator--right {
+  right: 0;
+  background: linear-gradient(to left, rgba(27,27,27,1), rgba(27,27,27,0));
+}
+.filter-scroll-indicator.visible { opacity: 1; }
 
-/* ============================================================
-   GRID + CARDS
-   ============================================================ */
+/* GRID */
 .portfolio-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px,1fr));
   gap: 34px;
+  opacity: 1;
+  transition: opacity .35s ease;
 }
 
+.portfolio-grid.fade-out { opacity: 0; }
+
+/* CARD */
 .card {
   display: block;
+  text-decoration: none;
   color: inherit;
   background: var(--card-bg);
   border-radius: var(--border-radius);
@@ -150,41 +126,86 @@ body {
   opacity: 0;
   transition: opacity .6s ease, transform .6s ease, box-shadow .35s ease;
 }
-
-.card.visible {
-  opacity: 1;
-  transform: translateY(0);
-}
+.card.visible { opacity: 1; transform: translateY(0); }
 .card:hover { box-shadow: var(--shadow-hover); }
 
-.card-media-wrap { position: relative; border-radius: var(--border-radius); overflow: hidden; }
+.card-inner { display: flex; flex-direction: column; height: 100%; }
+
+.card-media-wrap {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--border-radius);
+}
 .card-img {
   width: 100%;
   aspect-ratio: 16/9;
   object-fit: cover;
-  transition: transform .45s ease;
+  display: block;
 }
-.card:hover .card-img { transform: scale(1.06); }
+.card:hover .card-img { transform: scale(1.06); filter: saturate(1.1); }
 
 .card-media-overlay {
   position: absolute; inset: 0;
   opacity: 0;
+  background: radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.4) 80%);
   transition: opacity .45s ease;
-  background: radial-gradient(circle at center,
-    transparent 0%, rgba(0,0,0,0.35) 80%);
 }
 .card:hover .card-media-overlay { opacity: 1; }
 
-.card-text { padding: 18px; }
-.card-category { font-size: 11px; color: var(--text-muted); margin-bottom: 6px; }
+.card-text { padding: 18px 18px 20px; }
+.card-category { font-size: 11px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px; }
 .card-title { font-size: 20px; margin: 0 0 6px; }
-.card-excerpt { font-size: 13px; color: var(--text-muted); }
+.card-excerpt { font-size: 13px; color: var(--text-muted); margin: 0; }
 
 /* STATUS */
 #statusMessage {
   margin-top: 24px;
   text-align: center;
   color: var(--text-muted);
+}
+
+/* ===========================
+   MOBILE Sticky Version
+=========================== */
+@media (max-width: 768px) {
+
+  body { padding-bottom: 40px; }
+
+  #filterBar {
+    position: sticky;
+    top: 100px; /* Sticky Offset */
+    z-index: 40;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    background: linear-gradient(to bottom, rgba(27,27,27,0.96), rgba(27,27,27,0.92));
+    backdrop-filter: blur(10px);
+  }
+
+  #filterBar.compact {
+    padding-top: 6px;
+    padding-bottom: 6px;
+    transform: translateY(-2px);
+  }
+
+  .filter-group-label {
+    margin-bottom: 6px;
+    cursor: pointer;
+  }
+
+  #categoryFilters {
+    display: flex;
+    overflow-x: auto;
+    gap: 8px;
+    padding-bottom: 4px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  #categoryFilters::-webkit-scrollbar { display: none; }
+
+  .filter-pill {
+    padding: 6px 14px;
+    font-size: 11px;
+  }
 }
 </style>
 </head>
@@ -193,46 +214,195 @@ body {
 
 <div id="portfolio-wrapper">
 
-  <!-- FILTERBAR -->
   <div id="filterBar">
     <div class="filter-group">
       <div class="filter-group-label">Kategorien</div>
+
       <div id="categoryFilters"></div>
+
+      <div class="filter-scroll-indicator filter-scroll-indicator--left"></div>
+      <div class="filter-scroll-indicator filter-scroll-indicator--right"></div>
     </div>
   </div>
 
-  <!-- GRID -->
   <div id="portfolioGrid" class="portfolio-grid"></div>
   <div id="statusMessage"></div>
 </div>
 
-
 <script>
-/* ============================================================
-   PORTFOLIO ENGINE
-   ============================================================ */
 (function() {
 
-  const BASE  = "https://www.flowingframes.media";
+  const BASE = "https://www.flowingframes.media";
   const PROXY = "https://flowingframes-proxy.florian-augustus-alexander.workers.dev/?url=";
 
   let allPosts = [];
   let nextPath = "/all-projekte?format=json-pretty";
   let activeCategories = new Set();
 
-  const gridEl    = document.getElementById("portfolioGrid");
-  const filtersEl = document.getElementById("categoryFilters");
-  const filterBar = document.getElementById("filterBar");
-  const statusEl  = document.getElementById("statusMessage");
+  const gridEl        = document.getElementById("portfolioGrid");
+  const filtersEl     = document.getElementById("categoryFilters");
+  const statusEl      = document.getElementById("statusMessage");
+  const filterBarEl   = document.getElementById("filterBar");
+  const filterLabelEl = document.querySelector(".filter-group-label");
+  const indicatorLeft = document.querySelector(".filter-scroll-indicator--left");
+  const indicatorRight= document.querySelector(".filter-scroll-indicator--right");
 
   let visibleCount = 0;
   const BATCH = 30;
 
+
   async function fetchPage(path) {
-    const res = await fetch(PROXY + encodeURIComponent(BASE + path));
+    const url = PROXY + encodeURIComponent(BASE + path);
+    const res = await fetch(url);
+    if (!res.ok) throw new Error("Fehler: " + res.status);
     return res.json();
   }
 
+
+  async function loadAllPages() {
+    while (nextPath) {
+      const data = await fetchPage(nextPath);
+      allPosts = allPosts.concat(data.items || []);
+
+      if (data.pagination?.nextPageUrl) {
+        const u = data.pagination.nextPageUrl;
+        nextPath = u.includes("format=") ? u : u + "&format=json-pretty";
+      } else nextPath = null;
+    }
+  }
+
+
+  /* ---------------- FILTERS ---------------- */
+  function buildFilters() {
+    filtersEl.innerHTML = "";
+
+    const counts = {};
+    allPosts.forEach(p =>
+      (p.categories || []).forEach(cat =>
+        counts[cat] = (counts[cat] || 0) + 1
+      )
+    );
+
+    Object.keys(counts)
+      .sort((a,b) => counts[b] - counts[a] || a.localeCompare(b))  /* FIXED */
+      .forEach(cat => {
+
+        const label = document.createElement("label");
+        label.className = "filter-pill";
+
+        const input = document.createElement("input");
+        input.type = "checkbox";
+        input.value = cat;
+
+        input.addEventListener("change", async () => {
+          if (input.checked) {
+            activeCategories.add(cat);
+            label.classList.add("active");
+          } else {
+            activeCategories.delete(cat);
+            label.classList.remove("active");
+          }
+
+          gridEl.classList.add("fade-out");
+          await new Promise(r => setTimeout(r, 250));
+
+          if (activeCategories.size > 0 && nextPath)
+            await loadAllPages();
+
+          visibleCount = 0;
+          gridEl.innerHTML = "";
+
+          renderCards();
+          gridEl.classList.remove("fade-out");
+
+          setTimeout(sendHeight, 50);
+        });
+
+        label.appendChild(input);
+        label.appendChild(document.createTextNode(cat));
+        filtersEl.appendChild(label);
+      });
+
+    updateScrollIndicators();
+  }
+
+
+  function getFilteredPosts() {
+    if (activeCategories.size === 0) return allPosts;
+    return allPosts.filter(p =>
+      p.categories?.some(c => activeCategories.has(c))
+    );
+  }
+
+
+  /* ---------------- RENDER CARDS ---------------- */
+  function renderCards() {
+    const filtered = getFilteredPosts();
+    const newEnd = visibleCount + BATCH;
+    const slice = filtered.slice(visibleCount, newEnd);
+
+    slice.forEach(post => {
+      const a = document.createElement("a");
+      a.className = "card";
+      a.href = BASE + post.fullUrl;
+      a.target = "_top";
+
+      a.innerHTML = `
+        <div class="card-inner">
+          <div class="card-media-wrap">
+            <img class="card-img" src="${post.assetUrl}" loading="lazy" alt="${post.title}">
+            <div class="card-media-overlay"></div>
+          </div>
+          <div class="card-text">
+            <div class="card-category">${(post.categories || []).join(" · ")}</div>
+            <h3 class="card-title">${post.title}</h3>
+            <p class="card-excerpt">${(post.excerpt || "").replace(/<[^>]+>/g,"")}</p>
+          </div>
+        </div>
+      `;
+
+      gridEl.appendChild(a);
+      observeCard(a);
+    });
+
+    visibleCount = newEnd;
+    statusEl.textContent = filtered.length === 0
+      ? "Keine Projekte für die gewählten Kategorien."
+      : "";
+  }
+
+
+  /* Fade-in */
+  const cardObserver = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add("visible");
+        cardObserver.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.2 });
+
+  function observeCard(card) { cardObserver.observe(card); }
+
+
+  /* Infinite Scroll */
+  const sentinel = document.createElement("div");
+  sentinel.style.height = "1px";
+  gridEl.after(sentinel);
+
+  const scrollObs = new IntersectionObserver(entries => {
+    if (!entries[0].isIntersecting) return;
+
+    const filtered = getFilteredPosts();
+    if (visibleCount >= filtered.length) return;
+
+    renderCards();
+    sendHeight();
+  });
+  scrollObs.observe(sentinel);
+
+
+  /* ---------------- INITIAL LOAD ---------------- */
   async function loadInitial() {
     statusEl.textContent = "Lade Projekte …";
 
@@ -253,141 +423,41 @@ body {
     statusEl.textContent = "";
   }
 
-  /* FILTERS */
-  function buildFilters() {
-    filtersEl.innerHTML = "";
 
-    const counts = {};
-    allPosts.forEach(post =>
-      (post.categories || []).forEach(cat =>
-        counts[cat] = (counts[cat] || 0) + 1
-      )
-    );
-
-    Object.keys(counts).sort().forEach(cat => {
-      const pill = document.createElement("label");
-      pill.className = "filter-pill";
-
-      const input = document.createElement("input");
-      input.type = "checkbox";
-      input.value = cat;
-
-      input.addEventListener("change", async () => {
-        if (input.checked) {
-          activeCategories.add(cat);
-          pill.classList.add("active");
-        } else {
-          activeCategories.delete(cat);
-          pill.classList.remove("active");
-        }
-
-        gridEl.innerHTML = "";
-        visibleCount = 0;
-
-        renderCards();
-        renderCards();
-        sendHeight();
-      });
-
-      pill.appendChild(input);
-      pill.appendChild(document.createTextNode(cat));
-      filtersEl.appendChild(pill);
-    });
-  }
-
-  function getFiltered() {
-    if (activeCategories.size === 0) return allPosts;
-    return allPosts.filter(p =>
-      p.categories?.some(c => activeCategories.has(c))
-    );
-  }
-
-  /* RENDER */
-  function renderCards() {
-    const filtered = getFiltered();
-    const slice = filtered.slice(visibleCount, visibleCount + BATCH);
-
-    slice.forEach(post => {
-      const a = document.createElement("a");
-      a.className = "card";
-      a.href = BASE + post.fullUrl;
-      a.target = "_top";
-
-      a.innerHTML = `
-        <div class="card-inner">
-          <div class="card-media-wrap">
-            <img class="card-img" src="${post.assetUrl}" loading="lazy" alt="">
-            <div class="card-media-overlay"></div>
-          </div>
-          <div class="card-text">
-            <div class="card-category">${(post.categories || []).join(" · ")}</div>
-            <h3 class="card-title">${post.title}</h3>
-            <p class="card-excerpt">${(post.excerpt || "").replace(/<[^>]+>/g,"")}</p>
-          </div>
-        </div>
-      `;
-
-      gridEl.appendChild(a);
-      observer.observe(a);
-    });
-
-    visibleCount += BATCH;
-  }
-
-  /* Fade-in */
-  const observer = new IntersectionObserver(entries => {
-    entries.forEach(e => {
-      if (e.isIntersecting) {
-        e.target.classList.add("visible");
-        observer.unobserve(e.target);
-      }
-    });
-  }, { threshold: 0.2 });
-
-  /* Infinite Scroll */
-  const sentinel = document.createElement("div");
-  sentinel.style.height = "1px";
-  gridEl.after(sentinel);
-
-  const scrollObs = new IntersectionObserver(entries => {
-    if (!entries[0].isIntersecting) return;
-    const filtered = getFiltered();
-    if (visibleCount >= filtered.length) return;
-    renderCards();
-    sendHeight();
-  });
-  scrollObs.observe(sentinel);
-
-  /* ============================================================
-     STICKY-FILTERBAR NACH 100px SCROLL
-     ============================================================ */
+  /* Mobile Sticky Mini-Mode */
   window.addEventListener("scroll", () => {
     const y = window.scrollY;
-
-    if (y > 100) {
-      filterBar.classList.add("sticky");
-    } else {
-      filterBar.classList.remove("sticky");
-    }
-
-    if (y > 260) {
-      filterBar.classList.add("compact");
-    } else {
-      filterBar.classList.remove("compact");
-    }
+    if (y > 80) filterBarEl.classList.add("compact");
+    else filterBarEl.classList.remove("compact");
   });
 
-  loadInitial();
 
+  /* Scroll-Indikatoren */
+  function updateScrollIndicators() {
+    const maxScroll = filtersEl.scrollWidth - filtersEl.clientWidth;
+
+    indicatorLeft.classList.toggle("visible", filtersEl.scrollLeft > 2);
+    indicatorRight.classList.toggle("visible", filtersEl.scrollLeft < maxScroll - 2);
+  }
+
+  filtersEl.addEventListener("scroll", updateScrollIndicators);
+
+
+  loadInitial();
 })();
 </script>
 
-<!-- HEIGHT MESSAGE -->
+
+<!-- HEIGHT MESSAGE TO SQUARESPACE -->
 <script>
-function sendHeight(){
-  parent.postMessage({ portfolioHeight: document.documentElement.scrollHeight }, "*");
+function sendHeight() {
+  const h = document.documentElement.scrollHeight;
+  parent.postMessage({ portfolioHeight: h }, "*");
 }
-new MutationObserver(sendHeight).observe(document.body, { childList:true, subtree:true });
+
+new MutationObserver(sendHeight)
+  .observe(document.body, { childList: true, subtree: true });
+
 setInterval(sendHeight, 300);
 window.addEventListener("load", sendHeight);
 </script>
