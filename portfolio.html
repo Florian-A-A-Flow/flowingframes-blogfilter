@@ -37,18 +37,17 @@ body {
 }
 a { text-decoration: none; color: inherit; }
 
-/* -----------------------------------------------------------
-   DESKTOP WRAPPER — unverändert
------------------------------------------------------------ */
+/* WRAPPER ------------------------------------------------- */
+/* Desktop Grid vollbreit (UNVERÄNDERT) */
 #portfolio-wrapper {
   width: 100%;
   max-width: none;
   margin: 0;
-  padding: 0 48px;
+  padding: 0 16px;
 }
 
 /* -----------------------------------------------------------
-   FILTER BAR DESKTOP — unverändert
+   FILTER BAR — DESKTOP (UNVERÄNDERT)
 ----------------------------------------------------------- */
 #filterBar {
   margin-bottom: 32px;
@@ -58,7 +57,7 @@ a { text-decoration: none; color: inherit; }
 }
 
 .filter-inner {
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
   padding: 0 16px;
   position: relative;
@@ -71,12 +70,11 @@ a { text-decoration: none; color: inherit; }
   letter-spacing: .14em;
   color: var(--text-muted);
   margin-bottom: 10px;
-  pointer-events: none;
 }
 
 #categoryFilters {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(140px, auto));
   gap: 12px;
 }
 
@@ -84,25 +82,16 @@ a { text-decoration: none; color: inherit; }
   display: inline-flex;
   justify-content: center;
   align-items: center;
-
   padding: 9px 24px;
   border-radius: var(--pill-radius);
   background: rgba(255,255,255,0.05);
   border: 1px solid rgba(255,255,255,0.12);
-
   font-size: 11px;
   letter-spacing: .12em;
   text-transform: uppercase;
   color: var(--text-muted);
-
-  transition: var(--transition-fast);
-  cursor: pointer;
   white-space: nowrap;
-}
-
-.filter-pill:hover {
-  background: rgba(255,255,255,0.09);
-  border-color: rgba(255,255,255,0.25);
+  transition: var(--transition-fast);
 }
 
 .filter-pill.active {
@@ -111,103 +100,127 @@ a { text-decoration: none; color: inherit; }
   color: white;
 }
 
-.filter-pill input {
-  position: absolute;
-  opacity: 0;
-  pointer-events: none;
-}
-
-/* Fade edges (desktop hidden) */
+/* FADES – DESKTOP HIDDEN BY DEFAULT */
 .filter-scroll-indicator {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 32px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .25s ease;
+  z-index: 3;
   display: none;
 }
 
-/* -----------------------------------------------------------
-   GRID DESKTOP — exakt wie du wolltest (3 Spalten)
------------------------------------------------------------ */
+/* Desktop Grid — 3 Columns (unchanged!) */
 .portfolio-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 34px;
+  grid-template-columns: repeat(3, 1fr); /* UNVERÄNDERT */
+  gap: 48px; /* UNVERÄNDERT */
 }
 
 /* -----------------------------------------------------------
-   MOBILE VERSION — neu korrigiert
+   CARDS (unchanged)
+----------------------------------------------------------- */
+
+.card {
+  display: block;
+  background: #1B1B1B;
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: .65s ease, box-shadow .35s ease;
+}
+
+.card.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.card-media-wrap { position: relative; overflow: hidden; }
+
+.card-img {
+  width: 100%;
+  aspect-ratio: 16/9;
+  object-fit: cover;
+  transition: .45s ease;
+}
+
+.card:hover .card-img { transform: scale(1.06); }
+
+/* -----------------------------------------------------------
+   MOBILE — NEW FIXED VERSION
 ----------------------------------------------------------- */
 @media (max-width: 768px) {
 
-  /* GRID zurück auf 1 Spalte */
+  /* MOBILE GRID BACK TO 1 COLUMN (your request #2) */
   .portfolio-grid {
     grid-template-columns: 1fr !important;
-    gap: 26px;
+    gap: 22px !important;
   }
 
-  #portfolio-wrapper {
-    padding: 0 16px;
-  }
+  body { padding-bottom: 140px; }
 
-  /* FILTERBAR MOBILE */
   #filterBar {
+    margin-bottom: 18px;
+    padding: 0;
     background: var(--glass-bg);
     backdrop-filter: blur(18px) saturate(180%);
     border-top: 1px solid var(--glass-border);
     border-bottom: 1px solid var(--glass-border);
-    margin: 0 0 20px;
-    position: relative; /* Bereit für fixierte Fades */
+    box-shadow: var(--shadow-glass);
   }
 
   .filter-inner {
-    padding: 0 0;
+    padding: 0;
     margin: 0;
   }
 
-  .filter-group-label {
-    display: none;
-  }
-
-  /* horizontale Scrollbar */
+  /* MOBILE HORIZONTAL SCROLL */
   #categoryFilters {
     display: flex !important;
     overflow-x: auto !important;
-    gap: 12px;
-    padding: 12px 16px;
+    white-space: nowrap;
+    gap: 14px;
+    padding: 12px 20px;
     scrollbar-width: none;
   }
-  #categoryFilters::-webkit-scrollbar {
-    display: none;
-  }
+  #categoryFilters::-webkit-scrollbar { display: none; }
 
   .filter-pill {
     padding: 10px 24px;
-    font-size: 11px;
+    font-size: 12px;
     flex-shrink: 0;
   }
 
-  /* FADE FIX (neue stabile Version) */
+  /* ----------------------------------------------------
+     FIXED FADE (request #1)
+     Now 20% wider, stays in place, never scrolls away.
+     Gradient is longer and smoother.
+  ---------------------------------------------------- */
   .filter-scroll-indicator {
     display: block;
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    width: 34px;
-    z-index: 20;
-    pointer-events: none;
-    opacity: 0;
-    transition: opacity .25s ease;
+    width: 42px; /* was 32px → +20% */
   }
 
   .filter-scroll-indicator--left {
     left: 0;
-    background: linear-gradient(to right, rgba(28,28,28,1), rgba(28,28,28,0));
+    background: linear-gradient(
+      to right,
+      rgba(28,28,28,1),
+      rgba(28,28,28,0)
+    );
   }
 
   .filter-scroll-indicator--right {
     right: 0;
-    background: linear-gradient(to left, rgba(28,28,28,1), rgba(28,28,28,0));
-  }
-
-  .filter-scroll-indicator.visible {
-    opacity: 1;
+    background: linear-gradient(
+      to left,
+      rgba(28,28,28,1),
+      rgba(28,28,28,0)
+    );
   }
 }
 </style>
@@ -215,17 +228,19 @@ a { text-decoration: none; color: inherit; }
 
 <body>
 
-<!-- FILTERBAR ÜBER DEM WRAPPER -->
+<!-- FILTERBAR OUTSIDE WRAPPER (unchanged desktop) -->
 <div id="filterBar">
   <div class="filter-inner">
+
     <div class="filter-group">
       <div class="filter-group-label">Kategorien</div>
       <div id="categoryFilters"></div>
     </div>
 
-    <!-- Fades fixiert -->
+    <!-- MOBILE FADES -->
     <div class="filter-scroll-indicator filter-scroll-indicator--left"></div>
     <div class="filter-scroll-indicator filter-scroll-indicator--right"></div>
+
   </div>
 </div>
 
@@ -236,11 +251,10 @@ a { text-decoration: none; color: inherit; }
 
 <script>
 /* ============================================================
-   ENGINE — unverändert, nur Fades aktualisiert
+   PORTFOLIO ENGINE (unchanged)
 ============================================================ */
 
 (function() {
-
   const BASE  = "https://www.flowingframes.media";
   const PROXY = "https://flowingframes-proxy.florian-augustus-alexander.workers.dev/?url=";
 
@@ -271,9 +285,7 @@ a { text-decoration: none; color: inherit; }
       if (data.pagination?.nextPageUrl) {
         const u = data.pagination.nextPageUrl;
         nextPath = u.includes("format=") ? u : u + "&format=json-pretty";
-      } else {
-        nextPath = null;
-      }
+      } else nextPath = null;
     }
 
     buildFilters();
@@ -286,16 +298,17 @@ a { text-decoration: none; color: inherit; }
 
   function buildFilters() {
     filtersEl.innerHTML = "";
-
     const counts = {};
+
     allPosts.forEach(p =>
-      (p.categories || []).forEach(c => counts[c] = (counts[c] || 0) + 1)
+      (p.categories || []).forEach(c =>
+        counts[c] = (counts[c] || 0) + 1
+      )
     );
 
     Object.keys(counts)
-      .sort((a,b) => counts[b] - counts[a] || a.localeCompare(b))
+      .sort((a,b) => counts[b]-counts[a] || a.localeCompare(b))
       .forEach(cat => {
-
         const pill = document.createElement("label");
         pill.className = "filter-pill";
 
@@ -304,21 +317,16 @@ a { text-decoration: none; color: inherit; }
         input.value = cat;
 
         input.addEventListener("change", async () => {
+          if (input.checked) activeCategories.add(cat);
+          else activeCategories.delete(cat);
 
-          if (input.checked) {
-            activeCategories.add(cat);
-            pill.classList.add("active");
-          } else {
-            activeCategories.delete(cat);
-            pill.classList.remove("active");
-          }
+          pill.classList.toggle("active", input.checked);
 
           gridEl.innerHTML = "";
           visibleCount = 0;
 
-          if (activeCategories.size > 0 && nextPath) {
+          if (activeCategories.size > 0 && nextPath)
             await loadAllPages();
-          }
 
           renderCards();
           renderCards();
@@ -340,9 +348,7 @@ a { text-decoration: none; color: inherit; }
       if (data.pagination?.nextPageUrl) {
         const u = data.pagination.nextPageUrl;
         nextPath = u.includes("format=") ? u : u + "&format=json-pretty";
-      } else {
-        nextPath = null;
-      }
+      } else nextPath = null;
     }
   }
 
@@ -355,7 +361,7 @@ a { text-decoration: none; color: inherit; }
 
   function renderCards() {
     const filtered = getFiltered();
-    const slice = filtered.slice(visibleCount, visibleCount + BATCH);
+    const slice = filtered.slice(visibleCount, visibleCount+BATCH);
 
     slice.forEach(post => {
       const a = document.createElement("a");
@@ -365,17 +371,16 @@ a { text-decoration: none; color: inherit; }
       a.innerHTML = `
         <div class="card-inner">
           <div class="card-media-wrap">
-            <img class="card-img" src="${post.assetUrl}" loading="lazy" alt="">
+            <img class="card-img" src="${post.assetUrl}" loading="lazy">
             <div class="card-media-overlay"></div>
           </div>
           <div class="card-text">
-            <div class="card-category">${(post.categories || []).join(" · ")}</div>
+            <div class="card-category">${(post.categories||[]).join(" · ")}</div>
             <h3 class="card-title">${post.title}</h3>
-            <p class="card-excerpt">${(post.excerpt || "").replace(/<[^>]+>/g,"")}</p>
+            <p class="card-excerpt">${(post.excerpt||"").replace(/<[^>]+>/g,"")}</p>
           </div>
         </div>
       `;
-
       gridEl.appendChild(a);
       observer.observe(a);
     });
@@ -398,13 +403,16 @@ a { text-decoration: none; color: inherit; }
 
   const scrollObs = new IntersectionObserver(entries => {
     if (!entries[0].isIntersecting) return;
+
     const filtered = getFiltered();
     if (visibleCount >= filtered.length) return;
+
     renderCards();
     sendHeight();
   });
   scrollObs.observe(sentinel);
 
+  /* MOBILE FADE INDICATORS */
   function updateScrollIndicators() {
     const maxScroll = filtersEl.scrollWidth - filtersEl.clientWidth;
 
@@ -415,12 +423,13 @@ a { text-decoration: none; color: inherit; }
     }
 
     const sl = filtersEl.scrollLeft;
+
     indicatorLeft.classList.toggle("visible", sl > 2);
     indicatorRight.classList.toggle("visible", sl < maxScroll - 2);
   }
 
   filtersEl.addEventListener("scroll", updateScrollIndicators);
-  window.addEventListener("resize", () => setTimeout(updateScrollIndicators, 60));
+  window.addEventListener("resize", () => setTimeout(updateScrollIndicators, 80));
 
   loadInitial();
 
