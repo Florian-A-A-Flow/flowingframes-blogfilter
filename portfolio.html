@@ -7,23 +7,25 @@
 
 <style>
 /* -----------------------------------------------------------
-   DESIGN CORE
+   DESIGN CORE — Apple-Inspired Modern Glass
 ----------------------------------------------------------- */
 :root {
   --bg: #1C1C1C;
-  --glass-bg: rgba(28,28,28,0.65);
-  --glass-border: rgba(255,255,255,0.08);
+
+  --glass-bg: rgba(28,28,28,0.55);
+  --glass-border: rgba(255,255,255,0.10);
+  --glass-border-strong: rgba(255,255,255,0.18);
 
   --text-main: #F5F5F5;
-  --text-muted: #9B9B9B;
+  --text-muted: #A0A0A0;
 
-  --border-radius: 14px;
   --pill-radius: 999px;
+  --card-radius: 14px;
 
-  --shadow-hover: 0 8px 22px rgba(0,0,0,0.38);
-  --shadow-glass: 0 4px 22px rgba(0,0,0,0.45);
+  --shadow-hover: 0 8px 22px rgba(0,0,0,0.40);
+  --shadow-glass: 0 6px 24px rgba(0,0,0,0.45);
 
-  --transition-fast: 0.22s ease-out;
+  --transition: 0.22s ease-out;
 }
 
 /* RESET --------------------------------------------------- */
@@ -32,8 +34,8 @@ body {
   margin: 0;
   padding: 40px 0 120px;
   background: var(--bg);
-  font-family: system-ui, Helvetica, Arial, sans-serif;
   color: var(--text-main);
+  font-family: system-ui, Helvetica, Arial, sans-serif;
 }
 a { text-decoration: none; color: inherit; }
 
@@ -45,13 +47,13 @@ a { text-decoration: none; color: inherit; }
 }
 
 /* -----------------------------------------------------------
-   FILTER BAR — DESKTOP (Minimal, Flat)
+   FILTER BAR — Desktop (Flat Minimalist)
 ----------------------------------------------------------- */
 
 #filterBar {
   margin-bottom: 32px;
+  padding: 12px 0;
   position: relative;
-  padding: 14px 0;
 }
 
 .filter-group-label {
@@ -60,8 +62,7 @@ a { text-decoration: none; color: inherit; }
   text-transform: uppercase;
   letter-spacing: .14em;
   color: var(--text-muted);
-  margin-bottom: 10px;
-  pointer-events: none;
+  margin-bottom: 12px;
 }
 
 #categoryFilters {
@@ -70,31 +71,42 @@ a { text-decoration: none; color: inherit; }
   gap: 12px;
 }
 
+/* -----------------------------------------------------------
+   FILTER PILLS — Variable Width (Fix for long entries)
+----------------------------------------------------------- */
+
 .filter-pill {
   display: inline-flex;
-  padding: 7px 14px;
+  align-items: center;
+  justify-content: center;
+
+  padding: 7px 16px;
+  max-width: 100%;             /* verhindert Überlaufen */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
   border-radius: var(--pill-radius);
   background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.12);
+  border: 1px solid var(--glass-border);
 
   font-size: 11px;
-  letter-spacing: .12em;
   text-transform: uppercase;
+  letter-spacing: .12em;
   color: var(--text-muted);
 
-  transition: var(--transition-fast);
+  transition: var(--transition);
   cursor: pointer;
-  white-space: nowrap;
 }
 
 .filter-pill:hover {
   background: rgba(255,255,255,0.09);
-  border-color: rgba(255,255,255,0.25);
+  border-color: var(--glass-border-strong);
 }
 
 .filter-pill.active {
-  background: rgba(255,255,255,0.18);
-  border-color: rgba(255,255,255,0.5);
+  background: rgba(255,255,255,0.17);
+  border-color: rgba(255,255,255,0.45);
   color: white;
 }
 
@@ -116,7 +128,7 @@ a { text-decoration: none; color: inherit; }
 .card {
   display: block;
   background: #1B1B1B;
-  border-radius: var(--border-radius);
+  border-radius: var(--card-radius);
   overflow: hidden;
 
   opacity: 0;
@@ -195,38 +207,35 @@ a { text-decoration: none; color: inherit; }
 }
 
 /* -----------------------------------------------------------
-   MOBILE — MODERN GLASS FILTERBAR
+   MOBILE — Glass Sticky Bar (Modern)
 ----------------------------------------------------------- */
 @media (max-width: 768px) {
 
-  body {
-    padding-bottom: 160px;
-  }
+  body { padding-bottom: 160px; }
 
   #filterBar {
     position: sticky;
-    top: 100px; /* === Sticky offset */
+    top: 100px;
     background: var(--glass-bg);
     backdrop-filter: blur(18px) saturate(180%);
+
     border: 1px solid var(--glass-border);
     border-left: none;
     border-right: none;
 
-    padding: 12px 12px;
+    padding: 12px 14px;
     margin: 0 -16px 20px;
-
     z-index: 40;
+
     box-shadow: var(--shadow-glass);
   }
 
   #filterBar.compact {
     backdrop-filter: blur(22px) saturate(220%);
-    padding: 8px 12px;
+    padding: 7px 12px;
   }
 
-  .filter-group-label {
-    display: none;
-  }
+  .filter-group-label { display: none; }
 
   #categoryFilters {
     display: flex;
@@ -235,15 +244,11 @@ a { text-decoration: none; color: inherit; }
     padding-bottom: 4px;
     scrollbar-width: none;
   }
-  #categoryFilters::-webkit-scrollbar {
-    display: none;
-  }
+  #categoryFilters::-webkit-scrollbar { display: none; }
 
   .filter-pill {
-    padding: 7px 18px;
+    padding: 8px 18px;
     font-size: 12px;
-    border-radius: var(--pill-radius);
-    backdrop-filter: none;
   }
 }
 </style>
@@ -267,7 +272,7 @@ a { text-decoration: none; color: inherit; }
 
 <script>
 /* ============================================================
-   PORTFOLIO ENGINE — Filters sorted by count (DESC)
+   ENGINE — Sorted by Count + Infinite Scroll
 ============================================================ */
 
 (function() {
@@ -298,11 +303,12 @@ a { text-decoration: none; color: inherit; }
     while (nextPath && allPosts.length < 100) {
       const data = await fetchPage(nextPath);
       allPosts.push(...(data.items || []));
-      if (data.pagination?.nextPageUrl) {
-        nextPath = data.pagination.nextPageUrl.includes("format=")
-          ? data.pagination.nextPageUrl
-          : data.pagination.nextPageUrl + "&format=json-pretty";
-      } else nextPath = null;
+
+      nextPath = data.pagination?.nextPageUrl
+        ? (data.pagination.nextPageUrl.includes("format=")
+            ? data.pagination.nextPageUrl
+            : data.pagination.nextPageUrl + "&format=json-pretty")
+        : null;
     }
 
     buildFilters();
@@ -363,11 +369,11 @@ a { text-decoration: none; color: inherit; }
     while (nextPath) {
       const data = await fetchPage(nextPath);
       allPosts.push(...(data.items || []));
-      if (data.pagination?.nextPageUrl) {
-        nextPath = data.pagination.nextPageUrl.includes("format=")
-          ? data.pagination.nextPageUrl
-          : data.pagination.nextPageUrl + "&format=json-pretty";
-      } else nextPath = null;
+      nextPath = data.pagination?.nextPageUrl
+        ? (data.pagination.nextPageUrl.includes("format=")
+            ? data.pagination.nextPageUrl
+            : data.pagination.nextPageUrl + "&format=json-pretty")
+        : null;
     }
   }
 
@@ -435,7 +441,7 @@ a { text-decoration: none; color: inherit; }
 })();
 </script>
 
-<!-- HEIGHT SYNC -->
+<!-- HEIGHT SYNC FOR SQUARESPACE -->
 <script>
 function sendHeight(){
   parent.postMessage({ portfolioHeight: document.documentElement.scrollHeight }, "*");
