@@ -107,12 +107,6 @@ body {
   transition: opacity .6s ease, transform .6s ease, box-shadow .35s ease;
 }
 
-/* sichtbar, wenn im Viewport (Lazy Anim) */
-.card.visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
 .card:hover {
   box-shadow: var(--shadow-hover);
 }
@@ -182,6 +176,7 @@ body {
   color: var(--text-muted);
   text-align: center;
 }
+
 </style>
 </head>
 
@@ -212,11 +207,14 @@ body {
   let nextPath = "/all-projekte?format=json-pretty";
   let activeCategories = new Set();
 
-  const gridEl    = document.getElementById("portfolioGrid");
+  const gridEl = document.getElementById("portfolioGrid");
   const filtersEl = document.getElementById("categoryFilters");
-  const statusEl  = document.getElementById("statusMessage");
+  const statusEl = document.getElementById("statusMessage");
 
-  /* FETCH – wie in deiner funktionierenden Version: KEIN encodeURIComponent */
+  let visibleCount = 0;
+  const BATCH = 30;
+
+  // Proxy-Request: Worker erwartet die Ziel-URL "roh", ohne encodeURIComponent
   async function fetchPage(path) {
     const url = PROXY + BASE + path;
     const res = await fetch(url);
@@ -227,34 +225,31 @@ body {
     return res.json();
   }
 
-  /* IntersectionObserver für Lazy-Fade der Cards */
-  const cardObserver = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add("visible");
-        cardObserver.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.2 });
+  async function loadAllPages() {
+    while (nextPath) {
+      const data = await fetchPage(nextPath);
+      allPosts = allPosts.concat(data.items || []);
 
-  function observeCard(card) {
-    cardObserver.observe(card);
+      if (data.pagination?.nextPageUrl) {
+        const u = data.pagination.nextPageUrl;
+        nextPath = u.includes("format=") ? u : u + "&format=json-pretty";
+      } else {
+        nextPath = null;
+      }
+    }
   }
 
-  /* Filter-Buttons erstellen */
   function buildFilters() {
     filtersEl.innerHTML = "";
     const counts = {};
-
-    allPosts.forEach((p) => {
-      (p.categories || []).forEach((c) => {
-        counts[c] = (counts[c] || 0) + 1;
-      });
-    });
+    allPosts.forEach(p =>
+      (p.categories || []).forEach(c => counts[c] = (counts[c] || 0) + 1)
+    );
 
     Object.keys(counts)
-      .sort((a, b) => counts[b] - counts[a] || a.localeCompare(b))
-      .forEach((cat) => {
+      .sort((a,b) => counts[b]-counts[a] || a.localeCompare(b))
+      .forEach(cat => {
+
         const label = document.createElement("label");
         label.className = "filter-pill";
 
@@ -271,13 +266,20 @@ body {
             label.classList.remove("active");
           }
 
-          // kleine Fade-Out / In Animation des Grids
           gridEl.classList.add("fade-out");
-          await new Promise((r) => setTimeout(r, 200));
+          await new Promise(r => setTimeout(r, 250));
+
+          // Bei aktivem Filter sicherstellen, dass alle Seiten geladen sind
+          if (activeCategories.size > 0 && nextPath)
+            await loadAllPages();
+
+          visibleCount = 0;
+          gridEl.innerHTML = "";
+          gridEl.after(sentinel);
 
           renderCards();
-
           gridEl.classList.remove("fade-out");
+
           setTimeout(sendHeight, 50);
         });
 
@@ -292,18 +294,16 @@ body {
 
   function getFilteredPosts() {
     if (activeCategories.size === 0) return allPosts;
-    return allPosts.filter((p) =>
-      p.categories?.some((c) => activeCategories.has(c))
+    return allPosts.filter(p =>
+      p.categories?.some(c => activeCategories.has(c))
     );
   }
 
-  /* Alle passenden Cards rendern (kein Limit, alle Elemente) */
   function renderCards() {
     const filtered = getFilteredPosts();
+    const slice = filtered.slice(visibleCount, visibleCount + BATCH);
 
-    gridEl.innerHTML = "";
-
-    filtered.forEach((post) => {
+    slice.forEach(post => {
       const a = document.createElement("a");
       a.className = "card";
       a.href = BASE + post.fullUrl;
@@ -318,7 +318,7 @@ body {
       const img = document.createElement("img");
       img.className = "card-img";
       img.src = post.assetUrl;
-      img.alt = post.title || "";
+      img.alt = post.title;
       img.loading = "lazy";
 
       const overlay = document.createElement("div");
@@ -336,7 +336,7 @@ body {
 
       const titleEl = document.createElement("h3");
       titleEl.className = "card-title";
-      titleEl.textContent = post.title || "";
+      titleEl.textContent = post.title;
 
       const excerptEl = document.createElement("p");
       excerptEl.className = "card-excerpt";
@@ -348,41 +348,52 @@ body {
 
       inner.appendChild(media);
       inner.appendChild(text);
-      a.appendChild(inner);
 
+      a.appendChild(inner);
       gridEl.appendChild(a);
 
-      // Lazy-Fade-In auf Scroll
-      observeCard(a);
+      // direkt sichtbar machen (animiert durch CSS .card.visible)
+      requestAnimationFrame(() => {
+        a.classList.add("visible");
+      });
     });
 
-    statusEl.textContent =
-      filtered.length === 0
-        ? "Keine Projekte für die gewählten Kategorien."
-        : "";
+    visibleCount += BATCH;
+
+    statusEl.textContent = filtered.length === 0
+      ? "Keine Projekte für die gewählten Kategorien."
+      : "";
   }
 
-  /* Initial: ALLE Seiten laden, dann einmal komplett rendern */
+  // Sentinel für Infinite Scroll
+  const sentinel = document.createElement("div");
+  sentinel.style.height = "1px";
+  gridEl.after(sentinel);
+
+  const scrollObserver = new IntersectionObserver(entries => {
+    if (!entries[0].isIntersecting) return;
+
+    const filtered = getFilteredPosts();
+    if (visibleCount < filtered.length) {
+      renderCards();
+      sendHeight();
+    }
+  });
+
+  scrollObserver.observe(sentinel);
+
   async function loadInitial() {
     statusEl.textContent = "Lade Projekte …";
 
-    while (nextPath) {
-      const data = await fetchPage(nextPath);
-      allPosts = allPosts.concat(data.items || []);
-
-      if (data.pagination?.nextPageUrl) {
-        const u = data.pagination.nextPageUrl;
-        nextPath = u.includes("format=") ? u : u + "&format=json-pretty";
-      } else {
-        nextPath = null;
-      }
-    }
+    // ALLE Seiten einmalig laden – Rendering passiert in Batches
+    await loadAllPages();
 
     buildFilters();
-    renderCards();
+
+    visibleCount = 0;
+    renderCards(); // nur 1 Batch initial
 
     statusEl.textContent = "";
-    sendHeight();
   }
 
   loadInitial();
