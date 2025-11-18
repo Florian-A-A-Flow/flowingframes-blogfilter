@@ -176,14 +176,12 @@ body {
   color: var(--text-muted);
   text-align: center;
 }
-
 </style>
 </head>
 
 <body>
 
 <div id="portfolio-wrapper">
-
   <div id="filterBar">
     <div class="filter-group">
       <div class="filter-group-label">Kategorien</div>
@@ -195,7 +193,6 @@ body {
 
   <div id="statusMessage"></div>
 </div>
-
 
 <script>
 (function() {
@@ -214,12 +211,12 @@ body {
   let visibleCount = 0;
   const BATCH = 30;
 
-  // KORREKTE FETCH-LOGIK – wie in der funktionierenden Ursprungs-Version
+  // ORIGINAL funktionierendes Muster: Proxy + encodeURIComponent
   async function fetchPage(path) {
     const url = PROXY + encodeURIComponent(BASE + path);
     const res = await fetch(url);
     if (!res.ok) {
-      throw new Error("Fehler beim Laden: " + res.status + " – " + url);
+      throw new Error("Fehler beim Laden: " + res.status + " für " + url);
     }
     return res.json();
   }
@@ -228,13 +225,9 @@ body {
     while (nextPath) {
       const data = await fetchPage(nextPath);
       allPosts = allPosts.concat(data.items || []);
-
-      if (data.pagination && data.pagination.nextPage) {
-        let np = data.pagination.nextPageUrl;
-        if (!np.includes("format=")) {
-          np += (np.includes("?") ? "&" : "?") + "format=json-pretty";
-        }
-        nextPath = np;
+      if (data.pagination?.nextPageUrl) {
+        const u = data.pagination.nextPageUrl;
+        nextPath = u.includes("format=") ? u : u + "&format=json-pretty";
       } else {
         nextPath = null;
       }
@@ -243,12 +236,9 @@ body {
 
   function buildFilters() {
     filtersEl.innerHTML = "";
-
     const counts = {};
     allPosts.forEach(p =>
-      (p.categories || []).forEach(c => {
-        counts[c] = (counts[c] || 0) + 1;
-      })
+      (p.categories || []).forEach(c => counts[c] = (counts[c] || 0) + 1)
     );
 
     Object.keys(counts)
@@ -263,7 +253,6 @@ body {
         input.value = cat;
 
         input.addEventListener("change", async () => {
-
           if (input.checked) {
             activeCategories.add(cat);
             label.classList.add("active");
@@ -281,7 +270,6 @@ body {
 
           visibleCount = 0;
           gridEl.innerHTML = "";
-          gridEl.after(sentinel);
 
           renderCards();
           gridEl.classList.remove("fade-out");
@@ -358,18 +346,17 @@ body {
       a.appendChild(inner);
       gridEl.appendChild(a);
 
-      observeCard(a);
+      observeCard(a); // Lazy-Fade-in per IntersectionObserver
     });
 
     visibleCount += BATCH;
 
-    statusEl.textContent =
-      filtered.length === 0
-        ? "Keine Projekte für die gewählten Kategorien."
-        : "";
+    statusEl.textContent = filtered.length === 0
+      ? "Keine Projekte für die gewählten Kategorien."
+      : "";
   }
 
-  // Lazy-Fade-In beim Scrollen
+  // Lazy-Animation beim Sichtbarwerden
   const cardObserver = new IntersectionObserver(entries => {
     entries.forEach(e => {
       if (e.isIntersecting) {
@@ -390,40 +377,39 @@ body {
 
   const scrollObserver = new IntersectionObserver(entries => {
     if (!entries[0].isIntersecting) return;
-
     const filtered = getFilteredPosts();
-    if (visibleCount < filtered.length) {
-      renderCards();
-      sendHeight();
-    }
+    if (visibleCount >= filtered.length) return;
+    renderCards();
+    sendHeight();
   });
 
   scrollObserver.observe(sentinel);
 
   async function loadInitial() {
-    statusEl.textContent = "Lade Projekte …";
+    try {
+      statusEl.textContent = "Lade Projekte …";
 
-    // Lade zunächst bis zu 100 Einträge oder bis keine Seite mehr da ist
-    while (nextPath && allPosts.length < 100) {
-      const data = await fetchPage(nextPath);
-      allPosts = allPosts.concat(data.items || []);
+      while (nextPath && allPosts.length < 100) {
+        const data = await fetchPage(nextPath);
+        allPosts = allPosts.concat(data.items || []);
 
-      if (data.pagination && data.pagination.nextPage) {
-        let np = data.pagination.nextPageUrl;
-        if (!np.includes("format=")) {
-          np += (np.includes("?") ? "&" : "?") + "format=json-pretty";
+        if (data.pagination?.nextPageUrl) {
+          const u = data.pagination.nextPageUrl;
+          nextPath = u.includes("format=") ? u : u + "&format=json-pretty";
+        } else {
+          nextPath = null;
         }
-        nextPath = np;
-      } else {
-        nextPath = null;
       }
+
+      buildFilters();
+      renderCards();
+      renderCards(); // zweites Batch für „volleres“ Initiallayout
+
+      statusEl.textContent = "";
+    } catch (err) {
+      console.error(err);
+      statusEl.textContent = "Beim Laden der Projekte ist ein Fehler aufgetreten.";
     }
-
-    buildFilters();
-    renderCards(); // erstes Batch
-    renderCards(); // zweites Batch für „volleres“ Initiallayout
-
-    statusEl.textContent = "";
   }
 
   loadInitial();
