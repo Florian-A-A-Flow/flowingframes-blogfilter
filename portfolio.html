@@ -102,28 +102,11 @@ body {
   color: inherit;
   background: var(--card-bg);
   border-radius: var(--border-radius);
-  overflow: hidden;
-
-  /* WICHTIG:
-     NICHT opacity:0 → macht Observer blind
-     Stattdessen „fast unsichtbar“, aber sichtbar für IntersectionObserver
-  */
-  opacity: 0.001;
   transform: translateY(20px);
-
-  transition:
-    opacity .6s ease,
-    transform .6s ease,
-    box-shadow .35s ease;
+  opacity: 0;
+  transition: opacity .6s ease, transform .6s ease, box-shadow .35s ease;
 }
 
-/* Sichtbar durch Lazy-Animation */
-.card.visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* Hover Shadow FIXED */
 .card:hover {
   box-shadow: var(--shadow-hover);
 }
@@ -188,17 +171,10 @@ body {
   margin: 0;
 }
 
-/* STATUS */
 #statusMessage {
   margin-top: 24px;
   color: var(--text-muted);
   text-align: center;
-}
-
-/* MOBILE */
-@media (max-width: 768px) {
-  .portfolio-grid { gap: 24px; }
-  .card-title { font-size: 18px; }
 }
 
 </style>
@@ -222,10 +198,6 @@ body {
 
 
 <script>
-/* ============================================================
-   PORTFOLIO ENGINE — Infinite Scroll + Lazy Anim + Filter Fix
-   ============================================================ */
-
 (function() {
 
   const BASE = "https://www.flowingframes.media";
@@ -242,14 +214,16 @@ body {
   let visibleCount = 0;
   const BATCH = 30;
 
-
+  /* FIX — NO ENCODING!!! */
   async function fetchPage(path) {
-    const url = PROXY + encodeURIComponent(BASE + path);
+    const url = PROXY + BASE + path;   // ← FIXED
     const res = await fetch(url);
-    if (!res.ok) throw new Error("Fehler: " + res.status);
+    if (!res.ok) {
+      console.warn("Proxy fetch failed", res.status, url);
+      return { items: [], pagination: {} };
+    }
     return res.json();
   }
-
 
   async function loadAllPages() {
     while (nextPath) {
@@ -262,10 +236,8 @@ body {
     }
   }
 
-
   function buildFilters() {
     filtersEl.innerHTML = "";
-
     const counts = {};
     allPosts.forEach(p =>
       (p.categories || []).forEach(c => counts[c] = (counts[c] || 0) + 1)
@@ -283,21 +255,14 @@ body {
         input.value = cat;
 
         input.addEventListener("change", async () => {
-
-          if (input.checked) {
-            activeCategories.add(cat);
-            label.classList.add("active");
-          } else {
-            activeCategories.delete(cat);
-            label.classList.remove("active");
-          }
+          if (input.checked) activeCategories.add(cat);
+          else activeCategories.delete(cat);
 
           gridEl.classList.add("fade-out");
           await new Promise(r => setTimeout(r, 250));
 
-          if (activeCategories.size > 0 && nextPath) {
+          if (activeCategories.size > 0 && nextPath)
             await loadAllPages();
-          }
 
           visibleCount = 0;
           gridEl.innerHTML = "";
@@ -318,14 +283,12 @@ body {
       });
   }
 
-
   function getFilteredPosts() {
     if (activeCategories.size === 0) return allPosts;
     return allPosts.filter(p =>
       p.categories?.some(c => activeCategories.has(c))
     );
   }
-
 
   function renderCards() {
     const filtered = getFilteredPosts();
@@ -362,7 +325,7 @@ body {
       catEl.className = "card-category";
       catEl.textContent = (post.categories || []).join(" · ");
 
-      const titleEl = document.create.createElement("h3");
+      const titleEl = document.createElement("h3");
       titleEl.className = "card-title";
       titleEl.textContent = post.title;
 
@@ -380,34 +343,16 @@ body {
       a.appendChild(inner);
       gridEl.appendChild(a);
 
-      observeCard(a);
+      a.classList.add("visible");
     });
 
     visibleCount += BATCH;
 
-    statusEl.textContent =
-      filtered.length === 0
+    statusEl.textContent = filtered.length === 0
       ? "Keine Projekte für die gewählten Kategorien."
       : "";
   }
 
-
-  /* --- LAZY ENTRY ANIMATION FIXED --- */
-  const cardObserver = new IntersectionObserver(entries => {
-    entries.forEach(e => {
-      if (e.isIntersecting) {
-        e.target.classList.add("visible");
-        cardObserver.unobserve(e.target);
-      }
-    });
-  });
-
-  function observeCard(card) {
-    requestAnimationFrame(() => cardObserver.observe(card));
-  }
-
-
-  /* --- INFINITE SCROLL SENTINEL --- */
   const sentinel = document.createElement("div");
   sentinel.style.height = "1px";
   gridEl.after(sentinel);
@@ -423,7 +368,6 @@ body {
   });
 
   scrollObserver.observe(sentinel);
-
 
   async function loadInitial() {
     statusEl.textContent = "Lade Projekte …";
@@ -449,7 +393,6 @@ body {
 
 })();
 </script>
-
 
 <script>
 function sendHeight() {
