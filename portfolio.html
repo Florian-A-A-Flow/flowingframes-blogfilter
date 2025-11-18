@@ -107,6 +107,13 @@ body {
   transition: opacity .6s ease, transform .6s ease, box-shadow .35s ease;
 }
 
+/* Lazy-Visible Zustand */
+.card.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Hover Shadow */
 .card:hover {
   box-shadow: var(--shadow-hover);
 }
@@ -214,9 +221,9 @@ body {
   let visibleCount = 0;
   const BATCH = 30;
 
-  /* FETCH */
+  /* FETCH – wie in deiner funktionierenden Version, ohne encodeURIComponent */
   async function fetchPage(path) {
-    const url = PROXY + BASE + path;   // <- wie in deiner funktionierenden Version
+    const url = PROXY + BASE + path;
     const res = await fetch(url);
     if (!res.ok) {
       console.warn("Proxy fetch failed", res.status, url);
@@ -225,7 +232,6 @@ body {
     return res.json();
   }
 
-  /* ALLE SEITEN LADEN FÜR FILTER */
   async function loadAllPages() {
     while (nextPath) {
       const data = await fetchPage(nextPath);
@@ -237,7 +243,6 @@ body {
     }
   }
 
-  /* FILTER UI */
   function buildFilters() {
     filtersEl.innerHTML = "";
     const counts = {};
@@ -257,8 +262,13 @@ body {
         input.value = cat;
 
         input.addEventListener("change", async () => {
-          if (input.checked) activeCategories.add(cat);
-          else activeCategories.delete(cat);
+          if (input.checked) {
+            activeCategories.add(cat);
+            label.classList.add("active");      // ← Feedback wieder aktiv
+          } else {
+            activeCategories.delete(cat);
+            label.classList.remove("active");
+          }
 
           gridEl.classList.add("fade-out");
           await new Promise(r => setTimeout(r, 250));
@@ -292,11 +302,11 @@ body {
     );
   }
 
-  /* LAZY FADE-IN OBSERVER */
+  /* Lazy-Loading der Cards via IntersectionObserver */
   const cardObserver = new IntersectionObserver(entries => {
     entries.forEach(e => {
       if (e.isIntersecting) {
-        e.target.classList.add("visible");
+        e.target.classList.add("visible");   // ← aktiviert Fade-In
         cardObserver.unobserve(e.target);
       }
     });
@@ -306,7 +316,6 @@ body {
     cardObserver.observe(card);
   }
 
-  /* RENDERING */
   function renderCards() {
     const filtered = getFilteredPosts();
     const slice = filtered.slice(visibleCount, visibleCount + BATCH);
@@ -326,7 +335,7 @@ body {
       const img = document.createElement("img");
       img.className = "card-img";
       img.src = post.assetUrl;
-      img.alt = post.title || "";
+      img.alt = post.title;
       img.loading = "lazy";
 
       const overlay = document.createElement("div");
@@ -344,7 +353,7 @@ body {
 
       const titleEl = document.createElement("h3");
       titleEl.className = "card-title";
-      titleEl.textContent = post.title || "";
+      titleEl.textContent = post.title;
 
       const excerptEl = document.createElement("p");
       excerptEl.className = "card-excerpt";
@@ -360,7 +369,7 @@ body {
       a.appendChild(inner);
       gridEl.appendChild(a);
 
-      // LAZY-VISIBLE per IntersectionObserver
+      // NICHT direkt sichtbar machen → IntersectionObserver übernimmt das
       observeCard(a);
     });
 
@@ -371,7 +380,6 @@ body {
       : "";
   }
 
-  /* SENTINEL + INFINITE SCROLL */
   const sentinel = document.createElement("div");
   sentinel.style.height = "1px";
   gridEl.after(sentinel);
@@ -388,7 +396,6 @@ body {
 
   scrollObserver.observe(sentinel);
 
-  /* INITIAL LOAD */
   async function loadInitial() {
     statusEl.textContent = "Lade Projekte …";
 
@@ -404,7 +411,7 @@ body {
 
     buildFilters();
     renderCards();
-    renderCards();
+    renderCards();   // zweites Batch, damit Start nicht zu leer ist
 
     statusEl.textContent = "";
   }
