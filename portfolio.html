@@ -1,418 +1,47 @@
-<!DOCTYPE html>
-<html lang="de">
-<head>
-  <meta charset="UTF-8" />
-  <title>Portfolio – Flowing Frames</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-
 <style>
-:root {
-  --bg: #1B1B1B;
-  --card-bg: #1B1B1B;
-  --text-main: #f5f5f5;
-  --text-muted: #a0a0a0;
-  --border-radius: 10px;
-  --transition-fast: 0.22s ease-out;
-  --shadow-hover: 0 6px 16px rgba(0,0,0,0.3);
-}
+  .sqs-block {
+    padding: 0 !important;
+  }
 
-/* Basic Reset */
-* { box-sizing: border-box; }
-body {
-  margin: 0;
-  padding: 40px 0 60px;
-  background: var(--bg);
-  color: var(--text-main);
-  font-family: system-ui, Helvetica, Arial, sans-serif;
-}
+  #portfolio-container {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    position: relative;
+  }
 
-/* Wrapper */
-#portfolio-wrapper {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 0 16px;
-}
-
-/* FILTER BAR */
-#filterBar { margin-bottom: 32px; }
-.filter-group-label {
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.14em;
-  color: var(--text-muted);
-  margin-bottom: 10px;
-}
-
-#categoryFilters {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, auto));
-  gap: 12px;
-}
-
-.filter-pill {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 6px 12px;
-  border-radius: 999px;
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.08);
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: .12em;
-  color: var(--text-muted);
-  cursor: pointer;
-  transition: .25s;
-}
-
-.filter-pill input {
-  opacity: 0;
-  pointer-events: none;
-  position: absolute;
-}
-
-.filter-pill:hover {
-  border-color: rgba(255,255,255,0.35);
-  transform: translateY(-1px);
-}
-
-.filter-pill.active {
-  background: rgba(255,255,255,0.12);
-  border-color: rgba(255,255,255,0.65);
-  color: white;
-}
-
-/* GRID */
-.portfolio-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px,1fr));
-  gap: 34px;
-  opacity: 1;
-  transition: opacity .35s ease;
-}
-
-.portfolio-grid.fade-out {
-  opacity: 0;
-}
-
-/* CARD */
-.card {
-  display: block;
-  text-decoration: none;
-  color: inherit;
-  background: var(--card-bg);
-  border-radius: var(--border-radius);
-  transform: translateY(20px);
-  opacity: 0;
-  transition: opacity .6s ease, transform .6s ease, box-shadow .35s ease;
-}
-
-.card:hover {
-  box-shadow: var(--shadow-hover);
-}
-
-.card-inner {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-}
-
-.card-media-wrap {
-  position: relative;
-  overflow: hidden;
-  border-radius: var(--border-radius);
-}
-
-.card-img {
-  width: 100%;
-  aspect-ratio: 16/9;
-  object-fit: cover;
-  display: block;
-  transition: transform .45s ease, filter .45s ease;
-}
-
-.card-media-overlay {
-  position: absolute;
-  inset: 0;
-  opacity: 0;
-  background: radial-gradient(circle at center,
-             transparent 0%, rgba(0,0,0,0.4) 80%);
-  transition: opacity .45s ease;
-}
-
-.card:hover .card-img {
-  transform: scale(1.06);
-  filter: saturate(1.1);
-}
-
-.card:hover .card-media-overlay {
-  opacity: 1;
-}
-
-.card-text {
-  padding: 18px 18px 20px;
-}
-
-.card-category {
-  font-size: 11px;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  margin-bottom: 6px;
-}
-
-.card-title {
-  font-size: 20px;
-  margin: 0 0 6px;
-}
-
-.card-excerpt {
-  font-size: 13px;
-  color: var(--text-muted);
-  margin: 0;
-}
-
-#statusMessage {
-  margin-top: 24px;
-  color: var(--text-muted);
-  text-align: center;
-}
-
+  #portfolio-iframe {
+    width: 100%;
+    border: none;
+    overflow: hidden;
+    opacity: 0;
+    transition: opacity .35s ease, height .4s ease;
+  }
 </style>
-</head>
 
-<body>
-
-<div id="portfolio-wrapper">
-
-  <div id="filterBar">
-    <div class="filter-group">
-      <div class="filter-group-label">Kategorien</div>
-      <div id="categoryFilters"></div>
-    </div>
-  </div>
-
-  <div id="portfolioGrid" class="portfolio-grid"></div>
-
-  <div id="statusMessage"></div>
+<div id="portfolio-container">
+  <iframe
+    id="portfolio-iframe"
+    src="https://florian-a-a-flow.github.io/flowingframes-blogfilter/portfolio.html"
+    scrolling="no"
+  ></iframe>
 </div>
-
 
 <script>
 (function() {
+  const iframe = document.getElementById("portfolio-iframe");
+  let first = true;
 
-  const BASE = "https://www.flowingframes.media";
-  const PROXY = "https://flowingframes-proxy.florian-augustus-alexander.workers.dev/?url=";
+  window.addEventListener("message", (event) => {
+    if (!event.data?.portfolioHeight) return;
 
-  let allPosts = [];
-  let nextPath = "/all-projekte?format=json-pretty";
-  let activeCategories = new Set();
+    const h = event.data.portfolioHeight;
+    iframe.style.height = h + "px";
 
-  const gridEl = document.getElementById("portfolioGrid");
-  const filtersEl = document.getElementById("categoryFilters");
-  const statusEl = document.getElementById("statusMessage");
-
-  let visibleCount = 0;
-  const BATCH = 30;
-
-  // Proxy-Request: Worker erwartet die Ziel-URL "roh", ohne encodeURIComponent
-  async function fetchPage(path) {
-    const url = PROXY + BASE + path;
-    const res = await fetch(url);
-    if (!res.ok) {
-      console.warn("Proxy fetch failed", res.status, url);
-      return { items: [], pagination: {} };
-    }
-    return res.json();
-  }
-
-  async function loadAllPages() {
-    while (nextPath) {
-      const data = await fetchPage(nextPath);
-      allPosts = allPosts.concat(data.items || []);
-
-      if (data.pagination?.nextPageUrl) {
-        const u = data.pagination.nextPageUrl;
-        nextPath = u.includes("format=") ? u : u + "&format=json-pretty";
-      } else {
-        nextPath = null;
-      }
-    }
-  }
-
-  function buildFilters() {
-    filtersEl.innerHTML = "";
-    const counts = {};
-    allPosts.forEach(p =>
-      (p.categories || []).forEach(c => counts[c] = (counts[c] || 0) + 1)
-    );
-
-    Object.keys(counts)
-      .sort((a,b) => counts[b]-counts[a] || a.localeCompare(b))
-      .forEach(cat => {
-
-        const label = document.createElement("label");
-        label.className = "filter-pill";
-
-        const input = document.createElement("input");
-        input.type = "checkbox";
-        input.value = cat;
-
-        input.addEventListener("change", async () => {
-          if (input.checked) {
-            activeCategories.add(cat);
-            label.classList.add("active");
-          } else {
-            activeCategories.delete(cat);
-            label.classList.remove("active");
-          }
-
-          gridEl.classList.add("fade-out");
-          await new Promise(r => setTimeout(r, 250));
-
-          // Bei aktivem Filter sicherstellen, dass alle Seiten geladen sind
-          if (activeCategories.size > 0 && nextPath)
-            await loadAllPages();
-
-          visibleCount = 0;
-          gridEl.innerHTML = "";
-          gridEl.after(sentinel);
-
-          renderCards();
-          gridEl.classList.remove("fade-out");
-
-          setTimeout(sendHeight, 50);
-        });
-
-        const span = document.createElement("span");
-        span.textContent = cat;
-
-        label.appendChild(input);
-        label.appendChild(span);
-        filtersEl.appendChild(label);
-      });
-  }
-
-  function getFilteredPosts() {
-    if (activeCategories.size === 0) return allPosts;
-    return allPosts.filter(p =>
-      p.categories?.some(c => activeCategories.has(c))
-    );
-  }
-
-  function renderCards() {
-    const filtered = getFilteredPosts();
-    const slice = filtered.slice(visibleCount, visibleCount + BATCH);
-
-    slice.forEach(post => {
-      const a = document.createElement("a");
-      a.className = "card";
-      a.href = BASE + post.fullUrl;
-      a.target = "_top";
-
-      const inner = document.createElement("div");
-      inner.className = "card-inner";
-
-      const media = document.createElement("div");
-      media.className = "card-media-wrap";
-
-      const img = document.createElement("img");
-      img.className = "card-img";
-      img.src = post.assetUrl;
-      img.alt = post.title;
-      img.loading = "lazy";
-
-      const overlay = document.createElement("div");
-      overlay.className = "card-media-overlay";
-
-      media.appendChild(img);
-      media.appendChild(overlay);
-
-      const text = document.createElement("div");
-      text.className = "card-text";
-
-      const catEl = document.createElement("div");
-      catEl.className = "card-category";
-      catEl.textContent = (post.categories || []).join(" · ");
-
-      const titleEl = document.createElement("h3");
-      titleEl.className = "card-title";
-      titleEl.textContent = post.title;
-
-      const excerptEl = document.createElement("p");
-      excerptEl.className = "card-excerpt";
-      excerptEl.textContent = (post.excerpt || "").replace(/<[^>]+>/g, "");
-
-      text.appendChild(catEl);
-      text.appendChild(titleEl);
-      if (excerptEl.textContent) text.appendChild(excerptEl);
-
-      inner.appendChild(media);
-      inner.appendChild(text);
-
-      a.appendChild(inner);
-      gridEl.appendChild(a);
-
-      // direkt sichtbar machen (animiert durch CSS .card.visible)
-      requestAnimationFrame(() => {
-        a.classList.add("visible");
-      });
-    });
-
-    visibleCount += BATCH;
-
-    statusEl.textContent = filtered.length === 0
-      ? "Keine Projekte für die gewählten Kategorien."
-      : "";
-  }
-
-  // Sentinel für Infinite Scroll
-  const sentinel = document.createElement("div");
-  sentinel.style.height = "1px";
-  gridEl.after(sentinel);
-
-  const scrollObserver = new IntersectionObserver(entries => {
-    if (!entries[0].isIntersecting) return;
-
-    const filtered = getFilteredPosts();
-    if (visibleCount < filtered.length) {
-      renderCards();
-      sendHeight();
+    if (first) {
+      iframe.style.opacity = 1;
+      first = false;
     }
   });
-
-  scrollObserver.observe(sentinel);
-
-  async function loadInitial() {
-    statusEl.textContent = "Lade Projekte …";
-
-    // ALLE Seiten einmalig laden – Rendering passiert in Batches
-    await loadAllPages();
-
-    buildFilters();
-
-    visibleCount = 0;
-    renderCards(); // nur 1 Batch initial
-
-    statusEl.textContent = "";
-  }
-
-  loadInitial();
-
 })();
 </script>
-
-<script>
-function sendHeight() {
-  const h = document.documentElement.scrollHeight;
-  parent.postMessage({ portfolioHeight: h }, "*");
-}
-
-new MutationObserver(sendHeight)
-  .observe(document.body, { childList: true, subtree: true });
-
-setInterval(sendHeight, 300);
-window.addEventListener("load", sendHeight);
-</script>
-
-</body>
-</html>
