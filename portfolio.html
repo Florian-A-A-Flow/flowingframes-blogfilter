@@ -107,7 +107,6 @@ body {
   transition: opacity .6s ease, transform .6s ease, box-shadow .35s ease;
 }
 
-/* 🔧 NEU: sichtbarer Zustand */
 .card.visible {
   opacity: 1;
   transform: translateY(0);
@@ -182,7 +181,6 @@ body {
   color: var(--text-muted);
   text-align: center;
 }
-
 </style>
 </head>
 
@@ -220,7 +218,6 @@ body {
   let visibleCount = 0;
   const BATCH = 30;
 
-  // Proxy-Fetch (wie bei dir zuletzt funktionierend)
   async function fetchPage(path) {
     const url = PROXY + BASE + path;
     const res = await fetch(url);
@@ -263,10 +260,10 @@ body {
         input.addEventListener("change", async () => {
           if (input.checked) {
             activeCategories.add(cat);
-            label.classList.add("active");   // 🔧 NEU: Optik
+            label.classList.add("active");
           } else {
             activeCategories.delete(cat);
-            label.classList.remove("active"); // 🔧 NEU: Optik
+            label.classList.remove("active");
           }
 
           gridEl.classList.add("fade-out");
@@ -354,7 +351,7 @@ body {
       a.appendChild(inner);
       gridEl.appendChild(a);
 
-      // 🔧 Sichtbar machen (nutzt .card.visible im CSS)
+      // direkt sichtbar machen (Lazy-Anim über CSS-Klasse)
       a.classList.add("visible");
     });
 
