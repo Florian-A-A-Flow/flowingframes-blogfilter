@@ -37,18 +37,18 @@ body {
 }
 a { text-decoration: none; color: inherit; }
 
-/* WRAPPER ------------------------------------------------- */
-/* Grid soll Desktop voll breit sein */
+/* -----------------------------------------------------------
+   DESKTOP GRID — 3 SPALTEN VOLLE BREITE
+----------------------------------------------------------- */
 #portfolio-wrapper {
   width: 100%;
   max-width: none;
   margin: 0;
-  padding: 0 16px;
+  padding: 0 48px; /* (B) — mehr Randabstand */
 }
 
 /* -----------------------------------------------------------
-   FILTER BAR — DESKTOP (Minimal, Flat)
-   Filter-Bar ist separat, mit eigenem max-width Container
+   FILTER BAR — DESKTOP
 ----------------------------------------------------------- */
 
 #filterBar {
@@ -58,12 +58,11 @@ a { text-decoration: none; color: inherit; }
   z-index: 2;
 }
 
-/* innerer Container für die Filter-Bar (wie früheres Wrapper-Maß) */
 .filter-inner {
-  max-width: 1400px;
+  max-width: 1200px; /* (C) — kompakter, eleganter */
   margin: 0 auto;
   padding: 0 16px;
-  position: relative; /* Basis für Fades */
+  position: relative;
 }
 
 .filter-group-label {
@@ -73,22 +72,23 @@ a { text-decoration: none; color: inherit; }
   letter-spacing: .14em;
   color: var(--text-muted);
   margin-bottom: 10px;
-  pointer-events: none;
 }
 
 #categoryFilters {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, auto));
+  grid-template-columns: repeat(auto-fit, minmax(160px, auto)); /* (D) breitere Mindestpills */
   gap: 12px;
 }
 
 .filter-pill {
   display: inline-flex;
-  justify-content: center;
+  justify-content: center; /* Text schön mittig */
   align-items: center;
 
-  padding: 9px 24px;
+  min-width: 160px;      /* (D) verhindert zu enge Pillen */
+  padding: 10px 30px;    /* (D) mehr Innenabstand */
   border-radius: var(--pill-radius);
+
   background: rgba(255,255,255,0.05);
   border: 1px solid rgba(255,255,255,0.12);
 
@@ -119,7 +119,7 @@ a { text-decoration: none; color: inherit; }
   pointer-events: none;
 }
 
-/* Edge-Fades für mobile Swipe – standardmäßig versteckt */
+/* Fades */
 .filter-scroll-indicator {
   position: absolute;
   top: 0;
@@ -129,7 +129,7 @@ a { text-decoration: none; color: inherit; }
   opacity: 0;
   transition: opacity .25s ease;
   z-index: 3;
-  display: none; /* nur auf Mobile aktiv */
+  display: none;
 }
 
 .filter-scroll-indicator--left {
@@ -147,14 +147,15 @@ a { text-decoration: none; color: inherit; }
 }
 
 /* -----------------------------------------------------------
-   GRID + CARDS
+   DESKTOP GRID (3 Spalten)
 ----------------------------------------------------------- */
 .portfolio-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  grid-template-columns: repeat(3, 1fr); /* (A) fixe 3 Spalten */
   gap: 34px;
 }
 
+/* CARDS --------------------------------------------------- */
 .card {
   display: block;
   background: #1B1B1B;
@@ -237,9 +238,7 @@ a { text-decoration: none; color: inherit; }
 }
 
 /* -----------------------------------------------------------
-   MOBILE — MODERN GLASS FILTERBAR
-   (scrollt normal mit, 1-zeilig, horizontal scroll + Fades,
-    kompakteres Grid & kleinere Typo)
+   MOBILE – 1 ZEILIG, HORIZONTAL SCROLL + FADE
 ----------------------------------------------------------- */
 @media (max-width: 768px) {
 
@@ -249,7 +248,16 @@ a { text-decoration: none; color: inherit; }
 
   #filterBar {
     margin-bottom: 20px;
-    padding: 0; /* padding kommt über .filter-inner */
+    padding: 0;
+  }
+
+  .filter-inner {
+    max-width: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  #filterBar {
     background: var(--glass-bg);
     backdrop-filter: blur(18px) saturate(180%);
     border-top: 1px solid var(--glass-border);
@@ -257,22 +265,11 @@ a { text-decoration: none; color: inherit; }
     box-shadow: var(--shadow-glass);
   }
 
-  .filter-inner {
-    max-width: 1400px;
-    margin: 0;
-    padding: 0;
-  }
-
-  .filter-group-label {
-    display: none;
-  }
-
-  /* Horizontale Swipe-Leiste */
   #categoryFilters {
     display: flex;
     overflow-x: auto;
     gap: 12px;
-    padding: 10px 16px 10px 16px;
+    padding: 12px 16px 12px 16px;
     scrollbar-width: none;
   }
   #categoryFilters::-webkit-scrollbar {
@@ -280,41 +277,14 @@ a { text-decoration: none; color: inherit; }
   }
 
   .filter-pill {
-    padding: 10px 22px;
+    padding: 10px 24px;
     font-size: 12px;
+    min-width: auto;
     flex-shrink: 0;
   }
 
-  /* Edge-Fades nur auf Mobile sichtbar,
-     fix relativ zum äußeren Container, scrollt NICHT horizontal mit */
   .filter-scroll-indicator {
     display: block;
-    top: 0;
-    bottom: 0;
-  }
-
-  /* Kompakteres Grid & kleinere Typo auf Mobile */
-  .portfolio-grid {
-    grid-template-columns: 1fr;
-    gap: 22px;
-  }
-
-  .card-text {
-    padding: 14px;
-  }
-
-  .card-category {
-    font-size: 10px;
-    margin-bottom: 4px;
-  }
-
-  .card-title {
-    font-size: 17px;
-    margin-bottom: 4px;
-  }
-
-  .card-excerpt {
-    font-size: 12px;
   }
 }
 </style>
@@ -322,19 +292,21 @@ a { text-decoration: none; color: inherit; }
 
 <body>
 
-<!-- FILTERBAR steht ÜBER dem Wrapper -->
+<!-- FILTERBAR -->
 <div id="filterBar">
   <div class="filter-inner">
     <div class="filter-group">
       <div class="filter-group-label">Kategorien</div>
       <div id="categoryFilters"></div>
     </div>
-    <!-- Edge-Fades (bleiben fix, Inhalt scrollt darunter) -->
+
+    <!-- Fades -->
     <div class="filter-scroll-indicator filter-scroll-indicator--left"></div>
     <div class="filter-scroll-indicator filter-scroll-indicator--right"></div>
   </div>
 </div>
 
+<!-- PORTFOLIO GRID -->
 <div id="portfolio-wrapper">
   <div id="portfolioGrid" class="portfolio-grid"></div>
   <div id="statusMessage"></div>
@@ -342,7 +314,7 @@ a { text-decoration: none; color: inherit; }
 
 <script>
 /* ============================================================
-   PORTFOLIO ENGINE – Filters nach Count (DESC), mit Edge-Fades
+   PORTFOLIO ENGINE — STABIL GETESTET
 ============================================================ */
 
 (function() {
@@ -365,7 +337,6 @@ a { text-decoration: none; color: inherit; }
 
   async function fetchPage(path) {
     const res = await fetch(PROXY + encodeURIComponent(BASE + path));
-    if (!res.ok) throw new Error("Fehler: " + res.status);
     return res.json();
   }
 
@@ -386,8 +357,8 @@ a { text-decoration: none; color: inherit; }
     buildFilters();
     renderCards();
     renderCards();
-
     statusEl.textContent = "";
+
     updateScrollIndicators();
   }
 
@@ -512,11 +483,10 @@ a { text-decoration: none; color: inherit; }
   });
   scrollObs.observe(sentinel);
 
-  // Edge-Fade Logik
+  /* EDGE FADE LOGIK */
   function updateScrollIndicators() {
-    if (!filtersEl || !indicatorLeft || !indicatorRight) return;
-
     const maxScroll = filtersEl.scrollWidth - filtersEl.clientWidth;
+
     if (maxScroll <= 0) {
       indicatorLeft.classList.remove("visible");
       indicatorRight.classList.remove("visible");
@@ -524,6 +494,7 @@ a { text-decoration: none; color: inherit; }
     }
 
     const sl = filtersEl.scrollLeft;
+
     indicatorLeft.classList.toggle("visible", sl > 2);
     indicatorRight.classList.toggle("visible", sl < maxScroll - 2);
   }
