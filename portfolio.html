@@ -35,6 +35,7 @@ body {
 
 /* FILTER BAR */
 #filterBar { margin-bottom: 32px; }
+
 .filter-group-label {
   font-size: 12px;
   text-transform: uppercase;
@@ -63,6 +64,7 @@ body {
   color: var(--text-muted);
   cursor: pointer;
   transition: .25s;
+  white-space: nowrap;
 }
 
 .filter-pill input {
@@ -105,13 +107,9 @@ body {
   overflow: hidden;
   transform: translateY(20px);
   opacity: 0;
-  transition:
-    opacity .6s ease,
-    transform .6s ease,
-    box-shadow .35s ease;
+  transition: opacity .6s ease, transform .6s ease, box-shadow .35s ease;
 }
 
-/* Hover-Schatten */
 .card:hover {
   box-shadow: var(--shadow-hover);
 }
@@ -189,7 +187,7 @@ body {
 }
 
 /* ============================================================
-   MOBILE OPTIMIERUNG – kompakter, enger, aber klar lesbar
+   MOBILE – kompakter + horizontale Swipe-Kategorien
    ============================================================ */
 @media (max-width: 768px) {
 
@@ -198,18 +196,33 @@ body {
   }
 
   #filterBar {
-    margin-bottom: 22px;
+    margin-bottom: 20px;
   }
 
+  .filter-group-label {
+    margin-bottom: 8px;
+  }
+
+  /* Horizontale Kategorie-Swipe-Navigation */
   #categoryFilters {
+    display: flex;
+    overflow-x: auto;
+    overflow-y: hidden;
     gap: 8px;
-    grid-template-columns: repeat(auto-fit, minmax(110px, auto));
+    padding-bottom: 4px;
+
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  #categoryFilters::-webkit-scrollbar {
+    display: none;
   }
 
   .filter-pill {
-    padding: 4px 10px;
+    padding: 5px 12px;
     font-size: 10px;
-    letter-spacing: .1em;
+    border-radius: 999px;
   }
 
   .portfolio-grid {
@@ -223,12 +236,10 @@ body {
 
   .card-title {
     font-size: 17px;
-    margin-bottom: 4px;
   }
 
   .card-category {
     font-size: 10px;
-    margin-bottom: 4px;
   }
 
   .card-excerpt {
