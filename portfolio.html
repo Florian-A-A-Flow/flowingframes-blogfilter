@@ -45,7 +45,7 @@ a { text-decoration: none; color: inherit; }
 }
 
 /* -----------------------------------------------------------
-   FILTER BAR — DESKTOP (Minimal, Flat)
+   FILTER BAR — DESKTOP
 ----------------------------------------------------------- */
 
 #filterBar {
@@ -64,32 +64,27 @@ a { text-decoration: none; color: inherit; }
   pointer-events: none;
 }
 
-/* Desktop: Pills variabel + größerer Innenabstand */
+/* Desktop grid */
 #categoryFilters {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, auto));
   gap: 12px;
 }
 
 .filter-pill {
   display: inline-flex;
-  align-items: center;
-  justify-content: center;
-
-  padding: 16px 28px;                 /* EXTRA Inside Padding */
+  padding: 9px 20px;               /* EXTRA INNENABSTAND */
   border-radius: var(--pill-radius);
   background: rgba(255,255,255,0.05);
   border: 1px solid rgba(255,255,255,0.12);
-
   font-size: 11px;
   letter-spacing: .12em;
   text-transform: uppercase;
   color: var(--text-muted);
-
   transition: var(--transition-fast);
   cursor: pointer;
   white-space: nowrap;
-  line-height: 1;                     /* Fix for tall fonts */
+  line-height: 1.3;
 }
 
 .filter-pill:hover {
@@ -149,41 +144,30 @@ a { text-decoration: none; color: inherit; }
   object-fit: cover;
   transition: .45s ease;
 }
-
-.card:hover .card-img {
-  transform: scale(1.06);
-}
+.card:hover .card-img { transform: scale(1.06); }
 
 .card-media-overlay {
-  position: absolute;
-  inset: 0;
+  position: absolute; inset: 0;
   opacity: 0;
-  background: radial-gradient(circle at center,
-               transparent 0%, rgba(0,0,0,0.35) 80%);
+  background: radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.35) 80%);
   transition: opacity .45s ease;
 }
-
-.card:hover .card-media-overlay {
-  opacity: 1;
-}
+.card:hover .card-media-overlay { opacity: 1; }
 
 .card-text {
   padding: 18px;
 }
-
 .card-category {
   font-size: 11px;
   text-transform: uppercase;
   color: var(--text-muted);
   margin-bottom: 6px;
 }
-
 .card-title {
   font-size: 20px;
-  margin: 0 0 6px;
   font-weight: 600;
+  margin: 0 0 6px;
 }
-
 .card-excerpt {
   font-size: 13px;
   color: var(--text-muted);
@@ -200,53 +184,55 @@ a { text-decoration: none; color: inherit; }
 }
 
 /* -----------------------------------------------------------
-   MOBILE — MODERN GLASS FILTERBAR
+   MOBILE — GLASS FILTERBAR + SWIPE-PILLS
 ----------------------------------------------------------- */
 @media (max-width: 768px) {
 
-  body {
-    padding-bottom: 160px;
-  }
+  body { padding-bottom: 160px; }
 
+  /* Glass Sticky Filterbar */
   #filterBar {
     position: sticky;
-    top: 100px; /* Sticky offset */
+    top: 100px;
     background: var(--glass-bg);
     backdrop-filter: blur(18px) saturate(180%);
     border: 1px solid var(--glass-border);
     border-left: none;
     border-right: none;
-
-    padding: 12px 12px;
+    padding: 14px 10px;
     margin: 0 -16px 20px;
-
     z-index: 40;
     box-shadow: var(--shadow-glass);
   }
 
-  #filterBar.compact {
-    backdrop-filter: blur(22px) saturate(220%);
-    padding: 8px 12px;
-  }
+  .filter-group-label { display: none; }
 
-  .filter-group-label {
-    display: none;
-  }
-
+  /* -----------------------------------------------
+     Horizontal Swipe-Leiste (zurückgeholt)
+  ----------------------------------------------- */
   #categoryFilters {
-    display: flex;
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 12px;
     overflow-x: auto;
-    gap: 10px;
-    padding-bottom: 4px;
+    overflow-y: hidden;
+    padding-bottom: 6px;
+    white-space: nowrap;
     scrollbar-width: none;
   }
-  #categoryFilters::-webkit-scrollbar {
-    display: none;
-  }
+  #categoryFilters::-webkit-scrollbar { display: none; }
 
   .filter-pill {
-    padding: 9px 24px;          /* EXTRA padding on mobile */
+    flex: 0 0 auto;         /* nicht umbrechen */
+    padding: 10px 22px;     /* mehr Platz */
     font-size: 12px;
+    border-radius: var(--pill-radius);
+    max-width: none;
+  }
+
+  .portfolio-grid {
+    gap: 22px;
+    grid-template-columns: 1fr;
   }
 }
 </style>
@@ -258,7 +244,6 @@ a { text-decoration: none; color: inherit; }
 
   <div id="filterBar">
     <div class="filter-group">
-      <div class="filter-group-label">Kategorien</div>
       <div id="categoryFilters"></div>
     </div>
   </div>
@@ -270,7 +255,7 @@ a { text-decoration: none; color: inherit; }
 
 <script>
 /* ============================================================
-   PORTFOLIO ENGINE — Filters sorted by count (DESC)
+   PORTFOLIO ENGINE — Filters by Count DESC + Infinite Scroll
 ============================================================ */
 
 (function() {
@@ -285,44 +270,45 @@ a { text-decoration: none; color: inherit; }
   const gridEl    = document.getElementById("portfolioGrid");
   const filtersEl = document.getElementById("categoryFilters");
   const statusEl  = document.getElementById("statusMessage");
-  const filterBarEl = document.getElementById("filterBar");
 
   let visibleCount = 0;
   const BATCH = 30;
 
+
+  /* FETCH */
   async function fetchPage(path) {
     const res = await fetch(PROXY + encodeURIComponent(BASE + path));
     return res.json();
   }
 
+  /* INITIAL LOAD */
   async function loadInitial() {
     statusEl.textContent = "Lade Projekte …";
 
     while (nextPath && allPosts.length < 100) {
       const data = await fetchPage(nextPath);
       allPosts.push(...(data.items || []));
-      if (data.pagination?.nextPageUrl) {
-        nextPath = data.pagination.nextPageUrl.includes("format=")
-          ? data.pagination.nextPageUrl
-          : data.pagination.nextPageUrl + "&format=json-pretty";
-      } else nextPath = null;
+      nextPath = data.pagination?.nextPageUrl
+        ? (data.pagination.nextPageUrl.includes("format=")
+            ? data.pagination.nextPageUrl
+            : data.pagination.nextPageUrl + "&format=json-pretty")
+        : null;
     }
 
     buildFilters();
     renderCards();
     renderCards();
-
     statusEl.textContent = "";
   }
 
-  /* Build Filters ---------------------- */
+  /* FILTER PILL SORTING: DESC by COUNT */
   function buildFilters() {
     filtersEl.innerHTML = "";
 
     const counts = {};
     allPosts.forEach(p =>
-      (p.categories || []).forEach(c =>
-        counts[c] = (counts[c] || 0) + 1
+      (p.categories || []).forEach(cat =>
+        counts[cat] = (counts[cat] || 0) + 1
       )
     );
 
@@ -338,7 +324,6 @@ a { text-decoration: none; color: inherit; }
         input.value = cat;
 
         input.addEventListener("change", async () => {
-
           if (input.checked) {
             activeCategories.add(cat);
             pill.classList.add("active");
@@ -349,9 +334,6 @@ a { text-decoration: none; color: inherit; }
 
           gridEl.innerHTML = "";
           visibleCount = 0;
-
-          if (activeCategories.size > 0 && nextPath)
-            await loadAllPages();
 
           renderCards();
           renderCards();
@@ -364,28 +346,12 @@ a { text-decoration: none; color: inherit; }
       });
   }
 
-  /* Load ALL pages when filtering -------- */
-  async function loadAllPages() {
-    while (nextPath) {
-      const data = await fetchPage(nextPath);
-      allPosts.push(...(data.items || []));
-      if (data.pagination?.nextPageUrl) {
-        nextPath = data.pagination.nextPageUrl.includes("format=")
-          ? data.pagination.nextPageUrl
-          : data.pagination.nextPageUrl + "&format=json-pretty";
-      } else nextPath = null;
-    }
-  }
-
-  /* Filters Applied ---------------------- */
   function getFiltered() {
     if (activeCategories.size === 0) return allPosts;
-    return allPosts.filter(p =>
-      p.categories?.some(c => activeCategories.has(c))
-    );
+    return allPosts.filter(p => p.categories?.some(c => activeCategories.has(c)));
   }
 
-  /* Render Cards ------------------------- */
+  /* CARDS */
   function renderCards() {
     const filtered = getFiltered();
     const slice = filtered.slice(visibleCount, visibleCount + BATCH);
@@ -404,7 +370,7 @@ a { text-decoration: none; color: inherit; }
           <div class="card-text">
             <div class="card-category">${(post.categories || []).join(" · ")}</div>
             <h3 class="card-title">${post.title}</h3>
-            <p class="card-excerpt">${(post.excerpt || "").replace(/<[^>]+>/g,"")}</p>
+            <p class="card-excerpt">${(post.excerpt || "").replace(/<[^>]+>/g, "")}</p>
           </div>
         </div>
       `;
@@ -416,7 +382,7 @@ a { text-decoration: none; color: inherit; }
     visibleCount += BATCH;
   }
 
-  /* Fade-in Observer --------------------- */
+  /* Fade-in observer */
   const observer = new IntersectionObserver(entries => {
     entries.forEach(e => {
       if (e.isIntersecting) {
@@ -426,7 +392,7 @@ a { text-decoration: none; color: inherit; }
     });
   }, { threshold: 0.2 });
 
-  /* Infinite Scroll ---------------------- */
+  /* Infinite scroll sentinel */
   const sentinel = document.createElement("div");
   sentinel.style.height = "1px";
   gridEl.after(sentinel);
@@ -439,12 +405,6 @@ a { text-decoration: none; color: inherit; }
     sendHeight();
   });
   scrollObs.observe(sentinel);
-
-  /* Sticky Mini Mode --------------------- */
-  window.addEventListener("scroll", () => {
-    if (window.scrollY > 140) filterBarEl.classList.add("compact");
-    else filterBarEl.classList.remove("compact");
-  });
 
   loadInitial();
 
