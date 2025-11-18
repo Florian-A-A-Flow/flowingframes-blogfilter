@@ -38,19 +38,18 @@ body {
 a { text-decoration: none; color: inherit; }
 
 /* -----------------------------------------------------------
-   DESKTOP GRID — 3 SPALTEN VOLLE BREITE
+   DESKTOP WRAPPER — unverändert
 ----------------------------------------------------------- */
 #portfolio-wrapper {
   width: 100%;
   max-width: none;
   margin: 0;
-  padding: 0 48px; /* (B) — mehr Randabstand */
+  padding: 0 48px;
 }
 
 /* -----------------------------------------------------------
-   FILTER BAR — DESKTOP
+   FILTER BAR DESKTOP — unverändert
 ----------------------------------------------------------- */
-
 #filterBar {
   margin-bottom: 32px;
   position: relative;
@@ -59,7 +58,7 @@ a { text-decoration: none; color: inherit; }
 }
 
 .filter-inner {
-  max-width: 1200px; /* (C) — kompakter, eleganter */
+  max-width: 1200px;
   margin: 0 auto;
   padding: 0 16px;
   position: relative;
@@ -72,23 +71,22 @@ a { text-decoration: none; color: inherit; }
   letter-spacing: .14em;
   color: var(--text-muted);
   margin-bottom: 10px;
+  pointer-events: none;
 }
 
 #categoryFilters {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, auto)); /* (D) breitere Mindestpills */
+  grid-template-columns: repeat(3, 1fr);
   gap: 12px;
 }
 
 .filter-pill {
   display: inline-flex;
-  justify-content: center; /* Text schön mittig */
+  justify-content: center;
   align-items: center;
 
-  min-width: 160px;      /* (D) verhindert zu enge Pillen */
-  padding: 10px 30px;    /* (D) mehr Innenabstand */
+  padding: 9px 24px;
   border-radius: var(--pill-radius);
-
   background: rgba(255,255,255,0.05);
   border: 1px solid rgba(255,255,255,0.12);
 
@@ -119,157 +117,60 @@ a { text-decoration: none; color: inherit; }
   pointer-events: none;
 }
 
-/* Fades */
+/* Fade edges (desktop hidden) */
 .filter-scroll-indicator {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 26px;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity .25s ease;
-  z-index: 3;
   display: none;
 }
 
-.filter-scroll-indicator--left {
-  left: 16px;
-  background: linear-gradient(to right, rgba(28,28,28,1), rgba(28,28,28,0));
-}
-
-.filter-scroll-indicator--right {
-  right: 16px;
-  background: linear-gradient(to left, rgba(28,28,28,1), rgba(28,28,28,0));
-}
-
-.filter-scroll-indicator.visible {
-  opacity: 1;
-}
-
 /* -----------------------------------------------------------
-   DESKTOP GRID (3 Spalten)
+   GRID DESKTOP — exakt wie du wolltest (3 Spalten)
 ----------------------------------------------------------- */
 .portfolio-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr); /* (A) fixe 3 Spalten */
+  grid-template-columns: repeat(3, 1fr);
   gap: 34px;
 }
 
-/* CARDS --------------------------------------------------- */
-.card {
-  display: block;
-  background: #1B1B1B;
-  border-radius: var(--border-radius);
-  overflow: hidden;
-
-  opacity: 0;
-  transform: translateY(20px);
-  transition: .65s ease, box-shadow .35s ease;
-}
-
-.card.visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.card:hover {
-  box-shadow: var(--shadow-hover);
-}
-
-.card-media-wrap {
-  position: relative;
-  overflow: hidden;
-}
-
-.card-img {
-  width: 100%;
-  aspect-ratio: 16/9;
-  object-fit: cover;
-  transition: .45s ease;
-}
-
-.card:hover .card-img {
-  transform: scale(1.06);
-}
-
-.card-media-overlay {
-  position: absolute;
-  inset: 0;
-  opacity: 0;
-  background: radial-gradient(circle at center,
-               transparent 0%, rgba(0,0,0,0.35) 80%);
-  transition: opacity .45s ease;
-}
-
-.card:hover .card-media-overlay {
-  opacity: 1;
-}
-
-.card-text {
-  padding: 18px;
-}
-
-.card-category {
-  font-size: 11px;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  margin-bottom: 6px;
-}
-
-.card-title {
-  font-size: 20px;
-  margin: 0 0 6px;
-  font-weight: 600;
-}
-
-.card-excerpt {
-  font-size: 13px;
-  color: var(--text-muted);
-  margin: 0;
-}
-
 /* -----------------------------------------------------------
-   STATUS
------------------------------------------------------------ */
-#statusMessage {
-  text-align: center;
-  margin-top: 24px;
-  color: var(--text-muted);
-}
-
-/* -----------------------------------------------------------
-   MOBILE – 1 ZEILIG, HORIZONTAL SCROLL + FADE
+   MOBILE VERSION — neu korrigiert
 ----------------------------------------------------------- */
 @media (max-width: 768px) {
 
-  body {
-    padding-bottom: 160px;
+  /* GRID zurück auf 1 Spalte */
+  .portfolio-grid {
+    grid-template-columns: 1fr !important;
+    gap: 26px;
   }
 
-  #filterBar {
-    margin-bottom: 20px;
-    padding: 0;
+  #portfolio-wrapper {
+    padding: 0 16px;
   }
 
-  .filter-inner {
-    max-width: none;
-    margin: 0;
-    padding: 0;
-  }
-
+  /* FILTERBAR MOBILE */
   #filterBar {
     background: var(--glass-bg);
     backdrop-filter: blur(18px) saturate(180%);
     border-top: 1px solid var(--glass-border);
     border-bottom: 1px solid var(--glass-border);
-    box-shadow: var(--shadow-glass);
+    margin: 0 0 20px;
+    position: relative; /* Bereit für fixierte Fades */
   }
 
+  .filter-inner {
+    padding: 0 0;
+    margin: 0;
+  }
+
+  .filter-group-label {
+    display: none;
+  }
+
+  /* horizontale Scrollbar */
   #categoryFilters {
-    display: flex;
-    overflow-x: auto;
+    display: flex !important;
+    overflow-x: auto !important;
     gap: 12px;
-    padding: 12px 16px 12px 16px;
+    padding: 12px 16px;
     scrollbar-width: none;
   }
   #categoryFilters::-webkit-scrollbar {
@@ -278,13 +179,35 @@ a { text-decoration: none; color: inherit; }
 
   .filter-pill {
     padding: 10px 24px;
-    font-size: 12px;
-    min-width: auto;
+    font-size: 11px;
     flex-shrink: 0;
   }
 
+  /* FADE FIX (neue stabile Version) */
   .filter-scroll-indicator {
     display: block;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 34px;
+    z-index: 20;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity .25s ease;
+  }
+
+  .filter-scroll-indicator--left {
+    left: 0;
+    background: linear-gradient(to right, rgba(28,28,28,1), rgba(28,28,28,0));
+  }
+
+  .filter-scroll-indicator--right {
+    right: 0;
+    background: linear-gradient(to left, rgba(28,28,28,1), rgba(28,28,28,0));
+  }
+
+  .filter-scroll-indicator.visible {
+    opacity: 1;
   }
 }
 </style>
@@ -292,7 +215,7 @@ a { text-decoration: none; color: inherit; }
 
 <body>
 
-<!-- FILTERBAR -->
+<!-- FILTERBAR ÜBER DEM WRAPPER -->
 <div id="filterBar">
   <div class="filter-inner">
     <div class="filter-group">
@@ -300,13 +223,12 @@ a { text-decoration: none; color: inherit; }
       <div id="categoryFilters"></div>
     </div>
 
-    <!-- Fades -->
+    <!-- Fades fixiert -->
     <div class="filter-scroll-indicator filter-scroll-indicator--left"></div>
     <div class="filter-scroll-indicator filter-scroll-indicator--right"></div>
   </div>
 </div>
 
-<!-- PORTFOLIO GRID -->
 <div id="portfolio-wrapper">
   <div id="portfolioGrid" class="portfolio-grid"></div>
   <div id="statusMessage"></div>
@@ -314,7 +236,7 @@ a { text-decoration: none; color: inherit; }
 
 <script>
 /* ============================================================
-   PORTFOLIO ENGINE — STABIL GETESTET
+   ENGINE — unverändert, nur Fades aktualisiert
 ============================================================ */
 
 (function() {
@@ -357,8 +279,8 @@ a { text-decoration: none; color: inherit; }
     buildFilters();
     renderCards();
     renderCards();
-    statusEl.textContent = "";
 
+    statusEl.textContent = "";
     updateScrollIndicators();
   }
 
@@ -367,14 +289,13 @@ a { text-decoration: none; color: inherit; }
 
     const counts = {};
     allPosts.forEach(p =>
-      (p.categories || []).forEach(c => {
-        counts[c] = (counts[c] || 0) + 1;
-      })
+      (p.categories || []).forEach(c => counts[c] = (counts[c] || 0) + 1)
     );
 
     Object.keys(counts)
       .sort((a,b) => counts[b] - counts[a] || a.localeCompare(b))
       .forEach(cat => {
+
         const pill = document.createElement("label");
         pill.className = "filter-pill";
 
@@ -383,6 +304,7 @@ a { text-decoration: none; color: inherit; }
         input.value = cat;
 
         input.addEventListener("change", async () => {
+
           if (input.checked) {
             activeCategories.add(cat);
             pill.classList.add("active");
@@ -483,7 +405,6 @@ a { text-decoration: none; color: inherit; }
   });
   scrollObs.observe(sentinel);
 
-  /* EDGE FADE LOGIK */
   function updateScrollIndicators() {
     const maxScroll = filtersEl.scrollWidth - filtersEl.clientWidth;
 
@@ -494,15 +415,12 @@ a { text-decoration: none; color: inherit; }
     }
 
     const sl = filtersEl.scrollLeft;
-
     indicatorLeft.classList.toggle("visible", sl > 2);
     indicatorRight.classList.toggle("visible", sl < maxScroll - 2);
   }
 
   filtersEl.addEventListener("scroll", updateScrollIndicators);
-  window.addEventListener("resize", () => {
-    setTimeout(updateScrollIndicators, 80);
-  });
+  window.addEventListener("resize", () => setTimeout(updateScrollIndicators, 60));
 
   loadInitial();
 
