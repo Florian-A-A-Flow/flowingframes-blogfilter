@@ -33,7 +33,7 @@ body {
   padding: 0 16px;
 }
 
-/* FILTER BAR */
+/* FILTER BAR (Desktop-Basis) */
 #filterBar {
   margin-bottom: 32px;
   position: relative; /* Basis für Indikatoren */
@@ -91,7 +91,7 @@ body {
 /* Scroll-Indikatoren (werden nur auf Mobile sichtbar gemacht) */
 .filter-scroll-indicator {
   position: absolute;
-  top: 26px; /* ungefähr Mitte der Pills */
+  top: 26px; /* Desktop: ungefähr Mitte der Pills */
   bottom: 0;
   width: 24px;
   pointer-events: none;
@@ -218,30 +218,41 @@ body {
 }
 
 /* ============================================================
-   MOBILE – kompakter + Swipe-Kategorien + Sticky + Dropdown
+   MOBILE – kompakter + Swipe-Kategorien + Floating Bottom-Bar
    ============================================================ */
 @media (max-width: 768px) {
 
   body {
-    padding: 24px 0 40px;
+    padding: 24px 0 110px; /* extra Platz unten für Floating-Bar */
   }
 
-  /* Sticky-Filterbar mit Mini-Mode */
+  /* Floating Bottom-Bar: komplett fix am unteren Bildschirmrand */
   #filterBar {
-    position: sticky;
-    top: 0;
-    z-index: 20;
-    padding-top: 10px;
-    padding-bottom: 10px;
-    margin-bottom: 20px;
-    background: linear-gradient(to bottom, rgba(27,27,27,0.96), rgba(27,27,27,0.92));
-    backdrop-filter: blur(10px);
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 16px;
+    z-index: 40;
+    margin: 0;
+    padding: 0 16px;
+    background: transparent;
+    pointer-events: none; /* damit nur die Bar selbst klickbar ist */
   }
 
-  #filterBar.compact {
-    padding-top: 6px;
-    padding-bottom: 6px;
-    transform: translateY(-2px);
+  #filterBar .filter-group {
+    background: linear-gradient(to bottom, rgba(27,27,27,0.96), rgba(27,27,27,0.94));
+    backdrop-filter: blur(10px);
+    border-radius: 999px;
+    padding: 8px 10px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.65);
+    pointer-events: auto; /* Inhalte sind klickbar */
+  }
+
+  /* Mini-Mode beim Scrollen */
+  #filterBar.compact .filter-group {
+    padding: 5px 8px;
+    transform: translateY(2px) scale(0.96);
+    transform-origin: center;
   }
 
   #filterBar.compact .filter-group-label {
@@ -298,17 +309,17 @@ body {
     pointer-events: auto;
   }
 
-  /* Mobile-Pill-Optik etwas kompakter */
+  /* Mobile-Pill-Optik */
   .filter-pill {
     padding: 6px 14px;
     font-size: 11px;
     border-radius: 999px;
   }
 
-  /* Scroll-Indikatoren nur auf Mobile sichtbar */
+  /* Scroll-Indikatoren auf die Floating-Bar anpassen */
   .filter-scroll-indicator {
-    top: 30px;
-    bottom: 8px;
+    top: 22px;
+    bottom: 6px;
   }
 
   .portfolio-grid {
@@ -579,18 +590,15 @@ body {
      Mobile: Dropdown-Filter + Mini-Mode + Scroll-Indikatoren
   ---------------------------- */
 
-  // Dropdown Toggle beim Klick auf Label (vor allem relevant auf Mobile)
+  // Dropdown Toggle beim Klick auf Label
   if (filterLabelEl) {
     filterLabelEl.addEventListener("click", () => {
-      // Nur sinnvoll auf Mobile; Desktop ignoriert die Klasse per CSS
       filterBarEl.classList.toggle("filters-open");
-      // Nach Öffnen/Schließen Indikatoren aktualisieren
       setTimeout(updateScrollIndicators, 50);
     });
   }
 
-  // Sticky Mini-Mode
-  let lastScrollY = 0;
+  // Sticky Mini-Mode (hier für Floating-Bottom genutzt: Bar schrumpft leicht)
   window.addEventListener("scroll", () => {
     const y = window.scrollY || document.documentElement.scrollTop;
     if (y > 80) {
@@ -598,7 +606,6 @@ body {
     } else {
       filterBarEl.classList.remove("compact");
     }
-    lastScrollY = y;
   });
 
   // Scroll-Indikatoren basierend auf Scrollposition von #categoryFilters
