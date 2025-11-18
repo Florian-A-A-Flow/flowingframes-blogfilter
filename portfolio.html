@@ -105,7 +105,15 @@ body {
   overflow: hidden;
   transform: translateY(20px);
   opacity: 0;
-  transition: opacity .6s ease, transform .6s ease;
+  transition:
+    opacity .6s ease,
+    transform .6s ease,
+    box-shadow .35s ease;  /* ← für Hover-Shadow */
+}
+
+/* Hover-Schatten (NEU) */
+.card:hover {
+  box-shadow: var(--shadow-hover);
 }
 
 .card.visible {
