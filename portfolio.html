@@ -11,9 +11,13 @@
   --card-bg: #1B1B1B;
   --text-main: #f5f5f5;
   --text-muted: #a0a0a0;
-  --border-radius: 10px;
+  --border-radius: 12px;
   --transition-fast: 0.22s ease-out;
   --shadow-hover: 0 6px 16px rgba(0,0,0,0.3);
+
+  --pill-bg: rgba(255,255,255,0.06);
+  --pill-border: rgba(255,255,255,0.18);
+  --pill-active-bg: rgba(255,255,255,0.22);
 }
 
 /* Basic Reset */
@@ -33,21 +37,25 @@ body {
   padding: 0 16px;
 }
 
-/* FILTER BAR */
-#filterBar { margin-bottom: 32px; }
+/* ============================================================
+   FILTER BAR — DESKTOP
+   ============================================================ */
+#filterBar {
+  margin-bottom: 32px;
+}
 
 .filter-group-label {
   font-size: 12px;
   text-transform: uppercase;
   letter-spacing: 0.14em;
   color: var(--text-muted);
-  margin-bottom: 10px;
+  margin-bottom: 12px;
 }
 
-/* Desktop-Layout: Grid wie bisher */
+/* MODERN DESKTOP GRID */
 #categoryFilters {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, auto));
+  display: flex;
+  flex-wrap: wrap;
   gap: 12px;
 }
 
@@ -55,17 +63,29 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 6px 12px;
+  padding: 8px 16px;
   border-radius: 999px;
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.08);
-  font-size: 11px;
+  background: var(--pill-bg);
+  border: 1px solid var(--pill-border);
+  font-size: 12px;
   text-transform: uppercase;
   letter-spacing: .12em;
   color: var(--text-muted);
   cursor: pointer;
-  transition: .25s;
+  transition: all .25s;
   white-space: nowrap;
+  backdrop-filter: blur(6px);
+}
+
+.filter-pill:hover {
+  border-color: rgba(255,255,255,0.35);
+  background: rgba(255,255,255,0.12);
+}
+
+.filter-pill.active {
+  background: var(--pill-active-bg);
+  border-color: rgba(255,255,255,0.65);
+  color: white;
 }
 
 .filter-pill input {
@@ -74,18 +94,67 @@ body {
   position: absolute;
 }
 
-.filter-pill:hover {
-  border-color: rgba(255,255,255,0.35);
-  transform: translateY(-1px);
+/* ============================================================
+   MOBILE — Sticky Swipe-Bar
+   ============================================================ */
+@media (max-width: 768px) {
+
+  #filterBar {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    padding: 12px 0 16px;
+    background: linear-gradient(var(--bg), var(--bg));
+    backdrop-filter: blur(12px);
+  }
+
+  #categoryFilters {
+    display: flex;
+    overflow-x: auto;
+    overflow-y: hidden;
+    gap: 10px;
+    padding: 4px 4px 10px;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  #categoryFilters::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Larger mobile pills */
+  .filter-pill {
+    padding: 10px 20px;
+    font-size: 13px;
+    border-radius: 999px;
+  }
+
+  /* Fade shadows left & right */
+  #filterBar::before,
+  #filterBar::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 24px;
+    pointer-events: none;
+    z-index: 60;
+  }
+
+  #filterBar::before {
+    left: 0;
+    background: linear-gradient(to right, var(--bg) 0%, transparent 100%);
+  }
+
+  #filterBar::after {
+    right: 0;
+    background: linear-gradient(to left, var(--bg) 0%, transparent 100%);
+  }
 }
 
-.filter-pill.active {
-  background: rgba(255,255,255,0.12);
-  border-color: rgba(255,255,255,0.65);
-  color: white;
-}
-
-/* GRID */
+/* ============================================================
+   GRID + CARDS
+   ============================================================ */
 .portfolio-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px,1fr));
@@ -98,7 +167,6 @@ body {
   opacity: 0;
 }
 
-/* CARD */
 .card {
   display: block;
   text-decoration: none;
@@ -111,7 +179,6 @@ body {
   transition: opacity .6s ease, transform .6s ease, box-shadow .35s ease;
 }
 
-/* Hover-Schatten */
 .card:hover {
   box-shadow: var(--shadow-hover);
 }
@@ -119,12 +186,6 @@ body {
 .card.visible {
   opacity: 1;
   transform: translateY(0);
-}
-
-.card-inner {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
 }
 
 .card-media-wrap {
@@ -137,7 +198,6 @@ body {
   width: 100%;
   aspect-ratio: 16/9;
   object-fit: cover;
-  display: block;
   transition: transform .45s ease, filter .45s ease;
 }
 
@@ -145,14 +205,13 @@ body {
   position: absolute;
   inset: 0;
   opacity: 0;
-  background: radial-gradient(circle at center,
-             transparent 0%, rgba(0,0,0,0.4) 80%);
+  background: radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.45) 80%);
   transition: opacity .45s ease;
 }
 
 .card:hover .card-img {
   transform: scale(1.06);
-  filter: saturate(1.1);
+  filter: saturate(1.15);
 }
 
 .card:hover .card-media-overlay {
@@ -178,105 +237,21 @@ body {
 .card-excerpt {
   font-size: 13px;
   color: var(--text-muted);
-  margin: 0;
 }
 
-/* STATUS */
 #statusMessage {
   margin-top: 24px;
-  color: var(--text-muted);
   text-align: center;
+  color: var(--text-muted);
 }
 
-/* ============================================================
-   MOBILE – kompakter + horizontale Swipe-Kategorien (Version A)
-   ============================================================ */
+/* Mobile layout adjustments */
 @media (max-width: 768px) {
-
-  body {
-    padding: 24px 0 40px;
-  }
-
-  #filterBar {
-    margin-bottom: 20px;
-  }
-
-  .filter-group-label {
-    margin-bottom: 8px;
-  }
-
-  /* Wrapper für Gradient-Fades */
-  .filter-group {
-    position: relative;
-  }
-
-  /* Horizontale Kategorie-Swipe-Navigation */
-  #categoryFilters {
-    display: flex;
-    overflow-x: auto;
-    overflow-y: hidden;
-    gap: 8px;
-    padding-bottom: 4px;
-
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-
-    scroll-snap-type: x proximity;
-  }
-
-  #categoryFilters::-webkit-scrollbar {
-    display: none;
-  }
-
-  .filter-pill {
-    padding: 5px 12px;
-    font-size: 10px;
-    border-radius: 999px;
-    scroll-snap-align: start;
-  }
-
-  /* Gradient-Fades links/rechts (Instagram-Style) */
-  .filter-group::before,
-  .filter-group::after {
-    content: "";
-    position: absolute;
-    top: 18px;
-    height: 34px;
-    width: 28px;
-    pointer-events: none;
-    z-index: 2;
-  }
-
-  .filter-group::before {
-    left: 0;
-    background: linear-gradient(to right, var(--bg) 0%, transparent 100%);
-  }
-
-  .filter-group::after {
-    right: 0;
-    background: linear-gradient(to left, var(--bg) 0%, transparent 100%);
-  }
-
-  .portfolio-grid {
-    gap: 18px;
-    grid-template-columns: 1fr;
-  }
-
-  .card-text {
-    padding: 14px 14px 16px;
-  }
-
-  .card-title {
-    font-size: 17px;
-  }
-
-  .card-category {
-    font-size: 10px;
-  }
-
-  .card-excerpt {
-    font-size: 12px;
-  }
+  .portfolio-grid { gap: 20px; grid-template-columns: 1fr; }
+  .card-text { padding: 14px 14px 16px; }
+  .card-title { font-size: 18px; }
+  .card-category { font-size: 10px; }
+  .card-excerpt { font-size: 12px; }
 }
 </style>
 </head>
@@ -293,15 +268,13 @@ body {
   </div>
 
   <div id="portfolioGrid" class="portfolio-grid"></div>
-
   <div id="statusMessage"></div>
-</div>
 
+</div>
 
 <script>
 /* ============================================================
-   PORTFOLIO ENGINE — FlowingFrames Infinite Scroll Version
-   (unverändert zur letzten funktionierenden Version)
+   PORTFOLIO ENGINE — Infinite Scroll + Filter
    ============================================================ */
 
 (function() {
@@ -332,7 +305,6 @@ body {
     while (nextPath) {
       const data = await fetchPage(nextPath);
       allPosts = allPosts.concat(data.items || []);
-
       if (data.pagination?.nextPageUrl) {
         const u = data.pagination.nextPageUrl;
         nextPath = u.includes("format=") ? u : u + "&format=json-pretty";
@@ -344,9 +316,9 @@ body {
     filtersEl.innerHTML = "";
 
     const counts = {};
-    allPosts.forEach(p =>
-      (p.categories || []).forEach(cat =>
-        counts[cat] = (counts[cat] || 0) + 1
+    allPosts.forEach(post =>
+      (post.categories || []).forEach(c =>
+        counts[c] = (counts[c] || 0) + 1
       )
     );
 
@@ -362,13 +334,9 @@ body {
         input.value = cat;
 
         input.addEventListener("change", async () => {
-          if (input.checked) {
-            activeCategories.add(cat);
-            label.classList.add("active");
-          } else {
-            activeCategories.delete(cat);
-            label.classList.remove("active");
-          }
+          input.checked
+            ? (activeCategories.add(cat), label.classList.add("active"))
+            : (activeCategories.delete(cat), label.classList.remove("active"));
 
           gridEl.classList.add("fade-out");
           await new Promise(r => setTimeout(r, 250));
@@ -396,17 +364,17 @@ body {
 
   function getFilteredPosts() {
     if (activeCategories.size === 0) return allPosts;
-    return allPosts.filter(p =>
-      p.categories?.some(c => activeCategories.has(c))
+    return allPosts.filter(post =>
+      post.categories?.some(c => activeCategories.has(c))
     );
   }
 
   function renderCards() {
     const filtered = getFilteredPosts();
     const newEnd = visibleCount + BATCH;
-    const slice = filtered.slice(visibleCount, newEnd);
+    const batch = filtered.slice(visibleCount, newEnd);
 
-    slice.forEach(post => {
+    batch.forEach(post => {
       const a = document.createElement("a");
       a.className = "card";
       a.href = BASE + post.fullUrl;
@@ -421,33 +389,33 @@ body {
       const img = document.createElement("img");
       img.className = "card-img";
       img.src = post.assetUrl;
-      img.alt = post.title || "";
+      img.alt = post.title;
       img.loading = "lazy";
 
-      const overlay = document.createElement("div");
-      overlay.className = "card-media-overlay";
+      const ov = document.createElement("div");
+      ov.className = "card-media-overlay";
 
       media.appendChild(img);
-      media.appendChild(overlay);
+      media.appendChild(ov);
 
       const text = document.createElement("div");
       text.className = "card-text";
 
-      const catEl = document.createElement("div");
-      catEl.className = "card-category";
-      catEl.textContent = (post.categories || []).join(" · ");
+      const cat = document.createElement("div");
+      cat.className = "card-category";
+      cat.textContent = (post.categories || []).join(" · ");
 
-      const titleEl = document.createElement("h3");
-      titleEl.className = "card-title";
-      titleEl.textContent = post.title || "";
+      const title = document.createElement("h3");
+      title.className = "card-title";
+      title.textContent = post.title;
 
-      const excerptEl = document.createElement("p");
-      excerptEl.className = "card-excerpt";
-      excerptEl.textContent = post.excerpt?.replace(/<[^>]+>/g,"") || "";
+      const excerpt = document.createElement("p");
+      excerpt.className = "card-excerpt";
+      excerpt.textContent = post.excerpt?.replace(/<[^>]+>/g, "") || "";
 
-      text.appendChild(catEl);
-      text.appendChild(titleEl);
-      if (excerptEl.textContent) text.appendChild(excerptEl);
+      text.appendChild(cat);
+      text.appendChild(title);
+      if (excerpt.textContent) text.appendChild(excerpt);
 
       inner.appendChild(media);
       inner.appendChild(text);
@@ -458,9 +426,9 @@ body {
     });
 
     visibleCount = newEnd;
-    statusEl.textContent = filtered.length === 0
-      ? "Keine Projekte für die gewählten Kategorien."
-      : "";
+
+    statusEl.textContent =
+      filtered.length === 0 ? "Keine Projekte für die gewählten Kategorien." : "";
   }
 
   const cardObserver = new IntersectionObserver(entries => {
@@ -480,14 +448,13 @@ body {
   sentinel.style.height = "1px";
   gridEl.after(sentinel);
 
-  const scrollObserver = new IntersectionObserver(async (entries) => {
+  const scrollObserver = new IntersectionObserver(entries => {
     if (!entries[0].isIntersecting) return;
-
     const filtered = getFilteredPosts();
-    if (visibleCount >= filtered.length) return;
-
-    renderCards();
-    sendHeight();
+    if (visibleCount < filtered.length) {
+      renderCards();
+      sendHeight();
+    }
   });
 
   scrollObserver.observe(sentinel);
@@ -495,35 +462,33 @@ body {
   async function loadInitial() {
     statusEl.textContent = "Lade Projekte …";
 
-    while (nextPath && allPosts.length < 100) {
+    while (nextPath && allPosts.length < 120) {
       const data = await fetchPage(nextPath);
       allPosts = allPosts.concat(data.items || []);
-
-      if (data.pagination?.nextPageUrl) {
-        const u = data.pagination.nextPageUrl;
-        nextPath = u.includes("format=") ? u : u + "&format=json-pretty";
-      } else nextPath = null;
-      }
+      nextPath = data.pagination?.nextPageUrl
+        ? (data.pagination.nextPageUrl.includes("format=")
+            ? data.pagination.nextPageUrl
+            : data.pagination.nextPageUrl + "&format=json-pretty")
+        : null;
+    }
 
     buildFilters();
     renderCards();
     renderCards();
-
     statusEl.textContent = "";
   }
 
   loadInitial();
+
 })();
 </script>
 
-<!-- HEIGHT MESSAGE TO SQUARESPACE -->
 <script>
 function sendHeight() {
-  const h = document.documentElement.scrollHeight;
-  parent.postMessage({ portfolioHeight: h }, "*");
+  parent.postMessage({ portfolioHeight: document.documentElement.scrollHeight }, "*");
 }
 
-new MutationObserver(() => sendHeight())
+new MutationObserver(sendHeight)
   .observe(document.body, { childList: true, subtree: true });
 
 setInterval(sendHeight, 300);
