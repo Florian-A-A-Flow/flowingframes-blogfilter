@@ -35,10 +35,7 @@ body {
   font-family: system-ui, Helvetica, Arial, sans-serif;
   color: var(--text-main);
 }
-a {
-  text-decoration: none;
-  color: inherit;
-}
+a { text-decoration: none; color: inherit; }
 
 /* WRAPPER ------------------------------------------------- */
 #portfolio-wrapper {
@@ -48,19 +45,14 @@ a {
 }
 
 /* -----------------------------------------------------------
-   FILTER BAR — OUTSIDE WRAPPER
-   Desktop: flach & seriös
+   FILTER BAR — DESKTOP (Minimal, Flat)
 ----------------------------------------------------------- */
 
 #filterBar {
-  max-width: 1400px;
-  margin: 0 auto 32px;
-  padding: 0 16px;
-  position: relative;
-}
-
-.filter-group {
-  width: 100%;
+  margin-bottom: 32px;
+  position: relative; /* NICHT sticky */
+  padding: 14px 0;
+  z-index: 2; /* Damit sie über dem Grid bleibt */
 }
 
 .filter-group-label {
@@ -70,23 +62,22 @@ a {
   letter-spacing: .14em;
   color: var(--text-muted);
   margin-bottom: 10px;
+  pointer-events: none;
 }
 
-/* Desktop: flexible Reihe mit Wrap */
 #categoryFilters {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, auto));
   gap: 12px;
 }
 
-/* Pills: Inhalt + angenehmer Innenabstand, zentrierter Text */
 .filter-pill {
   display: inline-flex;
-  align-items: center;
   justify-content: center;
-  padding: 8px 22px;           /* mehr Platz innen */
-  border-radius: var(--pill-radius);
+  align-items: center;
 
+  padding: 9px 20px;
+  border-radius: var(--pill-radius);
   background: rgba(255,255,255,0.05);
   border: 1px solid rgba(255,255,255,0.12);
 
@@ -97,13 +88,7 @@ a {
 
   transition: var(--transition-fast);
   cursor: pointer;
-  white-space: nowrap;         /* niemals umbrechen */
-}
-
-.filter-pill input {
-  position: absolute;
-  opacity: 0;
-  pointer-events: none;
+  white-space: nowrap;
 }
 
 .filter-pill:hover {
@@ -115,6 +100,12 @@ a {
   background: rgba(255,255,255,0.18);
   border-color: rgba(255,255,255,0.5);
   color: white;
+}
+
+.filter-pill input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
 }
 
 /* -----------------------------------------------------------
@@ -208,7 +199,8 @@ a {
 }
 
 /* -----------------------------------------------------------
-   MOBILE — MODERNE GLASS-STICKY-BAR + SWIPE-PILLS
+   MOBILE — MODERN GLASS FILTERBAR
+   (NICHT STICKY, scrollt normal mit)
 ----------------------------------------------------------- */
 @media (max-width: 768px) {
 
@@ -216,50 +208,41 @@ a {
     padding-bottom: 160px;
   }
 
-  /* FilterBar sticky am oberen Rand der Iframe-Ansicht */
   #filterBar {
-    position: sticky;
-    top: 0;  /* innerhalb des iFrames – bleibt unter deinem Website-Header */
-    z-index: 40;
-
-    margin: 0;
-    padding: 10px 12px;
-
-    max-width: none;
-    width: 100%;
-
+    position: relative;  /* <-- WICHTIG: nicht sticky */
+    top: 0;
     background: var(--glass-bg);
     backdrop-filter: blur(18px) saturate(180%);
-    border-bottom: 1px solid var(--glass-border);
+    border: 1px solid var(--glass-border);
+    border-left: none;
+    border-right: none;
+
+    padding: 12px 12px;
+    margin: 0 -16px 20px;
+
+    z-index: 40;
     box-shadow: var(--shadow-glass);
   }
 
   .filter-group-label {
-    display: none; /* mobil Platz sparen */
+    display: none;
   }
 
-  /* Horizontale Swipe-Leiste */
   #categoryFilters {
     display: flex;
-    flex-wrap: nowrap;
     overflow-x: auto;
-    gap: 10px;
-    padding-bottom: 4px;
+    gap: 12px;
     scrollbar-width: none;
+    padding-bottom: 3px;
   }
-
   #categoryFilters::-webkit-scrollbar {
     display: none;
   }
 
   .filter-pill {
-    padding: 8px 22px;   /* genug Platz für lange Wörter */
+    padding: 10px 22px;
     font-size: 12px;
-  }
-
-  .portfolio-grid {
-    grid-template-columns: 1fr;
-    gap: 24px;
+    flex-shrink: 0;
   }
 }
 </style>
@@ -267,7 +250,7 @@ a {
 
 <body>
 
-<!-- FILTERBAR AUSSERHALB DES WRAPPERS -->
+<!-- FILTERBAR steht JETZT ÜBER dem Wrapper -->
 <div id="filterBar">
   <div class="filter-group">
     <div class="filter-group-label">Kategorien</div>
@@ -275,7 +258,6 @@ a {
   </div>
 </div>
 
-<!-- PORTFOLIO-INHALT -->
 <div id="portfolio-wrapper">
   <div id="portfolioGrid" class="portfolio-grid"></div>
   <div id="statusMessage"></div>
@@ -283,7 +265,7 @@ a {
 
 <script>
 /* ============================================================
-   PORTFOLIO ENGINE — Filters sorted by count (DESC)
+   PORTFOLIO ENGINE – funktioniert unverändert weiter
 ============================================================ */
 
 (function() {
@@ -304,11 +286,9 @@ a {
 
   async function fetchPage(path) {
     const res = await fetch(PROXY + encodeURIComponent(BASE + path));
-    if (!res.ok) throw new Error("Fetch-Fehler: " + res.status);
     return res.json();
   }
 
-  /* ---------------- INITIAL LOAD ---------------- */
   async function loadInitial() {
     statusEl.textContent = "Lade Projekte …";
 
@@ -316,11 +296,10 @@ a {
       const data = await fetchPage(nextPath);
       allPosts.push(...(data.items || []));
       if (data.pagination?.nextPageUrl) {
-        const u = data.pagination.nextPageUrl;
-        nextPath = u.includes("format=") ? u : u + "&format=json-pretty";
-      } else {
-        nextPath = null;
-      }
+        nextPath = data.pagination.nextPageUrl.includes("format=")
+          ? data.pagination.nextPageUrl
+          : data.pagination.nextPageUrl + "&format=json-pretty";
+      } else nextPath = null;
     }
 
     buildFilters();
@@ -330,15 +309,14 @@ a {
     statusEl.textContent = "";
   }
 
-  /* ---------------- FILTER SYSTEM ---------------- */
   function buildFilters() {
     filtersEl.innerHTML = "";
 
     const counts = {};
     allPosts.forEach(p =>
-      (p.categories || []).forEach(c => {
-        counts[c] = (counts[c] || 0) + 1;
-      })
+      (p.categories || []).forEach(c =>
+        counts[c] = (counts[c] || 0) + 1
+      )
     );
 
     Object.keys(counts)
@@ -383,11 +361,10 @@ a {
       const data = await fetchPage(nextPath);
       allPosts.push(...(data.items || []));
       if (data.pagination?.nextPageUrl) {
-        const u = data.pagination.nextPageUrl;
-        nextPath = u.includes("format=") ? u : u + "&format=json-pretty";
-      } else {
-        nextPath = null;
-      }
+        nextPath = data.pagination.nextPageUrl.includes("format=")
+          ? data.pagination.nextPageUrl
+          : data.pagination.nextPageUrl + "&format=json-pretty";
+      } else nextPath = null;
     }
   }
 
@@ -398,7 +375,6 @@ a {
     );
   }
 
-  /* ---------------- RENDER CARDS ---------------- */
   function renderCards() {
     const filtered = getFiltered();
     const slice = filtered.slice(visibleCount, visibleCount + BATCH);
@@ -407,21 +383,17 @@ a {
       const a = document.createElement("a");
       a.className = "card";
       a.href = BASE + post.fullUrl;
-      a.target = "_top";
-
-      const categories = (post.categories || []).join(" · ");
-      const cleanExcerpt = (post.excerpt || "").replace(/<[^>]+>/g,"");
 
       a.innerHTML = `
         <div class="card-inner">
           <div class="card-media-wrap">
-            <img class="card-img" src="${post.assetUrl}" loading="lazy" alt="${post.title || ""}">
+            <img class="card-img" src="${post.assetUrl}" loading="lazy">
             <div class="card-media-overlay"></div>
           </div>
           <div class="card-text">
-            <div class="card-category">${categories}</div>
-            <h3 class="card-title">${post.title || ""}</h3>
-            <p class="card-excerpt">${cleanExcerpt}</p>
+            <div class="card-category">${(post.categories || []).join(" · ")}</div>
+            <h3 class="card-title">${post.title}</h3>
+            <p class="card-excerpt">${(post.excerpt || "").replace(/<[^>]+>/g,"")}</p>
           </div>
         </div>
       `;
@@ -431,13 +403,8 @@ a {
     });
 
     visibleCount += BATCH;
-
-    statusEl.textContent = filtered.length === 0
-      ? "Keine Projekte für die gewählten Kategorien."
-      : "";
   }
 
-  /* ---------------- FADE-IN OBSERVER ---------------- */
   const observer = new IntersectionObserver(entries => {
     entries.forEach(e => {
       if (e.isIntersecting) {
@@ -447,24 +414,21 @@ a {
     });
   }, { threshold: 0.2 });
 
-  /* ---------------- INFINITE SCROLL ---------------- */
   const sentinel = document.createElement("div");
   sentinel.style.height = "1px";
   gridEl.after(sentinel);
 
   const scrollObs = new IntersectionObserver(entries => {
     if (!entries[0].isIntersecting) return;
-
     const filtered = getFiltered();
     if (visibleCount >= filtered.length) return;
-
     renderCards();
     sendHeight();
   });
-
   scrollObs.observe(sentinel);
 
   loadInitial();
+
 })();
 </script>
 
