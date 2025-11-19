@@ -38,25 +38,38 @@ body {
 a { text-decoration: none; color: inherit; }
 
 /* WRAPPER ------------------------------------------------- */
-/* Desktop mit leicht reduziertem Rand */
 #portfolio-wrapper {
   width: 100%;
   max-width: none;
   margin: 0;
-  padding: 0 36px; /* leicht reduziert nach deinem Wunsch */
+  padding: 0 48px;
 }
 
 /* -----------------------------------------------------------
-   FILTER BAR – DESKTOP (schmaler Bereich)
+   FILTER BAR – DESKTOP (F1 clean UI)
 ----------------------------------------------------------- */
 #filterBar {
   margin-bottom: 32px;
   position: relative;
-  padding: 14px 0;
+  padding: 30px 0;
   z-index: 2;
 }
 
-/* neuer schmaler Desktop-Zentrierbereich */
+/* Dezente Strukturlinien (F1) */
+@media (min-width: 769px) {
+  #filterBar::before,
+  #filterBar::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: rgba(255,255,255,0.05);
+  }
+  #filterBar::before { top: 0; }
+  #filterBar::after { bottom: 0; }
+}
+
 .filter-inner-desktop {
   max-width: 1200px;
   margin: 0 auto;
@@ -72,7 +85,7 @@ a { text-decoration: none; color: inherit; }
   margin-bottom: 10px;
 }
 
-/* Desktop Pills flexibel */
+/* Desktop: Pills flexibel */
 @media (min-width: 769px) {
   #categoryFilters {
     display: flex;
@@ -98,12 +111,14 @@ a { text-decoration: none; color: inherit; }
   position: relative;
 }
 
+/* Invisible input */
 .filter-pill input {
   position: absolute;
   opacity: 0;
   pointer-events: none;
 }
 
+/* Active */
 .filter-pill.active {
   background: rgba(255,255,255,0.18);
   border-color: rgba(255,255,255,0.5);
@@ -111,12 +126,26 @@ a { text-decoration: none; color: inherit; }
 }
 
 /* -----------------------------------------------------------
+   PREMIUM HOVER (H3)
+   Nur Desktop
+----------------------------------------------------------- */
+@media (min-width: 769px) {
+  .filter-pill:hover:not(.active) {
+    background: rgba(255,255,255,0.12);
+    border-color: rgba(255,255,255,0.25);
+    color: #fff;
+    box-shadow: 0 0 14px rgba(255,255,255,0.08);
+    transform: translateY(-1px);
+  }
+}
+
+/* -----------------------------------------------------------
    DESKTOP GRID
 ----------------------------------------------------------- */
 .portfolio-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr); 
-  gap: 30px; /* minimal größerer Abstand */
+  grid-template-columns: repeat(3, 1fr);
+  gap: 34px;
 }
 
 .card {
@@ -141,7 +170,7 @@ a { text-decoration: none; color: inherit; }
 .card:hover .card-img { transform: scale(1.06); }
 
 .card-text {
-  padding: 14px 0; /* links & rechts 0 → bündig mit Bild */
+  padding: 14px 0;
 }
 
 .card-category {
@@ -152,7 +181,7 @@ a { text-decoration: none; color: inherit; }
 }
 
 .card-title {
-  font-size: 18px; /* kleiner wie Beispielbild */
+  font-size: 18px;
   margin-bottom: 4px;
   font-weight: 600;
 }
@@ -163,7 +192,7 @@ a { text-decoration: none; color: inherit; }
 }
 
 /* -----------------------------------------------------------
-   MOBILE VERSION – unverändert außer Fix für Fade
+   MOBILE – kompakt + stabiler Fade
 ----------------------------------------------------------- */
 @media (max-width: 768px) {
 
@@ -199,7 +228,7 @@ a { text-decoration: none; color: inherit; }
     flex-shrink: 0;
   }
 
-  /* FIX: Statischer Fade → jetzt an #filterBar, nicht am scrollenden Bereich */
+  /* Static Fade (mobile fix) */
   #filterBar::before,
   #filterBar::after {
     content: "";
@@ -210,14 +239,22 @@ a { text-decoration: none; color: inherit; }
     pointer-events: none;
     z-index: 50;
   }
+
   #filterBar::before {
     left: 0;
     background: linear-gradient(to right, rgba(28,28,28,0.85), rgba(28,28,28,0));
   }
+
   #filterBar::after {
     right: 0;
     background: linear-gradient(to left, rgba(28,28,28,0.85), rgba(28,28,28,0));
   }
+
+  /* Mobile text spacing */
+  .card-text { padding: 10px 0; }
+  .card-category { margin-bottom: 2px; font-size: 10px; }
+  .card-title { font-size: 16px; margin-bottom: 3px; }
+  .card-excerpt { font-size: 12px; line-height: 1.35; }
 
   .portfolio-grid {
     grid-template-columns: 1fr;
