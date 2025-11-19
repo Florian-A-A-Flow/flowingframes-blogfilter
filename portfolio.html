@@ -112,7 +112,7 @@ a { text-decoration: none; color: inherit; }
   position: absolute;
   top: 0;
   bottom: 0;
-  width: 72px; /* breite mobile fades */
+  width: 72px;
   pointer-events: none;
   opacity: 0;
   transition: opacity .35s ease;
@@ -164,8 +164,16 @@ a { text-decoration: none; color: inherit; }
   transform: translateY(20px);
   transition: .65s ease, box-shadow .35s ease;
 }
+
+/* ✔ Hover shadow aus alter Version */
+.card:hover {
+  box-shadow: var(--shadow-hover);
+}
+
 .card.visible { opacity: 1; transform: translateY(0); }
+
 .card-media-wrap { position: relative; overflow: hidden; }
+
 .card-img {
   width: 100%;
   aspect-ratio: 16/9;
@@ -174,8 +182,47 @@ a { text-decoration: none; color: inherit; }
 }
 .card:hover .card-img { transform: scale(1.06); }
 
+/* ✔ Overlay bleibt */
+.card-media-overlay {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  background: radial-gradient(circle at center,
+               transparent 0%, rgba(0,0,0,0.35) 80%);
+  transition: opacity .45s ease;
+}
+.card:hover .card-media-overlay {
+  opacity: 1;
+}
+
 /* -----------------------------------------------------------
-   MOBILE – kompakter (Option A2)
+   ✔ TEXTSTIL aus alter Version (Desktop + Mobile)
+----------------------------------------------------------- */
+.card-text {
+  padding: 18px; /* alt */
+}
+
+.card-category {
+  font-size: 11px;      /* alt */
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 6px;   /* alt */
+}
+
+.card-title {
+  font-size: 20px;      /* alt */
+  margin: 0 0 6px;      /* alt */
+  font-weight: 600;
+}
+
+.card-excerpt {
+  font-size: 13px;      /* alt */
+  color: var(--text-muted);
+  margin: 0;
+}
+
+/* -----------------------------------------------------------
+   MOBILE
 ----------------------------------------------------------- */
 @media (max-width: 768px) {
 
@@ -210,11 +257,11 @@ a { text-decoration: none; color: inherit; }
 
   .filter-scroll-indicator { display: block; }
 
-  /* kompaktes Card-Design */
-  .card-text { padding: 10px; }
-  .card-category { font-size: 8px; margin-bottom: 3px; }
-  .card-title { font-size: 15px; margin-bottom: 4px; }
-  .card-excerpt { font-size: 10px; line-height: 1.4; }
+  /* ✔ Hier NICHT kompakt — alte Textwerte gelten nun auch mobil */
+  .card-text { padding: 18px; }
+  .card-category { font-size: 11px; margin-bottom: 6px; }
+  .card-title { font-size: 20px; margin-bottom: 6px; }
+  .card-excerpt { font-size: 13px; }
 
   .portfolio-grid {
     grid-template-columns: 1fr;
