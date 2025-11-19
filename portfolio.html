@@ -38,10 +38,18 @@ body {
 a { text-decoration: none; color: inherit; }
 
 /* WRAPPER ------------------------------------------------- */
+/* Basis wie früher – passend zu mobiler Filterbar */
 #portfolio-wrapper {
   max-width: 1400px;
   margin: 0 auto;
-  padding: 0 32px; /* ↓ UPDATED: etwas schmaler wie Beispielbild */
+  padding: 0 16px;
+}
+
+/* Desktop: etwas mehr Außenabstand, näher am Beispielbild */
+@media (min-width: 769px) {
+  #portfolio-wrapper {
+    padding: 0 32px;
+  }
 }
 
 /* -----------------------------------------------------------
@@ -60,7 +68,7 @@ a { text-decoration: none; color: inherit; }
   #filterBar .filter-inner-desktop {
     max-width: 1400px;
     margin: 0 auto;
-    padding: 0 32px; /* angepasst an Grid-Abstand */
+    padding: 0 32px;
   }
 }
 
@@ -125,7 +133,7 @@ a { text-decoration: none; color: inherit; }
 .portfolio-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 34px; /* ↓ UPDATED: leicht größer wie Beispielbild */
+  gap: 34px;
 }
 
 .card {
@@ -193,7 +201,7 @@ a { text-decoration: none; color: inherit; }
 }
 
 .card-title {
-  font-size: 18px; /* ↓ UPDATED: etwas kleiner wie Beispiel */
+  font-size: 18px;
   margin: 0 0 6px;
   font-weight: 600;
 }
@@ -214,7 +222,7 @@ a { text-decoration: none; color: inherit; }
 }
 
 /* -----------------------------------------------------------
-   MOBILE — unverändert!
+   MOBILE — Filterbar unverändert
 ----------------------------------------------------------- */
 @media (max-width: 768px) {
 
@@ -478,7 +486,6 @@ a { text-decoration: none; color: inherit; }
 })();
 </script>
 
-<!-- HEIGHT SYNC -->
 <script>
 function sendHeight(){
   parent.postMessage({ portfolioHeight: document.documentElement.scrollHeight }, "*");
