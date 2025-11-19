@@ -112,12 +112,12 @@ a { text-decoration: none; color: inherit; }
   position: absolute;
   top: 0;
   bottom: 0;
-  width: 72px; /* EXTRA BREITER, hochwertiger Fade */
+  width: 72px; /* breite mobile fades */
   pointer-events: none;
   opacity: 0;
   transition: opacity .35s ease;
   z-index: 6;
-  display: none; /* erst mobil */
+  display: none;
 }
 
 .filter-scroll-indicator.visible {
@@ -175,7 +175,7 @@ a { text-decoration: none; color: inherit; }
 .card:hover .card-img { transform: scale(1.06); }
 
 /* -----------------------------------------------------------
-   MOBILE
+   MOBILE – kompakter (Option A2)
 ----------------------------------------------------------- */
 @media (max-width: 768px) {
 
@@ -208,26 +208,18 @@ a { text-decoration: none; color: inherit; }
   }
   #categoryFilters::-webkit-scrollbar { display: none; }
 
-  /* MOBILE FADE-ACTIVATION */
-  .filter-scroll-indicator {
-    display: block;
-  }
+  .filter-scroll-indicator { display: block; }
 
-  .filter-pill {
-    padding: 10px 24px;
-    font-size: 12px;
-    flex-shrink: 0;
-  }
+  /* kompaktes Card-Design */
+  .card-text { padding: 10px; }
+  .card-category { font-size: 8px; margin-bottom: 3px; }
+  .card-title { font-size: 15px; margin-bottom: 4px; }
+  .card-excerpt { font-size: 10px; line-height: 1.4; }
 
   .portfolio-grid {
     grid-template-columns: 1fr;
     gap: 22px;
   }
-
-  .card-text { padding: 14px; }
-  .card-category { font-size: 10px; margin-bottom: 4px; }
-  .card-title { font-size: 17px; margin-bottom: 4px; }
-  .card-excerpt { font-size: 12px; }
 }
 </style>
 </head>
