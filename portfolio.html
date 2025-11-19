@@ -81,7 +81,7 @@ a { text-decoration: none; color: inherit; }
   .filter-inner-desktop::after { bottom: 0; }
 }
 
-/* Kategorien – typografisch aufgewertet, zentriert */
+/* Kategorien – typografisch aufgewertet (Desktop) */
 .filter-group-label {
   font-size: 13px;
   font-weight: 600;
@@ -162,7 +162,7 @@ a { text-decoration: none; color: inherit; }
 }
 .card.visible { opacity: 1; transform: translateY(0); }
 
-/* === NEW: Squarespace Summary Hover Effect (EXACT COPY) === */
+/* === Squarespace Summary Hover Effect === */
 
 /* Smooth back-transition */
 .card {
@@ -233,7 +233,20 @@ a { text-decoration: none; color: inherit; }
     box-shadow: var(--shadow-glass);
   }
 
-  .filter-group-label { display: none; }
+  /* Mobile: Kategorien Label wieder anzeigen */
+  .filter-group-label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .26em;
+    color: #D3D3D3;
+    text-align: center;
+
+    /* kompakte mobile Abstände */
+    margin-top: 10px;
+    margin-bottom: 14px;
+  }
 
   .filter-inner-desktop { padding: 0; margin: 0; }
 
@@ -253,7 +266,7 @@ a { text-decoration: none; color: inherit; }
     flex-shrink: 0;
   }
 
-  /* Static Fade (mobile fix) */
+  /* Static Fade (mobile fix) — extended width */
   #filterBar::before,
   #filterBar::after {
     content: "";
@@ -440,6 +453,7 @@ a { text-decoration: none; color: inherit; }
     visibleCount += BATCH;
   }
 
+
   const observer = new IntersectionObserver(entries => {
     entries.forEach(e => {
       if (e.isIntersecting) {
@@ -465,6 +479,7 @@ a { text-decoration: none; color: inherit; }
   loadInitial();
 
 })();
+
 </script>
 
 <script>
