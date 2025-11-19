@@ -151,7 +151,7 @@ a { text-decoration: none; color: inherit; }
   gap: 34px;
 }
 
-/* Unified, corrected transition */
+/* Unified transitions */
 .card {
   display: block;
   background: #1B1B1B;
@@ -187,17 +187,17 @@ a { text-decoration: none; color: inherit; }
 }
 
 /* -----------------------------------------------------------
-   Compact Text Spacing – UPDATED (Variante A)
+   Compact Text Spacing (Variante A)
 ----------------------------------------------------------- */
 .card-text {
   padding: 6px 0;
 }
 
-/* Kategorie → Titel minimal reduziert */
+/* Kategorie → Titel halbiert */
 .card-category {
   font-size: 11px;
-  margin-bottom: 0px;  /* vorher 1px */
-  line-height: 1.0;    /* sauber & nicht gequetscht */
+  margin-bottom: -4px;   /* <<< HALBIERUNG DES ABSTANDS */
+  line-height: 1.0;
   text-transform: uppercase;
   color: var(--text-muted);
 }
@@ -285,7 +285,10 @@ a { text-decoration: none; color: inherit; }
   }
 
   .card-text { padding: 6px 0; }
-  .card-category { margin-bottom: 0px; font-size: 10px; line-height:1.0; }
+
+  /* gleiche Halbierung auf Mobile */
+  .card-category { margin-bottom: -4px; font-size: 10px; line-height:1.0; }
+
   .card-title { font-size: 16px; margin-bottom: 8px; }
   .card-excerpt { font-size: 12px; line-height: 1.35; }
 
@@ -295,7 +298,7 @@ a { text-decoration: none; color: inherit; }
   }
 }
 
-/* Mobile label hidden on Desktop */
+/* Hide mobile label on Desktop */
 @media (min-width: 769px) {
   #mobileLabel { display: none; }
 }
