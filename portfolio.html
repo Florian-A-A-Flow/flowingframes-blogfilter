@@ -189,7 +189,7 @@ a { text-decoration: none; color: inherit; }
 }
 
 /* -----------------------------------------------------------
-   UPDATED: Compact Text Spacing (Desktop & Mobile)
+   UPDATED: Compact Text Spacing
 ----------------------------------------------------------- */
 .card-text {
   padding: 12px 0;
@@ -197,19 +197,17 @@ a { text-decoration: none; color: inherit; }
 
 .card-category {
   font-size: 11px;
-  margin-bottom: 2px; /* kleiner */
+  margin-bottom: 2px;
   text-transform: uppercase;
   color: var(--text-muted);
 }
 
-/* UPDATED: Title smaller + tighter */
 .card-title {
-  font-size: 16px; /* vorher 18px */
-  margin-bottom: 3px; /* kleiner */
+  font-size: 16px;
+  margin-bottom: 3px;
   font-weight: 600;
 }
 
-/* Excerpt bleibt, wird automatisch kompakter */
 .card-excerpt {
   font-size: 13px;
   color: var(--text-muted);
@@ -218,12 +216,15 @@ a { text-decoration: none; color: inherit; }
 /* -----------------------------------------------------------
    MOBILE
 ----------------------------------------------------------- */
+
+/* FIX: Mobile Label NUR auf Mobile */
+#mobileLabel {
+  display: none;
+}
+
 @media (max-width: 768px) {
-
-  body { padding-bottom: 160px; }
-
-  /* MOBILE LABEL ÜBER der Bar */
   #mobileLabel {
+    display: block;
     text-align: center;
     font-size: 12px;
     font-weight: 600;
@@ -232,6 +233,11 @@ a { text-decoration: none; color: inherit; }
     color: #D3D3D3;
     margin: 6px 0 12px 0;
   }
+}
+
+@media (max-width: 768px) {
+
+  body { padding-bottom: 160px; }
 
   #filterBar {
     margin-bottom: 20px;
@@ -243,7 +249,6 @@ a { text-decoration: none; color: inherit; }
     box-shadow: var(--shadow-glass);
   }
 
-  /* Desktop label aus */
   .filter-group-label { display: none; }
 
   .filter-inner-desktop { padding: 0; margin: 0; }
@@ -264,14 +269,14 @@ a { text-decoration: none; color: inherit; }
     flex-shrink: 0;
   }
 
-  /* Fade wieder sichtbar + verlängert */
+  /* Fade */
   #filterBar::before,
   #filterBar::after {
     content: "";
     position: absolute;
     top: 0;
     bottom: 0;
-    width: 42px; /* verlängert */
+    width: 42px;
     pointer-events: none;
     z-index: 50;
   }
@@ -286,7 +291,6 @@ a { text-decoration: none; color: inherit; }
     background: linear-gradient(to left, rgba(28,28,28,0.85), rgba(28,28,28,0));
   }
 
-  /* Compact mobile text */
   .card-text { padding: 10px 0; }
   .card-category { margin-bottom: 2px; font-size: 10px; }
   .card-title { font-size: 16px; margin-bottom: 3px; }
@@ -296,7 +300,6 @@ a { text-decoration: none; color: inherit; }
     grid-template-columns: 1fr;
     gap: 22px;
   }
-
 }
 </style>
 </head>
@@ -304,7 +307,7 @@ a { text-decoration: none; color: inherit; }
 <body>
 
 <!-- MOBILE LABEL ÜBER DER BAR -->
-<div id="mobileLabel" class="mobile-only">Kategorien</div>
+<div id="mobileLabel">Kategorien</div>
 
 <!-- FILTERBAR -->
 <div id="filterBar">
@@ -420,7 +423,7 @@ a { text-decoration: none; color: inherit; }
   function getFiltered() {
     if (activeCategories.size === 0) return allPosts;
     return allPosts.filter(p =>
-      p.categories?.some(c => activeCategories.has(c))
+      p.categories?.some(c => assertUnique(c) && activeCategories.has(c))
     );
   }
 
@@ -480,9 +483,7 @@ a { text-decoration: none; color: inherit; }
 
 })();
 
-</script>
-
-<script>
+/* sendHeight */
 function sendHeight(){
   parent.postMessage({ portfolioHeight: document.documentElement.scrollHeight }, "*");
 }
