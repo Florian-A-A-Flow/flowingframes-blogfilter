@@ -62,7 +62,6 @@ a { text-decoration: none; color: inherit; }
   position: relative;
 }
 
-/* Mehr Luft zwischen Linien und Inhalt – nur Desktop */
 @media (min-width: 769px) {
   .filter-inner-desktop {
     padding: 20px 16px;
@@ -81,7 +80,7 @@ a { text-decoration: none; color: inherit; }
   .filter-inner-desktop::after { bottom: 0; }
 }
 
-/* Kategorien – typografisch aufgewertet (Desktop) */
+/* Kategorien Desktop */
 .filter-group-label {
   font-size: 13px;
   font-weight: 600;
@@ -133,7 +132,7 @@ a { text-decoration: none; color: inherit; }
   color: white;
 }
 
-/* PREMIUM HOVER (H3) – nur Desktop */
+/* Desktop hover */
 @media (min-width: 769px) {
   .filter-pill:hover {
     background: rgba(255,255,255,0.09);
@@ -151,6 +150,7 @@ a { text-decoration: none; color: inherit; }
   gap: 34px;
 }
 
+/* Smooth card transitions */
 .card {
   display: block;
   background: #1B1B1B;
@@ -158,94 +158,83 @@ a { text-decoration: none; color: inherit; }
   overflow: hidden;
   opacity: 0;
   transform: translateY(20px);
-  transition: .65s ease, box-shadow .35s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, opacity .65s ease;
 }
 .card.visible { opacity: 1; transform: translateY(0); }
 
-/* === Squarespace Summary Hover Effect === */
-
-/* Smooth back-transition */
-.card {
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-/* Hover: card lifts + shadow */
+/* Lift + shadow on hover */
 .card:hover {
   transform: translateY(-3px);
   box-shadow: 0 6px 16px rgba(0,0,0,0.30);
 }
 
-/* Smooth image transition */
+/* Image transition */
 .card-img {
+  width: 100%;
+  aspect-ratio: 16/9;
+  object-fit: cover;
   transition: transform 0.4s ease, filter 0.4s ease;
 }
 
-/* Hover: image zoom + darken */
+/* Zoom + darken */
 .card:hover .card-img {
   transform: scale(1.03);
   filter: brightness(0.80);
 }
 
-/* ----------------------------------------------------------- */
 .card-media-wrap { position: relative; overflow: hidden; }
-.card-img {
-  width: 100%;
-  aspect-ratio: 16/9;
-  object-fit: cover;
-}
 
-.card-text {
-  padding: 14px 0;
-}
-
+.card-text { padding: 14px 0; }
 .card-category {
   font-size: 11px;
   margin-bottom: 4px;
   text-transform: uppercase;
   color: var(--text-muted);
 }
-
 .card-title {
   font-size: 18px;
   margin-bottom: 4px;
   font-weight: 600;
 }
-
 .card-excerpt {
   font-size: 13px;
   color: var(--text-muted);
 }
 
 /* -----------------------------------------------------------
-   MOBILE – kompakt + stabiler Fade
+   MOBILE VERSION — NEW LABEL ABOVE FILTER BAR
 ----------------------------------------------------------- */
 @media (max-width: 768px) {
 
   body { padding-bottom: 160px; }
 
-  #filterBar {
-    margin-bottom: 20px;
-    padding: 0;
-    background: var(--glass-bg);
-    backdrop-filter: blur(18px) saturate(180%);
-    border-top: 1px solid var(--glass-border);
-    border-bottom: 1px solid var(--glass-border);
-    box-shadow: var(--shadow-glass);
+  /* mobile: hide original label */
+  .filter-group-label {
+    display: none;
   }
 
-  /* Mobile: Kategorien Label wieder anzeigen */
-  .filter-group-label {
+  /* NEW: label above entire filter bar */
+  #filterBar::before {
+    content: "Kategorien";
     display: block;
+    text-align: center;
     font-size: 12px;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: .26em;
     color: #D3D3D3;
-    text-align: center;
+    margin-bottom: 16px;
+  }
 
-    /* kompakte mobile Abstände */
-    margin-top: 10px;
-    margin-bottom: 14px;
+  #filterBar {
+    margin-top: 36px;
+    padding-top: 0;
+    margin-bottom: 20px;
+    background: var(--glass-bg);
+    backdrop-filter: blur(18px) saturate(180%);
+    border-top: 1px solid var(--glass-border);
+    border-bottom: 1px solid var(--glass-border);
+    box-shadow: var(--shadow-glass);
   }
 
   .filter-inner-desktop { padding: 0; margin: 0; }
@@ -266,29 +255,29 @@ a { text-decoration: none; color: inherit; }
     flex-shrink: 0;
   }
 
-  /* Static Fade (mobile fix) — extended width */
-  #filterBar::before,
+  /* Fade edges */
   #filterBar::after {
     content: "";
     position: absolute;
-    top: 0;
-    bottom: 0;
+    top: 0; bottom: 0;
+    left: 0;
     width: 36px;
     pointer-events: none;
+    background: linear-gradient(to right, rgba(28,28,28,0.85), rgba(28,28,28,0));
     z-index: 50;
   }
-
   #filterBar::before {
-    left: 0;
-    background: linear-gradient(to right, rgba(28,28,28,0.85), rgba(28,28,28,0));
+    content: "Kategorien";
   }
 
+  /* right fade */
   #filterBar::after {
     right: 0;
+    left: auto;
     background: linear-gradient(to left, rgba(28,28,28,0.85), rgba(28,28,28,0));
   }
 
-  /* Mobile spacing */
+  /* spacing */
   .card-text { padding: 10px 0; }
   .card-category { margin-bottom: 2px; font-size: 10px; }
   .card-title { font-size: 16px; margin-bottom: 3px; }
@@ -298,7 +287,6 @@ a { text-decoration: none; color: inherit; }
     grid-template-columns: 1fr;
     gap: 22px;
   }
-
 }
 </style>
 </head>
@@ -321,19 +309,17 @@ a { text-decoration: none; color: inherit; }
 </div>
 
 <script>
-/* ================== PORTFOLIO ENGINE ================== */
 (function() {
-
-  const BASE  = "https://www.flowingframes.media";
+  const BASE = "https://www.flowingframes.media";
   const PROXY = "https://flowingframes-proxy.florian-augustus-alexander.workers.dev/?url=";
 
   let allPosts = [];
   let nextPath = "/all-projekte?format=json-pretty";
   let activeCategories = new Set();
 
-  const gridEl        = document.getElementById("portfolioGrid");
-  const filtersEl     = document.getElementById("categoryFilters");
-  const statusEl      = document.getElementById("statusMessage");
+  const gridEl = document.getElementById("portfolioGrid");
+  const filtersEl = document.getElementById("categoryFilters");
+  const statusEl = document.getElementById("statusMessage");
 
   let visibleCount = 0;
   const BATCH = 30;
@@ -436,7 +422,6 @@ a { text-decoration: none; color: inherit; }
         <div class="card-inner">
           <div class="card-media-wrap">
             <img class="card-img" src="${post.assetUrl}" loading="lazy">
-            <div class="card-media-overlay"></div>
           </div>
           <div class="card-text">
             <div class="card-category">${(post.categories||[]).join(" · ")}</div>
@@ -452,7 +437,6 @@ a { text-decoration: none; color: inherit; }
 
     visibleCount += BATCH;
   }
-
 
   const observer = new IntersectionObserver(entries => {
     entries.forEach(e => {
@@ -479,7 +463,6 @@ a { text-decoration: none; color: inherit; }
   loadInitial();
 
 })();
-
 </script>
 
 <script>
