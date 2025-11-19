@@ -59,11 +59,15 @@ a { text-decoration: none; color: inherit; }
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 16px;
-  position: relative; /* nötig für die Linien */
+  position: relative;
 }
 
-/* Dezente, sichtbare Linien oben/unten nur auf Desktop */
+/* Mehr Luft zwischen Linien und Inhalt – nur Desktop */
 @media (min-width: 769px) {
+  .filter-inner-desktop {
+    padding: 20px 16px; /* oben/unten 20px, links/rechts 16px */
+  }
+
   .filter-inner-desktop::before,
   .filter-inner-desktop::after {
     content: "";
@@ -77,13 +81,15 @@ a { text-decoration: none; color: inherit; }
   .filter-inner-desktop::after { bottom: 0; }
 }
 
+/* Kategorien – typografisch aufgewertet, zentriert */
 .filter-group-label {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: .14em;
-  color: var(--text-muted);
-  margin-bottom: 10px;
+  letter-spacing: .24em;
+  color: #D3D3D3;
+  margin-bottom: 14px;
+  text-align: center;
 }
 
 /* Desktop: Pills flexibel */
@@ -126,10 +132,7 @@ a { text-decoration: none; color: inherit; }
   color: white;
 }
 
-/* -----------------------------------------------------------
-   PREMIUM HOVER (H3) – nur Desktop
-   → Glow + leichter Lift, respektiert active/non-active Design
------------------------------------------------------------ */
+/* PREMIUM HOVER (H3) – nur Desktop */
 @media (min-width: 769px) {
   .filter-pill:hover {
     box-shadow: 0 0 16px rgba(255,255,255,0.14);
