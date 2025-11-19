@@ -46,7 +46,7 @@ a { text-decoration: none; color: inherit; }
 }
 
 /* -----------------------------------------------------------
-   FILTER BAR – DESKTOP (F1 clean UI)
+   FILTER BAR – DESKTOP
 ----------------------------------------------------------- */
 #filterBar {
   margin-bottom: 32px;
@@ -62,7 +62,7 @@ a { text-decoration: none; color: inherit; }
   position: relative;
 }
 
-/* Mehr Luft zwischen Linien und Inhalt – nur Desktop */
+/* Desktop Linien */
 @media (min-width: 769px) {
   .filter-inner-desktop {
     padding: 20px 16px;
@@ -81,7 +81,7 @@ a { text-decoration: none; color: inherit; }
   .filter-inner-desktop::after { bottom: 0; }
 }
 
-/* Kategorien – typografisch aufgewertet (Desktop) */
+/* Kategorien Label Desktop */
 .filter-group-label {
   font-size: 13px;
   font-weight: 600;
@@ -133,7 +133,7 @@ a { text-decoration: none; color: inherit; }
   color: white;
 }
 
-/* PREMIUM HOVER (H3) – nur Desktop */
+/* PREMIUM HOVER – Desktop */
 @media (min-width: 769px) {
   .filter-pill:hover {
     background: rgba(255,255,255,0.09);
@@ -162,31 +162,25 @@ a { text-decoration: none; color: inherit; }
 }
 .card.visible { opacity: 1; transform: translateY(0); }
 
-/* === Squarespace Summary Hover Effect === */
-
-/* Smooth back-transition */
+/* Squarespace Hover Style */
 .card {
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-/* Hover: card lifts + shadow */
 .card:hover {
   transform: translateY(-3px);
   box-shadow: 0 6px 16px rgba(0,0,0,0.30);
 }
 
-/* Smooth image transition */
 .card-img {
   transition: transform 0.4s ease, filter 0.4s ease;
 }
 
-/* Hover: image zoom + darken */
 .card:hover .card-img {
   transform: scale(1.03);
   filter: brightness(0.80);
 }
 
-/* ----------------------------------------------------------- */
 .card-media-wrap { position: relative; overflow: hidden; }
 .card-img {
   width: 100%;
@@ -194,54 +188,49 @@ a { text-decoration: none; color: inherit; }
   object-fit: cover;
 }
 
+/* -----------------------------------------------------------
+   UPDATED: Compact Text Spacing (Desktop & Mobile)
+----------------------------------------------------------- */
 .card-text {
-  padding: 14px 0;
+  padding: 12px 0;
 }
 
 .card-category {
   font-size: 11px;
-  margin-bottom: 4px;
+  margin-bottom: 2px; /* kleiner */
   text-transform: uppercase;
   color: var(--text-muted);
 }
 
+/* UPDATED: Title smaller + tighter */
 .card-title {
-  font-size: 18px;
-  margin-bottom: 4px;
+  font-size: 16px; /* vorher 18px */
+  margin-bottom: 3px; /* kleiner */
   font-weight: 600;
 }
 
+/* Excerpt bleibt, wird automatisch kompakter */
 .card-excerpt {
   font-size: 13px;
   color: var(--text-muted);
 }
 
 /* -----------------------------------------------------------
-   MOBILE – kompakt + stabiler Fade
+   MOBILE
 ----------------------------------------------------------- */
 @media (max-width: 768px) {
 
   body { padding-bottom: 160px; }
 
-  /* ===== MOBILE: Kategorien über der gesamten Filterbar ===== */
-  .filter-group-label {
-    display: none; /* altes Label verstecken */
-  }
-
-  #filterBar::before {
-    content: "Kategorien";
-    display: block;
+  /* MOBILE LABEL ÜBER der Bar */
+  #mobileLabel {
     text-align: center;
-
     font-size: 12px;
     font-weight: 600;
-    text-transform: uppercase;
     letter-spacing: .26em;
+    text-transform: uppercase;
     color: #D3D3D3;
-
-    /* symmetrische Abstände */
-    margin-top: 18px;
-    margin-bottom: 18px;
+    margin: 6px 0 12px 0;
   }
 
   #filterBar {
@@ -253,6 +242,9 @@ a { text-decoration: none; color: inherit; }
     border-bottom: 1px solid var(--glass-border);
     box-shadow: var(--shadow-glass);
   }
+
+  /* Desktop label aus */
+  .filter-group-label { display: none; }
 
   .filter-inner-desktop { padding: 0; margin: 0; }
 
@@ -272,15 +264,21 @@ a { text-decoration: none; color: inherit; }
     flex-shrink: 0;
   }
 
-  /* Static Fade –verlängerte Version */
-  #filterBar::after,
-  #filterBar::before:not(:first-child) {
-    width: 36px;
-    pointer-events: none;
-    z-index: 50;
-    top: 0; bottom: 0;
+  /* Fade wieder sichtbar + verlängert */
+  #filterBar::before,
+  #filterBar::after {
     content: "";
     position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 42px; /* verlängert */
+    pointer-events: none;
+    z-index: 50;
+  }
+
+  #filterBar::before {
+    left: 0;
+    background: linear-gradient(to right, rgba(28,28,28,0.85), rgba(28,28,28,0));
   }
 
   #filterBar::after {
@@ -288,16 +286,7 @@ a { text-decoration: none; color: inherit; }
     background: linear-gradient(to left, rgba(28,28,28,0.85), rgba(28,28,28,0));
   }
 
-  #filterBar > *::before {
-    display: none !important;
-  }
-
-  #filterBar::before:not(:first-child) {
-    left: 0;
-    background: linear-gradient(to right, rgba(28,28,28,0.85), rgba(28,28,28,0));
-  }
-
-  /* Mobile spacing */
+  /* Compact mobile text */
   .card-text { padding: 10px 0; }
   .card-category { margin-bottom: 2px; font-size: 10px; }
   .card-title { font-size: 16px; margin-bottom: 3px; }
@@ -313,6 +302,9 @@ a { text-decoration: none; color: inherit; }
 </head>
 
 <body>
+
+<!-- MOBILE LABEL ÜBER DER BAR -->
+<div id="mobileLabel" class="mobile-only">Kategorien</div>
 
 <!-- FILTERBAR -->
 <div id="filterBar">
