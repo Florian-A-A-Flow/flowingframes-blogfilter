@@ -151,6 +151,7 @@ a { text-decoration: none; color: inherit; }
   gap: 34px;
 }
 
+/* Unified, corrected transition */
 .card {
   display: block;
   background: #1B1B1B;
@@ -158,24 +159,22 @@ a { text-decoration: none; color: inherit; }
   overflow: hidden;
   opacity: 0;
   transform: translateY(20px);
-  transition: .65s ease, box-shadow .35s ease;
+
+  /* FIXED: fade-in + smooth hover both work */
+  transition: opacity .65s ease, transform .65s ease, box-shadow .30s ease;
 }
 .card.visible { opacity: 1; transform: translateY(0); }
 
-/* Squarespace Hover Style */
-.card {
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
+/* Hover: lift + shadow */
 .card:hover {
   transform: translateY(-3px);
   box-shadow: 0 6px 16px rgba(0,0,0,0.30);
 }
 
+/* Image hover */
 .card-img {
   transition: transform 0.4s ease, filter 0.4s ease;
 }
-
 .card:hover .card-img {
   transform: scale(1.03);
   filter: brightness(0.80);
@@ -189,7 +188,7 @@ a { text-decoration: none; color: inherit; }
 }
 
 /* -----------------------------------------------------------
-   UPDATED: Compact Text Spacing
+   Compact Text Spacing (Desktop & Mobile)
 ----------------------------------------------------------- */
 .card-text {
   padding: 12px 0;
@@ -216,13 +215,11 @@ a { text-decoration: none; color: inherit; }
 /* -----------------------------------------------------------
    MOBILE
 ----------------------------------------------------------- */
-
-/* FIX: Mobile Label NUR auf Mobile */
-#mobileLabel {
-  display: none;
-}
-
 @media (max-width: 768px) {
+
+  body { padding-bottom: 160px; }
+
+  /* MOBILE LABEL ÜBER der Bar */
   #mobileLabel {
     display: block;
     text-align: center;
@@ -233,11 +230,9 @@ a { text-decoration: none; color: inherit; }
     color: #D3D3D3;
     margin: 6px 0 12px 0;
   }
-}
 
-@media (max-width: 768px) {
-
-  body { padding-bottom: 160px; }
+  /* Desktop Label ausblenden auf Mobile */
+  .filter-group-label { display: none; }
 
   #filterBar {
     margin-bottom: 20px;
@@ -248,8 +243,6 @@ a { text-decoration: none; color: inherit; }
     border-bottom: 1px solid var(--glass-border);
     box-shadow: var(--shadow-glass);
   }
-
-  .filter-group-label { display: none; }
 
   .filter-inner-desktop { padding: 0; margin: 0; }
 
@@ -269,7 +262,7 @@ a { text-decoration: none; color: inherit; }
     flex-shrink: 0;
   }
 
-  /* Fade */
+  /* Fade (mobile) */
   #filterBar::before,
   #filterBar::after {
     content: "";
@@ -300,6 +293,11 @@ a { text-decoration: none; color: inherit; }
     grid-template-columns: 1fr;
     gap: 22px;
   }
+}
+
+/* Mobile label hidden on Desktop */
+@media (min-width: 769px) {
+  #mobileLabel { display: none; }
 }
 </style>
 </head>
@@ -423,7 +421,7 @@ a { text-decoration: none; color: inherit; }
   function getFiltered() {
     if (activeCategories.size === 0) return allPosts;
     return allPosts.filter(p =>
-      p.categories?.some(c => assertUnique(c) && activeCategories.has(c))
+      p.categories?.some(c => activeCategories.has(c))
     );
   }
 
@@ -483,7 +481,9 @@ a { text-decoration: none; color: inherit; }
 
 })();
 
-/* sendHeight */
+</script>
+
+<script>
 function sendHeight(){
   parent.postMessage({ portfolioHeight: document.documentElement.scrollHeight }, "*");
 }
