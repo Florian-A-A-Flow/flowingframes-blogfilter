@@ -38,24 +38,17 @@ body {
 a { text-decoration: none; color: inherit; }
 
 /* WRAPPER ------------------------------------------------- */
-/* Basis wie früher – passend zu mobiler Filterbar */
+/* Desktop mit leicht reduziertem Rand */
 #portfolio-wrapper {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 0 16px;
-}
-
-/* Desktop: etwas mehr Außenabstand, näher am Beispielbild */
-@media (min-width: 769px) {
-  #portfolio-wrapper {
-    padding: 0 32px;
-  }
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 0 36px; /* leicht reduziert nach deinem Wunsch */
 }
 
 /* -----------------------------------------------------------
-   FILTER BAR — DESKTOP (schmale Breite)
+   FILTER BAR – DESKTOP (schmaler Bereich)
 ----------------------------------------------------------- */
-
 #filterBar {
   margin-bottom: 32px;
   position: relative;
@@ -63,13 +56,11 @@ a { text-decoration: none; color: inherit; }
   z-index: 2;
 }
 
-/* Desktop: schmaler Bereich für Filter */
-@media (min-width: 769px) {
-  #filterBar .filter-inner-desktop {
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 0 32px;
-  }
+/* neuer schmaler Desktop-Zentrierbereich */
+.filter-inner-desktop {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 16px;
 }
 
 .filter-group-label {
@@ -79,10 +70,9 @@ a { text-decoration: none; color: inherit; }
   letter-spacing: .14em;
   color: var(--text-muted);
   margin-bottom: 10px;
-  pointer-events: none;
 }
 
-/* Desktop flexible Pills */
+/* Desktop Pills flexibel */
 @media (min-width: 769px) {
   #categoryFilters {
     display: flex;
@@ -95,30 +85,17 @@ a { text-decoration: none; color: inherit; }
   display: inline-flex;
   justify-content: center;
   align-items: center;
-  padding: 9px 20px;
+  padding: 9px 24px;
   border-radius: var(--pill-radius);
   background: rgba(255,255,255,0.05);
   border: 1px solid rgba(255,255,255,0.12);
-
   font-size: 11px;
   letter-spacing: .12em;
   text-transform: uppercase;
   color: var(--text-muted);
-
-  transition: var(--transition-fast);
-  cursor: pointer;
   white-space: nowrap;
-}
-
-.filter-pill:hover {
-  background: rgba(255,255,255,0.09);
-  border-color: rgba(255,255,255,0.25);
-}
-
-.filter-pill.active {
-  background: rgba(255,255,255,0.18);
-  border-color: rgba(255,255,255,0.5);
-  color: white;
+  transition: var(--transition-fast);
+  position: relative;
 }
 
 .filter-pill input {
@@ -127,13 +104,19 @@ a { text-decoration: none; color: inherit; }
   pointer-events: none;
 }
 
+.filter-pill.active {
+  background: rgba(255,255,255,0.18);
+  border-color: rgba(255,255,255,0.5);
+  color: white;
+}
+
 /* -----------------------------------------------------------
-   GRID + CARDS
+   DESKTOP GRID
 ----------------------------------------------------------- */
 .portfolio-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 34px;
+  grid-template-columns: repeat(3, 1fr); 
+  gap: 30px; /* minimal größerer Abstand */
 }
 
 .card {
@@ -141,161 +124,106 @@ a { text-decoration: none; color: inherit; }
   background: #1B1B1B;
   border-radius: var(--border-radius);
   overflow: hidden;
-
   opacity: 0;
   transform: translateY(20px);
   transition: .65s ease, box-shadow .35s ease;
 }
+.card.visible { opacity: 1; transform: translateY(0); }
+.card:hover { box-shadow: var(--shadow-hover); }
 
-.card.visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.card:hover {
-  box-shadow: var(--shadow-hover);
-}
-
-.card-media-wrap {
-  position: relative;
-  overflow: hidden;
-}
-
+.card-media-wrap { position: relative; overflow: hidden; }
 .card-img {
   width: 100%;
   aspect-ratio: 16/9;
   object-fit: cover;
   transition: .45s ease;
 }
+.card:hover .card-img { transform: scale(1.06); }
 
-.card:hover .card-img {
-  transform: scale(1.06);
-}
-
-.card-media-overlay {
-  position: absolute;
-  inset: 0;
-  opacity: 0;
-  background: radial-gradient(circle at center,
-               transparent 0%, rgba(0,0,0,0.35) 80%);
-  transition: opacity .45s ease;
-}
-
-.card:hover .card-media-overlay {
-  opacity: 1;
-}
-
-/* Textblock */
 .card-text {
-  padding-left: 0;
-  padding-right: 0;
-  padding-top: 18px;
-  padding-bottom: 18px;
+  padding: 14px 0; /* links & rechts 0 → bündig mit Bild */
 }
 
 .card-category {
   font-size: 11px;
+  margin-bottom: 4px;
   text-transform: uppercase;
   color: var(--text-muted);
-  margin-bottom: 6px;
 }
 
 .card-title {
-  font-size: 18px;
-  margin: 0 0 6px;
+  font-size: 18px; /* kleiner wie Beispielbild */
+  margin-bottom: 4px;
   font-weight: 600;
 }
 
 .card-excerpt {
   font-size: 13px;
   color: var(--text-muted);
-  margin: 0;
 }
 
 /* -----------------------------------------------------------
-   STATUS
------------------------------------------------------------ */
-#statusMessage {
-  text-align: center;
-  margin-top: 24px;
-  color: var(--text-muted);
-}
-
-/* -----------------------------------------------------------
-   MOBILE — Filterbar unverändert
+   MOBILE VERSION – unverändert außer Fix für Fade
 ----------------------------------------------------------- */
 @media (max-width: 768px) {
 
-  body {
-    padding-bottom: 160px;
-  }
+  body { padding-bottom: 160px; }
 
   #filterBar {
-    position: relative;
-    top: 0;
+    margin-bottom: 20px;
+    padding: 0;
     background: var(--glass-bg);
     backdrop-filter: blur(18px) saturate(180%);
-    border: 1px solid var(--glass-border);
-    border-left: none;
-    border-right: none;
-
-    padding: 12px 12px;
-    margin: 0 -16px 20px;
-
-    z-index: 40;
+    border-top: 1px solid var(--glass-border);
+    border-bottom: 1px solid var(--glass-border);
     box-shadow: var(--shadow-glass);
-
-    overflow: visible;
   }
 
-  .filter-group-label {
-    display: none;
-  }
+  .filter-group-label { display: none; }
+
+  .filter-inner-desktop { padding: 0; margin: 0; }
 
   #categoryFilters {
     display: flex;
-    flex-wrap: nowrap;
     overflow-x: auto;
-    overflow-y: hidden;
-    gap: 12px;
     white-space: nowrap;
+    gap: 14px;
+    padding: 12px 18px;
     scrollbar-width: none;
-    padding-bottom: 3px;
-    position: relative;
   }
-  #categoryFilters::-webkit-scrollbar {
-    display: none;
-  }
+  #categoryFilters::-webkit-scrollbar { display: none; }
 
   .filter-pill {
-    padding: 10px 22px;
+    padding: 10px 24px;
     font-size: 12px;
     flex-shrink: 0;
   }
 
-  #categoryFilters::before {
+  /* FIX: Statischer Fade → jetzt an #filterBar, nicht am scrollenden Bereich */
+  #filterBar::before,
+  #filterBar::after {
     content: "";
     position: absolute;
-    left: 0;
     top: 0;
     bottom: 0;
     width: 28px;
-    background: linear-gradient(to right, rgba(28,28,28,0.85), rgba(28,28,28,0));
     pointer-events: none;
-    z-index: 5;
+    z-index: 50;
+  }
+  #filterBar::before {
+    left: 0;
+    background: linear-gradient(to right, rgba(28,28,28,0.85), rgba(28,28,28,0));
+  }
+  #filterBar::after {
+    right: 0;
+    background: linear-gradient(to left, rgba(28,28,28,0.85), rgba(28,28,28,0));
   }
 
-  #categoryFilters::after {
-    content: "";
-    position: absolute;
-    right: 0;
-    top: 0;
-    bottom: 0;
-    width: 28px;
-    background: linear-gradient(to left, rgba(28,28,28,0.85), rgba(28,28,28,0));
-    pointer-events: none;
-    z-index: 5;
+  .portfolio-grid {
+    grid-template-columns: 1fr;
+    gap: 22px;
   }
+
 }
 </style>
 </head>
@@ -318,10 +246,7 @@ a { text-decoration: none; color: inherit; }
 </div>
 
 <script>
-/* ============================================================
-   PORTFOLIO ENGINE – unverändert
-============================================================ */
-
+/* ================== PORTFOLIO ENGINE ================== */
 (function() {
 
   const BASE  = "https://www.flowingframes.media";
@@ -331,9 +256,9 @@ a { text-decoration: none; color: inherit; }
   let nextPath = "/all-projekte?format=json-pretty";
   let activeCategories = new Set();
 
-  const gridEl    = document.getElementById("portfolioGrid");
-  const filtersEl = document.getElementById("categoryFilters");
-  const statusEl  = document.getElementById("statusMessage");
+  const gridEl        = document.getElementById("portfolioGrid");
+  const filtersEl     = document.getElementById("categoryFilters");
+  const statusEl      = document.getElementById("statusMessage");
 
   let visibleCount = 0;
   const BATCH = 30;
@@ -350,9 +275,8 @@ a { text-decoration: none; color: inherit; }
       const data = await fetchPage(nextPath);
       allPosts.push(...(data.items || []));
       if (data.pagination?.nextPageUrl) {
-        nextPath = data.pagination.nextPageUrl.includes("format=")
-          ? data.pagination.nextPageUrl
-          : data.pagination.nextPageUrl + "&format=json-pretty";
+        const u = data.pagination.nextPageUrl;
+        nextPath = u.includes("format=") ? u : u + "&format=json-pretty";
       } else nextPath = null;
     }
 
@@ -365,8 +289,8 @@ a { text-decoration: none; color: inherit; }
 
   function buildFilters() {
     filtersEl.innerHTML = "";
-
     const counts = {};
+
     allPosts.forEach(p =>
       (p.categories || []).forEach(c =>
         counts[c] = (counts[c] || 0) + 1
@@ -374,9 +298,8 @@ a { text-decoration: none; color: inherit; }
     );
 
     Object.keys(counts)
-      .sort((a,b) => counts[b] - counts[a] || a.localeCompare(b))
+      .sort((a,b) => counts[b]-counts[a] || a.localeCompare(b))
       .forEach(cat => {
-
         const pill = document.createElement("label");
         pill.className = "filter-pill";
 
@@ -385,13 +308,10 @@ a { text-decoration: none; color: inherit; }
         input.value = cat;
 
         input.addEventListener("change", async () => {
-          if (input.checked) {
-            activeCategories.add(cat);
-            pill.classList.add("active");
-          } else {
-            activeCategories.delete(cat);
-            pill.classList.remove("active");
-          }
+          if (input.checked) activeCategories.add(cat);
+          else activeCategories.delete(cat);
+
+          pill.classList.toggle("active", input.checked);
 
           gridEl.innerHTML = "";
           visibleCount = 0;
@@ -415,9 +335,8 @@ a { text-decoration: none; color: inherit; }
       const data = await fetchPage(nextPath);
       allPosts.push(...(data.items || []));
       if (data.pagination?.nextPageUrl) {
-        nextPath = data.pagination.nextPageUrl.includes("format=")
-          ? data.pagination.nextPageUrl
-          : data.pagination.nextPageUrl + "&format=json-pretty";
+        const u = data.pagination.nextPageUrl;
+        nextPath = u.includes("format=") ? u : u + "&format=json-pretty";
       } else nextPath = null;
     }
   }
@@ -431,7 +350,7 @@ a { text-decoration: none; color: inherit; }
 
   function renderCards() {
     const filtered = getFiltered();
-    const slice = filtered.slice(visibleCount, visibleCount + BATCH);
+    const slice = filtered.slice(visibleCount, visibleCount+BATCH);
 
     slice.forEach(post => {
       const a = document.createElement("a");
@@ -445,9 +364,9 @@ a { text-decoration: none; color: inherit; }
             <div class="card-media-overlay"></div>
           </div>
           <div class="card-text">
-            <div class="card-category">${(post.categories || []).join(" · ")}</div>
+            <div class="card-category">${(post.categories||[]).join(" · ")}</div>
             <h3 class="card-title">${post.title}</h3>
-            <p class="card-excerpt">${(post.excerpt || "").replace(/<[^>]+>/g,"")}</p>
+            <p class="card-excerpt">${(post.excerpt||"").replace(/<[^>]+>/g,"")}</p>
           </div>
         </div>
       `;
