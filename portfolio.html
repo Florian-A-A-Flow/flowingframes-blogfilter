@@ -5,6 +5,9 @@
   <title>Portfolio – Flowing Frames</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
+<!-- ADOBE FONTS (Neu hinzugefügt) -->
+<link rel="stylesheet" href="https://use.typekit.net/cke2yrp.css">
+
 <style>
 /* -----------------------------------------------------------
    DESIGN CORE
@@ -32,9 +35,12 @@ body {
   margin: 0;
   padding: 40px 0 120px;
   background: var(--bg);
-  font-family: system-ui, Helvetica, Arial, sans-serif;
+
+  /* Omnes Pro global */
+  font-family: "omnes-pro", system-ui, Helvetica, Arial, sans-serif;
   color: var(--text-main);
 }
+
 a { text-decoration: none; color: inherit; }
 
 /* WRAPPER ------------------------------------------------- */
@@ -83,8 +89,9 @@ a { text-decoration: none; color: inherit; }
 
 /* Kategorien Label Desktop */
 .filter-group-label {
+  font-family: "omnes-pro", sans-serif;
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 400;
   text-transform: uppercase;
   letter-spacing: .28em;
   color: #D3D3D3;
@@ -117,6 +124,7 @@ a { text-decoration: none; color: inherit; }
   white-space: nowrap;
   transition: var(--transition-fast);
   position: relative;
+  font-family: "omnes-pro", sans-serif;
 }
 
 /* Invisible input */
@@ -151,7 +159,6 @@ a { text-decoration: none; color: inherit; }
   gap: 34px;
 }
 
-/* Unified, corrected transition */
 .card {
   display: block;
   background: #1B1B1B;
@@ -159,18 +166,15 @@ a { text-decoration: none; color: inherit; }
   overflow: hidden;
   opacity: 0;
   transform: translateY(20px);
-
   transition: opacity .65s ease, transform .65s ease, box-shadow .30s ease;
 }
 .card.visible { opacity: 1; transform: translateY(0); }
 
-/* Hover: lift + shadow */
 .card:hover {
   transform: translateY(-3px);
   box-shadow: 0 6px 16px rgba(0,0,0,0.30);
 }
 
-/* Image hover */
 .card-img {
   transition: transform 0.4s ease, filter 0.4s ease;
 }
@@ -187,29 +191,38 @@ a { text-decoration: none; color: inherit; }
 }
 
 /* -----------------------------------------------------------
-   Compact Text Spacing – UPDATED (Variante A)
+   TEXT (Kategorie, Titel, Exzerpt) — NOW USING OMNES PRO
 ----------------------------------------------------------- */
 .card-text {
   padding: 6px 0;
 }
 
+/* Kategorie */
 .card-category {
-  font-size: 11px;
-  margin-bottom: -4px;
+  font-family: "omnes-pro", sans-serif;
+  font-size: 13px;
+  margin-bottom: 0px;
   line-height: 1.0;
   text-transform: uppercase;
   color: var(--text-muted);
+  -webkit-font-smoothing: antialiased;
 }
 
+/* Titel */
 .card-title {
-  font-size: 16px;
+  font-family: "omnes-pro", sans-serif;
+  font-size: 15px; /* 14.92px */
   margin-bottom: 8px;
-  font-weight: 600;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
 }
 
+/* Exzerpt */
 .card-excerpt {
-  font-size: 13px;
+  font-family: "omnes-pro", sans-serif;
+  font-size: 14px;
   color: var(--text-muted);
+  -webkit-font-smoothing: antialiased;
 }
 
 /* -----------------------------------------------------------
@@ -228,6 +241,7 @@ a { text-decoration: none; color: inherit; }
     text-transform: uppercase;
     color: #D3D3D3;
     margin: 6px 0 12px 0;
+    font-family: "omnes-pro", sans-serif;
   }
 
   .filter-group-label { display: none; }
@@ -260,6 +274,7 @@ a { text-decoration: none; color: inherit; }
     flex-shrink: 0;
   }
 
+  /* Fade (mobile) */
   #filterBar::before,
   #filterBar::after {
     content: "";
@@ -282,7 +297,7 @@ a { text-decoration: none; color: inherit; }
   }
 
   .card-text { padding: 6px 0; }
-  .card-category { margin-bottom: -4px; font-size: 10px; line-height:1.0; }
+  .card-category { margin-bottom: 0px; font-size: 10px; line-height:1.0; }
   .card-title { font-size: 16px; margin-bottom: 8px; }
   .card-excerpt { font-size: 12px; line-height: 1.35; }
 
@@ -428,9 +443,6 @@ a { text-decoration: none; color: inherit; }
       const a = document.createElement("a");
       a.className = "card";
       a.href = BASE + post.fullUrl;
-
-      /* 🔥 FIX HIER: externe Seiten öffnen außerhalb des iFrames */
-      a.target = "_top";
 
       a.innerHTML = `
         <div class="card-inner">
