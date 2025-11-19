@@ -151,7 +151,7 @@ a { text-decoration: none; color: inherit; }
   gap: 34px;
 }
 
-/* Unified transitions */
+/* Unified, corrected transition */
 .card {
   display: block;
   background: #1B1B1B;
@@ -187,22 +187,20 @@ a { text-decoration: none; color: inherit; }
 }
 
 /* -----------------------------------------------------------
-   Compact Text Spacing (Variante A)
+   Compact Text Spacing – UPDATED (Variante A)
 ----------------------------------------------------------- */
 .card-text {
   padding: 6px 0;
 }
 
-/* Kategorie → Titel halbiert */
 .card-category {
   font-size: 11px;
-  margin-bottom: -4px;   /* <<< HALBIERUNG DES ABSTANDS */
+  margin-bottom: -4px;
   line-height: 1.0;
   text-transform: uppercase;
   color: var(--text-muted);
 }
 
-/* Titel → Exzerpt bleibt unverändert */
 .card-title {
   font-size: 16px;
   margin-bottom: 8px;
@@ -262,7 +260,6 @@ a { text-decoration: none; color: inherit; }
     flex-shrink: 0;
   }
 
-  /* Fade (mobile) */
   #filterBar::before,
   #filterBar::after {
     content: "";
@@ -285,10 +282,7 @@ a { text-decoration: none; color: inherit; }
   }
 
   .card-text { padding: 6px 0; }
-
-  /* gleiche Halbierung auf Mobile */
   .card-category { margin-bottom: -4px; font-size: 10px; line-height:1.0; }
-
   .card-title { font-size: 16px; margin-bottom: 8px; }
   .card-excerpt { font-size: 12px; line-height: 1.35; }
 
@@ -298,7 +292,7 @@ a { text-decoration: none; color: inherit; }
   }
 }
 
-/* Hide mobile label on Desktop */
+/* Mobile label hidden on Desktop */
 @media (min-width: 769px) {
   #mobileLabel { display: none; }
 }
@@ -434,6 +428,9 @@ a { text-decoration: none; color: inherit; }
       const a = document.createElement("a");
       a.className = "card";
       a.href = BASE + post.fullUrl;
+
+      /* 🔥 FIX HIER: externe Seiten öffnen außerhalb des iFrames */
+      a.target = "_top";
 
       a.innerHTML = `
         <div class="card-inner">
