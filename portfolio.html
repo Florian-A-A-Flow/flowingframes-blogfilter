@@ -65,7 +65,7 @@ a { text-decoration: none; color: inherit; }
 /* Mehr Luft zwischen Linien und Inhalt – nur Desktop */
 @media (min-width: 769px) {
   .filter-inner-desktop {
-    padding: 20px 16px; /* oben/unten 20px, links/rechts 16px */
+    padding: 20px 16px;
   }
 
   .filter-inner-desktop::before,
@@ -92,9 +92,6 @@ a { text-decoration: none; color: inherit; }
   margin-bottom: 34px;
   text-align: center;
 }
-
-
-
 
 /* Desktop: Pills flexibel */
 @media (min-width: 769px) {
@@ -164,16 +161,38 @@ a { text-decoration: none; color: inherit; }
   transition: .65s ease, box-shadow .35s ease;
 }
 .card.visible { opacity: 1; transform: translateY(0); }
-.card:hover { box-shadow: var(--shadow-hover); }
 
+/* === NEW: Squarespace Summary Hover Effect (EXACT COPY) === */
+
+/* Smooth back-transition */
+.card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Hover: card lifts + shadow */
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.30);
+}
+
+/* Smooth image transition */
+.card-img {
+  transition: transform 0.4s ease, filter 0.4s ease;
+}
+
+/* Hover: image zoom + darken */
+.card:hover .card-img {
+  transform: scale(1.03);
+  filter: brightness(0.80);
+}
+
+/* ----------------------------------------------------------- */
 .card-media-wrap { position: relative; overflow: hidden; }
 .card-img {
   width: 100%;
   aspect-ratio: 16/9;
   object-fit: cover;
-  transition: .45s ease;
 }
-.card:hover .card-img { transform: scale(1.06); }
 
 .card-text {
   padding: 14px 0;
@@ -256,7 +275,7 @@ a { text-decoration: none; color: inherit; }
     background: linear-gradient(to left, rgba(28,28,28,0.85), rgba(28,28,28,0));
   }
 
-  /* Mobile text spacing */
+  /* Mobile spacing */
   .card-text { padding: 10px 0; }
   .card-category { margin-bottom: 2px; font-size: 10px; }
   .card-title { font-size: 16px; margin-bottom: 3px; }
