@@ -55,25 +55,26 @@ a { text-decoration: none; color: inherit; }
   z-index: 2;
 }
 
-/* Dezente Strukturlinien (F1) */
+.filter-inner-desktop {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 16px;
+  position: relative; /* nötig für die Linien */
+}
+
+/* Dezente, sichtbare Linien oben/unten nur auf Desktop */
 @media (min-width: 769px) {
-  #filterBar::before,
-  #filterBar::after {
+  .filter-inner-desktop::before,
+  .filter-inner-desktop::after {
     content: "";
     position: absolute;
     left: 0;
     right: 0;
     height: 1px;
-    background: rgba(255,255,255,0.05);
+    background: rgba(255,255,255,0.08);
   }
-  #filterBar::before { top: 0; }
-  #filterBar::after { bottom: 0; }
-}
-
-.filter-inner-desktop {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 16px;
+  .filter-inner-desktop::before { top: 0; }
+  .filter-inner-desktop::after { bottom: 0; }
 }
 
 .filter-group-label {
@@ -126,15 +127,12 @@ a { text-decoration: none; color: inherit; }
 }
 
 /* -----------------------------------------------------------
-   PREMIUM HOVER (H3)
-   Nur Desktop
+   PREMIUM HOVER (H3) – nur Desktop
+   → Glow + leichter Lift, respektiert active/non-active Design
 ----------------------------------------------------------- */
 @media (min-width: 769px) {
-  .filter-pill:hover:not(.active) {
-    background: rgba(255,255,255,0.12);
-    border-color: rgba(255,255,255,0.25);
-    color: #fff;
-    box-shadow: 0 0 14px rgba(255,255,255,0.08);
+  .filter-pill:hover {
+    box-shadow: 0 0 16px rgba(255,255,255,0.14);
     transform: translateY(-1px);
   }
 }
