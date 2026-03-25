@@ -4,10 +4,9 @@
   <meta charset="UTF-8" />
   <title>Portfolio – Flowing Frames</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-
-  <!-- ADOBE FONTS -->
+ 
   <link rel="stylesheet" href="https://use.typekit.net/cke2yrp.css">
-
+ 
 <style>
 /* -----------------------------------------------------------
    DESIGN CORE
@@ -16,19 +15,19 @@
   --bg: #1C1C1C;
   --glass-bg: rgba(28,28,28,0.65);
   --glass-border: rgba(255,255,255,0.08);
-
+ 
   --text-main: #F5F5F5;
   --text-muted: #9B9B9B;
-
+ 
   --border-radius: 14px;
   --pill-radius: 999px;
-
+ 
   --shadow-hover: 0 8px 22px rgba(0,0,0,0.38);
   --shadow-glass: 0 4px 22px rgba(0,0,0,0.45);
-
+ 
   --transition-fast: 0.22s ease-out;
 }
-
+ 
 /* RESET --------------------------------------------------- */
 * { box-sizing: border-box; }
 body {
@@ -39,7 +38,7 @@ body {
   color: var(--text-main);
 }
 a { text-decoration: none; color: inherit; }
-
+ 
 /* WRAPPER ------------------------------------------------- */
 #portfolio-wrapper {
   width: 100%;
@@ -47,7 +46,7 @@ a { text-decoration: none; color: inherit; }
   margin: 0;
   padding: 0 48px;
 }
-
+ 
 /* -----------------------------------------------------------
    FILTER BAR – DESKTOP
 ----------------------------------------------------------- */
@@ -57,20 +56,20 @@ a { text-decoration: none; color: inherit; }
   padding: 30px 0;
   z-index: 2;
 }
-
+ 
 .filter-inner-desktop {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 16px;
   position: relative;
 }
-
+ 
 /* Desktop Linien */
 @media (min-width: 769px) {
   .filter-inner-desktop {
     padding: 20px 16px;
   }
-
+ 
   .filter-inner-desktop::before,
   .filter-inner-desktop::after {
     content: "";
@@ -83,7 +82,7 @@ a { text-decoration: none; color: inherit; }
   .filter-inner-desktop::before { top: 0; }
   .filter-inner-desktop::after { bottom: 0; }
 }
-
+ 
 /* Kategorien Label Desktop */
 .filter-group-label {
   font-family: "omnes-pro", sans-serif;
@@ -96,7 +95,7 @@ a { text-decoration: none; color: inherit; }
   margin-bottom: 34px;
   text-align: center;
 }
-
+ 
 /* Desktop: Pills flexibel */
 @media (min-width: 769px) {
   #categoryFilters {
@@ -105,7 +104,7 @@ a { text-decoration: none; color: inherit; }
     gap: 12px;
   }
 }
-
+ 
 .filter-pill {
   display: inline-flex;
   justify-content: center;
@@ -123,21 +122,21 @@ a { text-decoration: none; color: inherit; }
   position: relative;
   font-family: "omnes-pro", sans-serif;
 }
-
+ 
 /* Invisible input */
 .filter-pill input {
   position: absolute;
   opacity: 0;
   pointer-events: none;
 }
-
+ 
 /* Active */
 .filter-pill.active {
   background: rgba(255,255,255,0.18);
   border-color: rgba(255,255,255,0.5);
   color: white;
 }
-
+ 
 /* PREMIUM HOVER – Desktop */
 @media (min-width: 769px) {
   .filter-pill:hover {
@@ -146,7 +145,7 @@ a { text-decoration: none; color: inherit; }
     transform: translateY(-1px);
   }
 }
-
+ 
 /* -----------------------------------------------------------
    DESKTOP GRID
 ----------------------------------------------------------- */
@@ -155,7 +154,7 @@ a { text-decoration: none; color: inherit; }
   grid-template-columns: repeat(3, 1fr);
   gap: 34px;
 }
-
+ 
 /* Unified, corrected transition */
 .card {
   display: block;
@@ -167,13 +166,13 @@ a { text-decoration: none; color: inherit; }
   transition: opacity .65s ease, transform .65s ease, box-shadow .30s ease;
 }
 .card.visible { opacity: 1; transform: translateY(0); }
-
+ 
 /* Hover: lift + shadow */
 .card:hover {
   transform: translateY(-3px);
   box-shadow: 0 6px 16px rgba(0,0,0,0.30);
 }
-
+ 
 /* Image hover */
 .card-img {
   transition: transform 0.4s ease, filter 0.4s ease;
@@ -182,21 +181,21 @@ a { text-decoration: none; color: inherit; }
   transform: scale(1.03);
   filter: brightness(0.80);
 }
-
+ 
 .card-media-wrap { position: relative; overflow: hidden; }
 .card-img {
   width: 100%;
   aspect-ratio: 16/9;
   object-fit: cover;
 }
-
+ 
 /* -----------------------------------------------------------
    TEXTSTILE – so nah wie möglich am Squarespace-Beispiel
 ----------------------------------------------------------- */
 .card-text {
   padding: 6px 0;
 }
-
+ 
 /* Kategorie-Zeile (Musikvideo, Personenfotografie) */
 .card-category {
   font-family: "omnes-pro", sans-serif;
@@ -209,7 +208,7 @@ a { text-decoration: none; color: inherit; }
   color: var(--text-muted);
   -webkit-font-smoothing: antialiased;
 }
-
+ 
 /* Titel-Zeile (JAKUBA – HEILIGER MARTIN) */
 .card-title {
   font-family: "omnes-pro", sans-serif;
@@ -222,7 +221,7 @@ a { text-decoration: none; color: inherit; }
   color: var(--text-main);
   -webkit-font-smoothing: antialiased;
 }
-
+ 
 /* Exzerpt / Meta (2025 | Video, Foto) */
 .card-excerpt {
   font-family: "omnes-pro", sans-serif;
@@ -233,14 +232,14 @@ a { text-decoration: none; color: inherit; }
   color: var(--text-muted);
   -webkit-font-smoothing: antialiased;
 }
-
+ 
 /* -----------------------------------------------------------
    MOBILE
 ----------------------------------------------------------- */
 @media (max-width: 768px) {
-
+ 
   body { padding-bottom: 160px; }
-
+ 
   #mobileLabel {
     display: block;
     text-align: center;
@@ -252,9 +251,9 @@ a { text-decoration: none; color: inherit; }
     margin: 6px 0 12px 0;
     font-family: "omnes-pro", sans-serif;
   }
-
+ 
   .filter-group-label { display: none; }
-
+ 
   #filterBar {
     margin-bottom: 20px;
     padding: 0;
@@ -264,9 +263,9 @@ a { text-decoration: none; color: inherit; }
     border-bottom: 1px solid var(--glass-border);
     box-shadow: var(--shadow-glass);
   }
-
+ 
   .filter-inner-desktop { padding: 0; margin: 0; }
-
+ 
   #categoryFilters {
     display: flex;
     overflow-x: auto;
@@ -276,13 +275,13 @@ a { text-decoration: none; color: inherit; }
     scrollbar-width: none;
   }
   #categoryFilters::-webkit-scrollbar { display: none; }
-
+ 
   .filter-pill {
     padding: 10px 24px;
     font-size: 12px;
     flex-shrink: 0;
   }
-
+ 
   /* Fade (mobile) */
   #filterBar::before,
   #filterBar::after {
@@ -294,52 +293,52 @@ a { text-decoration: none; color: inherit; }
     pointer-events: none;
     z-index: 50;
   }
-
+ 
   #filterBar::before {
     left: 0;
     background: linear-gradient(to right, rgba(28,28,28,0.85), rgba(28,28,28,0));
   }
-
+ 
   #filterBar::after {
     right: 0;
     background: linear-gradient(to left, rgba(28,28,28,0.85), rgba(28,28,28,0));
   }
-
+ 
   /* gleiche Typo, nur etwas kleiner */
   .card-text { padding: 6px 0; }
-
+ 
   .card-category {
     font-size: 11px;
     margin-bottom: 3px;
   }
-
+ 
   .card-title {
     font-size: 15px;
     margin-bottom: 6px;
   }
-
+ 
   .card-excerpt {
     font-size: 12px;
     line-height: 1.35;
   }
-
+ 
   .portfolio-grid {
     grid-template-columns: 1fr;
     gap: 22px;
   }
 }
-
+ 
 /* Mobile label hidden on Desktop */
 @media (min-width: 769px) {
   #mobileLabel { display: none; }
 }
 </style>
 </head>
-
+ 
 <body>
-
+ 
 <div id="mobileLabel">Kategorien</div>
-
+ 
 <div id="filterBar">
   <div class="filter-inner-desktop">
     <div class="filter-group">
@@ -348,97 +347,100 @@ a { text-decoration: none; color: inherit; }
     </div>
   </div>
 </div>
-
+ 
 <div id="portfolio-wrapper">
   <div id="portfolioGrid" class="portfolio-grid"></div>
   <div id="statusMessage"></div>
 </div>
-
+ 
 <script>
 /* ================== PORTFOLIO ENGINE ================== */
 (function() {
-
+ 
   const BASE  = "https://www.flowingframes.media";
   const PROXY = "https://flowingframes-proxy.florian-augustus-alexander.workers.dev/?url=";
-
+ 
   let allPosts = [];
   let nextPath = "/all-projekte?format=json-pretty";
   let activeCategories = new Set();
-
+ 
   const gridEl        = document.getElementById("portfolioGrid");
   const filtersEl     = document.getElementById("categoryFilters");
   const statusEl      = document.getElementById("statusMessage");
-
+ 
   let visibleCount = 0;
   const BATCH = 30;
-
+ 
   async function fetchPage(path) {
     const res = await fetch(PROXY + encodeURIComponent(BASE + path));
     return res.json();
   }
-
+ 
   async function loadInitial() {
     statusEl.textContent = "Lade Projekte …";
-
-    while (nextPath && allPosts.length < 100) {
+ 
+    while (nextPath) {
       const data = await fetchPage(nextPath);
       allPosts.push(...(data.items || []));
+      
       if (data.pagination?.nextPageUrl) {
         const u = data.pagination.nextPageUrl;
         nextPath = u.includes("format=") ? u : u + "&format=json-pretty";
-      } else nextPath = null;
+      } else {
+        nextPath = null;
+      }
     }
-
+ 
     buildFilters();
     renderCards();
     renderCards();
-
+ 
     statusEl.textContent = "";
   }
-
+ 
   function buildFilters() {
     filtersEl.innerHTML = "";
     const counts = {};
-
+ 
     allPosts.forEach(p =>
       (p.categories || []).forEach(c =>
         counts[c] = (counts[c] || 0) + 1
       )
     );
-
+ 
     Object.keys(counts)
       .sort((a,b) => counts[b]-counts[a] || a.localeCompare(b))
       .forEach(cat => {
         const pill = document.createElement("label");
         pill.className = "filter-pill";
-
+ 
         const input = document.createElement("input");
         input.type = "checkbox";
         input.value = cat;
-
+ 
         input.addEventListener("change", async () => {
           if (input.checked) activeCategories.add(cat);
           else activeCategories.delete(cat);
-
+ 
           pill.classList.toggle("active", input.checked);
-
+ 
           gridEl.innerHTML = "";
           visibleCount = 0;
-
+ 
           if (activeCategories.size > 0 && nextPath)
             await loadAllPages();
-
+ 
           renderCards();
           renderCards();
           sendHeight();
         });
-
+ 
         pill.appendChild(input);
         pill.appendChild(document.createTextNode(cat));
         filtersEl.appendChild(pill);
       });
   }
-
+ 
   async function loadAllPages() {
     while (nextPath) {
       const data = await fetchPage(nextPath);
@@ -449,24 +451,24 @@ a { text-decoration: none; color: inherit; }
       } else nextPath = null;
     }
   }
-
+ 
   function getFiltered() {
     if (activeCategories.size === 0) return allPosts;
     return allPosts.filter(p =>
       p.categories?.some(c => activeCategories.has(c))
     );
   }
-
+ 
   function renderCards() {
     const filtered = getFiltered();
     const slice = filtered.slice(visibleCount, visibleCount+BATCH);
-
+ 
     slice.forEach(post => {
       const a = document.createElement("a");
       a.className = "card";
       a.href = BASE + post.fullUrl;
       a.target = "_parent"; // Links außerhalb des iFrames öffnen
-
+ 
       a.innerHTML = `
         <div class="card-inner">
           <div class="card-media-wrap">
@@ -480,14 +482,14 @@ a { text-decoration: none; color: inherit; }
           </div>
         </div>
       `;
-
+ 
       gridEl.appendChild(a);
       observer.observe(a);
     });
-
+ 
     visibleCount += BATCH;
   }
-
+ 
   const observer = new IntersectionObserver(entries => {
     entries.forEach(e => {
       if (e.isIntersecting) {
@@ -496,11 +498,11 @@ a { text-decoration: none; color: inherit; }
       }
     });
   }, { threshold: 0.2 });
-
+ 
   const sentinel = document.createElement("div");
   sentinel.style.height = "1px";
   gridEl.after(sentinel);
-
+ 
   const scrollObs = new IntersectionObserver(entries => {
     if (!entries[0].isIntersecting) return;
     const filtered = getFiltered();
@@ -509,13 +511,13 @@ a { text-decoration: none; color: inherit; }
     sendHeight();
   });
   scrollObs.observe(sentinel);
-
+ 
   loadInitial();
-
+ 
 })();
-
+ 
 </script>
-
+ 
 <script>
 function sendHeight(){
   parent.postMessage({ portfolioHeight: document.documentElement.scrollHeight }, "*");
@@ -524,6 +526,6 @@ new MutationObserver(sendHeight).observe(document.body,{childList:true,subtree:t
 window.addEventListener("load", sendHeight);
 setInterval(sendHeight,300);
 </script>
-
+ 
 </body>
 </html>
