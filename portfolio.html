@@ -363,6 +363,13 @@ a { text-decoration: none; color: inherit; }
   let allPosts = [];
   let nextPath = "/all-projekte?format=json-pretty";
   let activeCategories = new Set();
+
+  // URL-Parameter auslesen und in activeCategories speichern
+  const urlParams = new URLSearchParams(window.location.search);
+  const catParam = urlParams.get('category');
+  if (catParam) {
+    catParam.split(',').forEach(c => activeCategories.add(c.trim()));
+  }
  
   const gridEl        = document.getElementById("portfolioGrid");
   const filtersEl     = document.getElementById("categoryFilters");
@@ -417,6 +424,12 @@ a { text-decoration: none; color: inherit; }
         const input = document.createElement("input");
         input.type = "checkbox";
         input.value = cat;
+
+        // Setzt den Haken und die Klasse, falls Kategorie via URL vorab gewählt wurde
+        if (activeCategories.has(cat)) {
+          input.checked = true;
+          pill.classList.add("active");
+        }
  
         input.addEventListener("change", async () => {
           if (input.checked) activeCategories.add(cat);
