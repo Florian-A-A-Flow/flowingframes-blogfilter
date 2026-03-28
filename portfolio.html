@@ -282,26 +282,28 @@ a { text-decoration: none; color: inherit; }
     flex-shrink: 0;
   }
  
-  /* Fade (mobile) */
+  /* Fade & Pfeile (mobile) */
   #filterBar::before,
   #filterBar::after {
     content: "";
     position: absolute;
     top: 0;
     bottom: 0;
-    width: 42px;
+    width: 48px;
     pointer-events: none;
     z-index: 50;
   }
  
   #filterBar::before {
     left: 0;
-    background: linear-gradient(to right, rgba(28,28,28,0.85), rgba(28,28,28,0));
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%239B9B9B' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='15 18 9 12 15 6'%3E%3C/polyline%3E%3C/svg%3E") no-repeat left 6px center / 16px,
+                linear-gradient(to right, rgba(28,28,28,0.95) 15%, rgba(28,28,28,0));
   }
  
   #filterBar::after {
     right: 0;
-    background: linear-gradient(to left, rgba(28,28,28,0.85), rgba(28,28,28,0));
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%239B9B9B' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='9 18 15 12 9 6'%3E%3C/polyline%3E%3C/svg%3E") no-repeat right 6px center / 16px,
+                linear-gradient(to left, rgba(28,28,28,0.95) 15%, rgba(28,28,28,0));
   }
  
   /* gleiche Typo, nur etwas kleiner */
